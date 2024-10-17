@@ -93,3 +93,10 @@ manera más inmediata que otros sectores, permitiendo una rápida adaptación y 
 ***Otro comentario: Tb releyendo el enunciado y una vez planteados estos objetivos, se me vienen a la cabeza los planteos de los
  KPI´s, porque según entiendo por ahora sólo debemos 'plantear'las ideas de los mismos, y éstos son basados en los objetivos 
  estratégicos y medir su desempeño, por ende estan estrechamente relacionados con ést de aca arriba. Tengo pensados ya varios***
+
+ ## KPI´s: (posibles)
+
+- Incrementar el puntaje de reseñas en rubros que no superen un % a aquellos que no superen un X % de reseña
+- Mejorar el tiempo de respuesta de los propietarios hacia las reseñas que tengan demora
+- Aumentar el número de reseñas por rubro para aquellos que no lleguen a un nro determinado de reviews
+- Aumetar la accesibilidad de los negocios para gente discapacitada - buscar en un estado en concreto,que no tenga inclusion, y recomendar que adopte negocios con accesibilidad
