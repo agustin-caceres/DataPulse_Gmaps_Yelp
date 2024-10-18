@@ -2,7 +2,7 @@
 
 ## MIEMBROS DEL EQUIPO: 
 
-- Data Engineer: Julieta Trimarchi, Mauricio Arce
+- Data Engineer: Julieta Trimarchi, Mauricio Arce, Agustín Cáceres
 - Data Analyst: Débora Kellenberger, Mauricio Arce
 - Data Science: Agustín Cáceres, Aliskair Rodríguez
 
@@ -35,20 +35,15 @@ a las necesidades y expectativas cambiantes de los clientes. El análisis y la u
 
 (mauri-opinion): aca para mi el 1 y 2 no. porque deberian ir los objetivos del proyecto que le importen al cliente, eso seria mas nuestros objetivos como empleados. 
 
-1. Recopilar y analizar las opiniones de los usuarios en Yelp y Google Maps sobre hoteles Y restaurantes, para obtener 
-insights detallados.
+1. Predecir cuáles serán los rubros de negocios que más crecerán o decaerán en el mercado.
 
-2. Identificar las percepciones de los usuarios sobre los negocios mediante técnicas de análisis de sentimientos.
-
-3. Predecir cuáles serán los rubros de negocios que más crecerán o decaerán en el mercado.
-
-4. Identificar las mejores ubicaciones para nuevos locales basándose en la densidad de competidores y la demanda 
+2. Identificar las mejores ubicaciones para nuevos locales basándose en la densidad de competidores y la demanda 
 de usuarios.
 
-5. Implementar un sistema de recomendación personalizado para que los usuarios de Yelp y Google Maps descubran nuevos
+3. Implementar un sistema de recomendación personalizado para que los usuarios de Yelp y Google Maps descubran nuevos
  comercios basados en sus experiencias previas.
 
-6. Generar informes detallados que presenten los hallazgos de manera clara y accionable para el cliente.
+4. Generar herramientas de visualización que presenten los hallazgos de manera clara y accionable para el cliente.
 
 De esta forma se podrá  ayudar a nuestro cliente a tomar decisiones estratégicas informadas sobre su presencia en el mercado y 
 sus estrategias futuras.
@@ -67,6 +62,8 @@ futuro con otros rubros, de esa forma justificamos el porqué utilizamos solos d
 En esta, la primera etapa del proyecto daremos un enfoque exclusivo en restaurantes y hoteles, pues consideramos que centrarnos
 en estos dos pilares puede ser clave para la efectividad y la practicidad del proyecto, garantizando la relevancia, calidad y 
 utilidad de los resultados, optimizando el impacto estratégico para el cliente.
+
+Y en cuanto a los estados????
 
 #### Motivos:
 
@@ -90,9 +87,6 @@ sus reseñas previas.
 Tendencias del Mercado: Restaurantes y hoteles suelen reflejar tendencias y cambios en el comportamiento del consumidor de 
 manera más inmediata que otros sectores, permitiendo una rápida adaptación y estrategia de mercado.
 
-***Otro comentario: Tb releyendo el enunciado y una vez planteados estos objetivos, se me vienen a la cabeza los planteos de los
- KPI´s, porque según entiendo por ahora sólo debemos 'plantear'las ideas de los mismos, y éstos son basados en los objetivos 
- estratégicos y medir su desempeño, por ende estan estrechamente relacionados con ést de aca arriba. Tengo pensados ya varios***
 
  ## KPI´s: (posibles)
 
