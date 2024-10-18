@@ -8,7 +8,8 @@
 
 ## BREVE DESCRIPCIÓN DEL PROYECTO:
 
-
+NOMBRE DE LA EMPRESA: DataPulse Analytics
+ (estoy en eso)
 
 ## ENTENDIMIENTO DE LA SITUACION ACTUAL: 
 
@@ -33,8 +34,6 @@ a las necesidades y expectativas cambiantes de los clientes. El análisis y la u
 
 ## OBJETIVOS DEL PROYECTO: 
 
-(mauri-opinion): aca para mi el 1 y 2 no. porque deberian ir los objetivos del proyecto que le importen al cliente, eso seria mas nuestros objetivos como empleados. 
-
 1. Predecir cuáles serán los rubros de negocios que más crecerán o decaerán en el mercado.
 
 2. Identificar las mejores ubicaciones para nuevos locales basándose en la densidad de competidores y la demanda 
@@ -50,20 +49,12 @@ sus estrategias futuras.
 
 
 
-## ALCANCE INMEDIATO DEL PROYECTO:
-
-***Acá me basé tb en el enunciado, en donde remarca que "...deberán delimitar su trabajo definiendo el 
-alcance y las tareas/desarrollos que puedan considerar importantes para la integridad del proyecto pero que por complejidad o 
-tiempo, estén fuera de alcance. Esto último pueden plantearlo como posibilidades de continuidad del proyecto.", por eso tb creo 
-que Mariana en los slices de demostracion puso de forma conjunta los objetivos y el alcance, van de la mano. Es decir, nuestro 
-alcance INICIAL es solo a restaurantes y hoteles, para luego, dejar la puerta abierta a una segunda etapa del proyecto a 
-futuro con otros rubros, de esa forma justificamos el porqué utilizamos solos dos sectores ¿qué opinan?***
+## ALCANCE INMEDIATO DEL PROYECTO: (a definir parte del alcance aún)
 
 En esta, la primera etapa del proyecto daremos un enfoque exclusivo en restaurantes y hoteles, pues consideramos que centrarnos
 en estos dos pilares puede ser clave para la efectividad y la practicidad del proyecto, garantizando la relevancia, calidad y 
 utilidad de los resultados, optimizando el impacto estratégico para el cliente.
 
-Y en cuanto a los estados????
 
 #### Motivos:
 
@@ -88,9 +79,18 @@ Tendencias del Mercado: Restaurantes y hoteles suelen reflejar tendencias y camb
 manera más inmediata que otros sectores, permitiendo una rápida adaptación y estrategia de mercado.
 
 
- ## KPI´s: (posibles)
+ ## KPI´s: 
 
-- Incrementar el puntaje de reseñas en rubros que no superen un % a aquellos que no superen un X % de reseña
-- Mejorar el tiempo de respuesta de los propietarios hacia las reseñas que tengan demora
-- Aumentar el número de reseñas por rubro para aquellos que no lleguen a un nro determinado de reviews
-- Aumetar la accesibilidad de los negocios para gente discapacitada - buscar en un estado en concreto,que no tenga inclusion, y recomendar que adopte negocios con accesibilidad
+- KPI: Identificación de Baches de Accesibilidad
+Objetivo: Encontrar los estados en donde los negocios con accesibilidad sean inferiores al x% del total de negocios de ese rubro, indicando áreas con potencial de inversión para mejorar la accesibilidad.
+Métrica: Porcentaje de negocios accesibles en cada estado comparado con el total de negocios de ese rubro.
+
+
+- KPI: Satisfacción del Cliente en Relación a Reseñas
+Objetivo: Identificar los estados en donde hay comercios con alta cantidad de reseñas pero con bajo rating, indicando baja satisfacción del cliente y oportunidad de inversión.
+Métrica: Cantidad de reseñas vs. rating promedio de comercios en cada estado.
+
+
+- KPI: Tendencia de Crecimiento en Subcategorías
+Objetivo: Buscar subcategorías en las que en relación a la densidad de reseñas del trimestre anterior haya aumentado un x%, indicando una tendencia en alza y oportunidad de crecimiento en ese rubro.
+Métrica: Incremento porcentual en la densidad de reseñas por subcategoría respecto al trimestre anterior.
