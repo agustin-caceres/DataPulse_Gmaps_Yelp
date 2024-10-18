@@ -34,6 +34,8 @@ a las necesidades y expectativas cambiantes de los clientes. El análisis y la u
 
 ## OBJETIVOS DEL PROYECTO: 
 
+### (se podria agregar como un ultimo objetivo la actualizacion en tiempo real, osea que no es informacion que queda en el tiempo y desactualizada, si no que se actualiza en tiempo real a medida que hay mas reseñas.)
+
 1. Predecir cuáles serán los rubros de negocios que más crecerán o decaerán en el mercado.
 
 2. Identificar las mejores ubicaciones para nuevos locales basándose en la densidad de competidores y la demanda 
