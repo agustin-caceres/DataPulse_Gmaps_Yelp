@@ -34,7 +34,7 @@ a las necesidades y expectativas cambiantes de los clientes. El análisis y la u
 
 ## OBJETIVOS DEL PROYECTO: 
 
-### (se podria agregar como un ultimo objetivo la actualizacion en tiempo real, osea que no es informacion que queda en el tiempo y desactualizada, si no que se actualiza en tiempo real a medida que hay mas reseñas.)
+### (se podria agregar como un ultimo objetivo la actualizacion en tiempo real, osea que no es informacion que queda en el tiempo y desactualizada, si no que se actualiza en tiempo real a medida que hay mas reseñas.) AGREGADO
 
 1. Predecir cuáles serán los rubros de negocios que más crecerán o decaerán en el mercado.
 
@@ -45,6 +45,8 @@ de usuarios.
  comercios basados en sus experiencias previas.
 
 4. Generar herramientas de visualización que presenten los hallazgos de manera clara y accionable para el cliente.
+
+5. Desarrollar un sistema que actualice la información en tiempo real, permitiendo que las reseñas de Yelp y Google Maps se integren automáticamente en los análisis. 
 
 De esta forma se podrá  ayudar a nuestro cliente a tomar decisiones estratégicas informadas sobre su presencia en el mercado y 
 sus estrategias futuras.
