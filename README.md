@@ -1,15 +1,18 @@
+![Encabezado](<C:/Users/debor/OneDrive/Documentos/Henry/PROYECTO FINAL local/Images/EncabezadoREADME.png>)
+
 # PROYECTO FINAL
+
+## BREVE DESCRIPCIÓN DEL PROYECTO:
+
+NOMBRE DE LA EMPRESA: DataPulse Analytics
+
+Este proyecto se centra en mejorar la efectividad y la practicidad de las estrategias de nuestro cliente, quiene es parte de un conglomerado de empresas de restaurantes y afines en Estados Unidos, realizando un analisis del mercado en una muestra del territorio, con un enfoque exclusivo en los sectores de restaurantes y hoteles en los cinco estados con mayor cantidad de establecimientos de este tipo. De esta forma buscamos garantizar resultados relevantes y de alta calidad, optimizando el impacto estratégico y dejando una puerta abierta a que el cliente vea, transite y reciba el feedback de los insights hallados, para luego continuar en un futuro con otro análisis mas 'à la carte' 👨‍🍳 😉
 
 ## MIEMBROS DEL EQUIPO: 
 
 - Data Engineer: Julieta Trimarchi, Mauricio Arce, Agustín Cáceres
 - Data Analyst: Débora Kellenberger, Mauricio Arce
 - Data Science: Agustín Cáceres, Aliskair Rodríguez
-
-## BREVE DESCRIPCIÓN DEL PROYECTO:
-
-NOMBRE DE LA EMPRESA: DataPulse Analytics
- (estoy en eso)
 
 ## ENTENDIMIENTO DE LA SITUACION ACTUAL: 
 
@@ -34,8 +37,6 @@ a las necesidades y expectativas cambiantes de los clientes. El análisis y la u
 
 ## OBJETIVOS DEL PROYECTO: 
 
-### (se podria agregar como un ultimo objetivo la actualizacion en tiempo real, osea que no es informacion que queda en el tiempo y desactualizada, si no que se actualiza en tiempo real a medida que hay mas reseñas.) AGREGADO
-
 1. Predecir cuáles serán los rubros de negocios que más crecerán o decaerán en el mercado.
 
 2. Identificar las mejores ubicaciones para nuevos locales basándose en la densidad de competidores y la demanda 
@@ -53,11 +54,11 @@ sus estrategias futuras.
 
 
 
-## ALCANCE INMEDIATO DEL PROYECTO: (a definir parte del alcance aún)
+## ALCANCE INMEDIATO DEL PROYECTO: 
 
-En esta, la primera etapa del proyecto daremos un enfoque exclusivo en restaurantes y hoteles, pues consideramos que centrarnos
+En esta primera etapa del proyecto, (el mismo puede en un futuro y a pedido del cliente, expandirse), daremos un enfoque exclusivo en restaurantes y hoteles, pues consideramos que centrarnos
 en estos dos pilares puede ser clave para la efectividad y la practicidad del proyecto, garantizando la relevancia, calidad y 
-utilidad de los resultados, optimizando el impacto estratégico para el cliente.
+utilidad de los resultados, optimizando el impacto estratégico para el cliente, y tomando como muestra a los cinco estados del territorio de EEUU que, según los datos obtenidos, poseen la mayor cantidad de comercios de los rubros antes mencionados.
 
 
 #### Motivos:
