@@ -22,9 +22,9 @@ La aplicación está desplegada en línea y puedes acceder a ella a través del 
 
 ## 🎯 Funcionalidades Principales
 
-1. **Preferencias del Usuario**: El usuario puede ingresar la ubicación, tipo de comida, y rango de precios de su preferencia mediante un conjunto de filtros interactivos ubicados en la barra lateral.
+1. **Preferencias del Usuario**: El usuario puede ingresar ciertas preferencias a definir mediante un conjunto de filtros interactivos ubicados en la barra lateral.
    
-2. **Recomendaciones Personalizadas**: La aplicación muestra recomendaciones basadas en las preferencias ingresadas por el usuario, generando información relevante de cada restaurante, como su calificación, tipo de cocina, ubicación y más.
+2. **Recomendaciones Personalizadas**: La aplicación muestra recomendaciones basadas en las preferencias ingresadas por el usuario, generando información relevante de cada restaurante, como su calificación, tipo de cocina, ubicación y más (a definir)
 
 ## 🎨 Paleta de Colores
 
