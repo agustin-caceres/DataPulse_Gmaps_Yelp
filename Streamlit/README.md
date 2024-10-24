@@ -24,7 +24,7 @@ La aplicación está desplegada en línea y puedes acceder a ella a través del 
 
 1. **Preferencias del Usuario**: El usuario puede ingresar ciertas preferencias a definir mediante un conjunto de filtros interactivos ubicados en la barra lateral.
    
-2. **Recomendaciones Personalizadas**: La aplicación muestra recomendaciones basadas en las preferencias ingresadas por el usuario, generando información relevante de cada restaurante, como su calificación, tipo de cocina, ubicación y más (a definir)
+2. **Recomendaciones Personalizadas**: La aplicación muestra recomendaciones basadas en las preferencias ingresadas por el usuario, generando información relevante de cada restaurante, como su calificación, tipo de cocina, ubicación y más (a definir aun)
 
 ## 🎨 Paleta de Colores
 
