@@ -17,7 +17,7 @@ De esta forma buscamos garantizar resultados relevantes y de alta calidad, optim
 
 ## **MIEMBROS DEL EQUIPO**  👩🏻‍💻 👨🏻‍💻 👩🏼‍💻 👨🏻‍💻 👨🏼‍💻 
 
-- Data Engineer: Julieta Trimarchi, Mauricio Arce, Agustín Cáceres
+- Data Engineer: Julieta Trimarchi, Mauricio Arce
 - Data Analyst: Débora Kellenberger, Mauricio Arce
 - Data Science: Agustín Cáceres, Aliskair Rodríguez
 
@@ -57,48 +57,47 @@ sus estrategias futuras.
 
 ## *ALCANCE INMEDIATO DEL PROYECTO* 🏁 
 
-En esta primera etapa del proyecto, (el mismo puede en un futuro y a pedido del cliente, expandirse), daremos un enfoque exclusivo en restaurantes y hoteles, pues consideramos que centrarnos
-en estos dos pilares puede ser clave para la efectividad y la practicidad del proyecto, garantizando la relevancia, calidad y 
+En esta primera etapa del proyecto, (el mismo puede en un futuro y a pedido del cliente, expandirse), daremos un enfoque exclusivo en el sector gastronómico, pues consideramos que centrarnos
+en este pilar turístico puede ser clave para la efectividad y la practicidad del proyecto, garantizando la relevancia, calidad y 
 utilidad de los resultados, optimizando el impacto estratégico para el cliente, y tomando como muestra a los cinco estados del territorio de EEUU que, según los datos obtenidos, poseen la mayor cantidad de comercios de los rubros antes mencionados.
+
+¿Cuáles son esos estados? **New York, Florida, Texas, New Mexico y Pennsylvania**
 
 
 #### *Motivos*
 
-Relevancia del Cliente: Dado que nuestro cliente pertenece a un conglomerado de empresas de restaurantes y afines, es fundamental 
+**Relevancia del Cliente:** Dado que nuestro cliente pertenece a un conglomerado de empresas de restaurantes y afines, es fundamental 
 centrarse en sectores directamente relacionados con su núcleo de negocio para obtener insights más relevantes y accionables.
 
-Volumen y Calidad de Datos: Restaurantes y hoteles son dos de las categorías más populares en plataformas como Yelp y Google 
-Maps, lo que asegura un volumen significativo de opiniones y datos de calidad para un análisis preciso y detallado.
+**Impacto Económico:** Este sector representa una parte significativa de la industria del turismo y ocio, y es especialmente ensibles a las opiniones de los clientes. Un análisis exhaustivo puede tener un impacto directo en la estrategia de negocios y en la rentabilidad.
 
-Impacto Económico: Estos sectores representan una parte significativa de la industria del turismo y ocio, y son especialmente 
-sensibles a las opiniones de los clientes. Un análisis exhaustivo en estas áreas puede tener un impacto directo en la estrategia
-de negocios y en la rentabilidad.
+**Viabilidad del Proyecto:** Enfocarse en un ámbito más estrecho permite una gestión más eficaz y manejable del proyecto, asegurando que los recursos disponibles se utilicen de manera óptima.
 
-Viabilidad del Proyecto: Enfocarse en un ámbito más estrecho (restaurantes y hoteles) permite una gestión más eficaz y manejable 
-del proyecto, asegurando que los recursos disponibles se utilicen de manera óptima.
+**Claridad en la Implementación del Sistema de Recomendación:** Al limitar el alcance, el desarrollo del sistema de recomendación puede ser más preciso y efectivo, personalizando mejor las experiencias de los usuarios basadas en sus reseñas previas.
 
-Claridad en la Implementación del Sistema de Recomendación: Al limitar el alcance a restaurantes y hoteles, el desarrollo del 
-sistema de recomendación puede ser más preciso y efectivo, personalizando mejor las experiencias de los usuarios basadas en 
-sus reseñas previas.
-
-Tendencias del Mercado: Restaurantes y hoteles suelen reflejar tendencias y cambios en el comportamiento del consumidor de 
-manera más inmediata que otros sectores, permitiendo una rápida adaptación y estrategia de mercado.
+**Tendencias del Mercado:** Restaurantes suelen reflejar tendencias y cambios en el comportamiento del consumidor de manera más inmediata que otros sectores, permitiendo una rápida adaptación y estrategia de mercado.
 
 
  ## **KPI´s** 📈
 
 - KPI: Identificación de Baches de Accesibilidad
+
 Objetivo: Encontrar los estados en donde los negocios con accesibilidad sean inferiores al x% del total de negocios de ese rubro, indicando áreas con potencial de inversión para mejorar la accesibilidad.
+
 Métrica: Porcentaje de negocios accesibles en cada estado comparado con el total de negocios de ese rubro.
 
 
 - KPI: Satisfacción del Cliente en Relación a Reseñas
-Objetivo: Identificar los estados en donde hay comercios con alta cantidad de reseñas pero con bajo rating, indicando baja satisfacción del cliente y oportunidad de inversión.
+
+Objetivo: Identificar los estados en donde hay comercios con alta cantidad de reseñas pero con bajo rating (baja satisfacción del cliente en zonas de alta concurrencia) indicando oportunidad de inversión.
+
 Métrica: Cantidad de reseñas vs. rating promedio de comercios en cada estado.
 
 
 - KPI: Tendencia de Crecimiento en Subcategorías
+
 Objetivo: Buscar subcategorías en las que en relación a la densidad de reseñas del trimestre anterior haya aumentado un x%, indicando una tendencia en alza y oportunidad de crecimiento en ese rubro.
+
 Métrica: Incremento porcentual en la densidad de reseñas por subcategoría respecto al trimestre anterior.
 
 ## **METODOLOGÍA DE TRABAJO** 
