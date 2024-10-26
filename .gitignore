@@ -1,3 +1,6 @@
 AAentorno/
 data/
 nuevo_entorno/
+Datos/
+notebooks/EDA/*
+!notebooks/EDA/eda.ipynb
