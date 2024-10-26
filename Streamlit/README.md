@@ -26,6 +26,23 @@ La aplicación está desplegada en línea y puedes acceder a ella a través del 
    
 2. **Recomendaciones Personalizadas**: La aplicación muestra recomendaciones basadas en las preferencias ingresadas por el usuario, generando información relevante de cada restaurante, como su calificación, tipo de cocina, ubicación y más (a definir aun)
 
+## 🔄 Flujo del Pipeline
+**Input de Preferencias del Usuario:**
+
+  - El usuario selecciona sus preferencias en la barra lateral ``(filters.py)``. Estas preferencias son procesadas en el archivo ``components/filters.py`` y se devuelven en un diccionario.
+  - Estas preferencias se enviarán luego como parámetros al modelo de recomendación.
+
+**Generación de Recomendaciones:**
+- Con las preferencias del usuario, ``display_recommendations`` llama a ``generate_dummy_recommendations`` en ``utils/helpers.py`` para filtrar los resultados en base a los criterios seleccionados.
+- En esta fase, los datos dummy se utilizarán para mostrar la funcionalidad general, pero posteriormente, se integrará con el modelo de Machine Learning real.
+
+**Visualización de Resultados:**
+- Las recomendaciones filtradas se presentan en un formato visual (disposición horizontal o vertical según preferencia del producto final) para una experiencia de usuario optimizada.
+- Las recomendaciones se despliegan usando ``display_recommendations``, donde se podrá aplicar una disposición horizontal o vertical dependiendo de la preferencia final.
+
+**Aplicación del Tema (Opcional al Final):**
+- La paleta de colores predeterminada de Streamlit estará desactivada durante el desarrollo. Cuando la estructura final esté lista, se aplicará el tema definido en themes.py.
+
 ## 🎨 Paleta de Colores
 
 La aplicación utiliza una paleta de colores basada en el logo de la empresa ficticia:
@@ -38,7 +55,12 @@ Esta paleta se aplica mediante el archivo `styles/themes.py`, que centraliza los
 
 ## 🛠️ Próximos Pasos
 
-Este README se actualizará a medida que se agreguen nuevas funcionalidades a la aplicación. Actualmente, la aplicación está en su etapa inicial y se seguirán implementando mejoras, incluyendo la integración con el modelo de recomendación y la API con **FastAPI**.
+Este README se actualizará a medida que se agreguen nuevas funcionalidades a la aplicación. Actualmente, la aplicación está en su etapa inicial y se seguirán implementando mejoras.
+
+**Las próximas implementaciones incluyen:**
+
+- Integración con el modelo de recomendación de Machine Learning para generar resultados basados en datos históricos.
+- Conexión con una API a través de FastAPI para que el modelo sea accesible de forma remota.
 
 ---
 
