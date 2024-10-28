@@ -26,7 +26,16 @@ Archivos:
         yelp_chekin.parquet                       Peso 133 MB
             Enlace  https://drive.google.com/file/d/1-5ZWFugXCEaqlGL8cr4gMo6jMVNfEJKg/view?usp=sharing
         yelp.tip.parquet                          Peso 81 MB
-            Enlace https://drive.google.com/file/d/1s7vEnbV4BecSoVoH58KpufOQZPHWz5mS/viewusp=sharing      
+            Enlace https://drive.google.com/file/d/1s7vEnbV4BecSoVoH58KpufOQZPHWz5mS/viewusp=sharing   
+
+    yelp_user.ipynb --> Crea las siguientes Tablas:
+        yelp_user.parquet                          Peso 62.5 MB
+            Enlace  https://drive.google.com/file/d/1-Aj2sPLjqu-kxTNWles2yX5vXum5ibrc/view?usp=sharing
+        yelp_friends_user.parquet                  Peso  1.7 GB 
+            Enlace  https://drive.google.com/file/d/1-2t6WdKUla_ddGXXHrhIMcUxewQhqh8q/view?usp=sharing
+        yelp_elite_user.parquet                    Peso  2.3 MB
+            Enlace  https://drive.google.com/file/d/1-AytD795J2SM-urMJA0rsNKs4prVjdGU/view?usp=sharing    
+
 
     Hubo un pequeño cambio en el EDR (No Afecta las tablas de ustedes) Los atributos de los business de Yelp y los Misc de los sitios de google vinienron con 'estructuras de datos variables", por eso fue el cambio                         
 
