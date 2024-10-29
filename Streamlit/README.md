@@ -6,7 +6,7 @@ Este directorio contiene la implementación de la aplicación **Recomendador de 
 
 La aplicación está desplegada en línea y puedes acceder a ella a través del siguiente enlace:
 
-[🚀 Acceder a la aplicación](URL_DEL_DEPLOY)
+[🚀 Acceder a la aplicación](https://recomendador-restaurantes.streamlit.app/)
 
 ## 🗂️ Estructura de Directorios
 

@@ -1,15 +1,15 @@
-[Encabezado]
+![Encabezado](Images\EncabezadoREADME.png)
 
 # **PROYECTO GRUPAL**
 - - -
 
 ## **BREVE DESCRIPCIÓN DEL PROYECTO**
 
-NOMBRE DE LA EMPRESA: DataPulse Analytics
+NOMBRE DE LA EMPRESA: **DataPulse Analytics**
 
 Este proyecto se centra en mejorar la efectividad y la practicidad de las estrategias de nuestro cliente, quien es parte de un conglomerado de empresas de restaurantes y afines en Estados Unidos.
 
-*¿Cómo lo haremos?* Realizando un análisis de mercado en una muestra del territorio, con un enfoque exclusivo en los sectores de restaurantes y hoteles en los cinco estados con mayor cantidad de establecimientos de este tipo. 
+*¿Cómo lo haremos?* Realizando un análisis de mercado en una muestra del territorio, con un enfoque exclusivo en el sector gastronómico (restaurantes) en los cinco estados con mayor cantidad de establecimientos de este rubro. 
 
 *¿Cuáles son esos estados?:* Nueva York, Florida, Texas, New México y Pennsylvania.
 
@@ -21,7 +21,17 @@ De esta forma buscamos garantizar resultados relevantes y de alta calidad, optim
 - Data Analyst: Débora Kellenberger, Mauricio Arce
 - Data Science: Agustín Cáceres, Aliskair Rodríguez
 
-## ENTENDIMIENTO DE LA SITUACION ACTUAL
+## ESTRUCTURA DEL PROYECTO
+
+- API/:
+- assets/:
+- FastApi/:
+- Images: Imágenes de documentación
+- notebooks/: Jupyter notebooks con los análisis.
+- Steamlit:
+- READM.md: Documentación.
+
+## **ENTENDIMIENTO DE LA SITUACION ACTUAL**
 
 En la era digital, las opiniones de los usuarios se han convertido en un recurso inestimable para las empresas, especialmente en los sectores de turismo y gastronomía. Las plataformas de reseñas como Yelp y Google Maps permiten a los consumidores compartir sus experiencias de manera rápida y directa, generando un flujo constante de feedback invaluable.
 
@@ -31,7 +41,7 @@ Por otro lado, la integración de las reseñas en servicios de localización com
 
 En resumen, las empresas deben continuar aprovechando estas herramientas para mantenerse competitivas, adaptándose rápidamente a las necesidades y expectativas cambiantes de los clientes. El análisis y la utilización efectiva de este feedback puede marcar la diferencia entre estancarse o crecer en un mercado cada vez más exigente.
 
-## PROBLEMÁTICA
+### Problemática
 
 Las empresas enfrentan desafíos al interpretar y utilizar el flujo constante de reseñas de usuarios en plataformas como Yelp y Google Maps. La incapacidad para analizar estas opiniones en tiempo real puede resultar en decisiones desinformadas y en la falta de adaptación a las necesidades y expectativas cambiantes de los clientes. Esta desconexión afecta la competitividad y el crecimiento en mercados exigentes y en rápida evolución.
 
@@ -54,17 +64,16 @@ de usuarios.
 De esta forma se podrá  ayudar a nuestro cliente a tomar decisiones estratégicas informadas sobre su presencia en el mercado y 
 sus estrategias futuras.
 
+### *Alcance Inmediato* 🏁 
 
-## *ALCANCE INMEDIATO DEL PROYECTO* 🏁 
-
-En esta primera etapa del proyecto, (el mismo puede en un futuro y a pedido del cliente, expandirse), daremos un enfoque exclusivo en el sector gastronómico, pues consideramos que centrarnos
+En esta etapa del proyecto, (el mísmo puede en un futuro y a pedido del cliente, expandirse), daremos un enfoque exclusivo en el sector gastronómico, pues consideramos que centrarnos
 en este pilar turístico puede ser clave para la efectividad y la practicidad del proyecto, garantizando la relevancia, calidad y 
 utilidad de los resultados, optimizando el impacto estratégico para el cliente, y tomando como muestra a los cinco estados del territorio de EEUU que, según los datos obtenidos, poseen la mayor cantidad de comercios de los rubros antes mencionados.
 
 ¿Cuáles son esos estados? **New York, Florida, Texas, New Mexico y Pennsylvania**
 
-
 #### *Motivos*
+- - -
 
 **Relevancia del Cliente:** Dado que nuestro cliente pertenece a un conglomerado de empresas de restaurantes y afines, es fundamental 
 centrarse en sectores directamente relacionados con su núcleo de negocio para obtener insights más relevantes y accionables.
@@ -77,24 +86,83 @@ centrarse en sectores directamente relacionados con su núcleo de negocio para o
 
 **Tendencias del Mercado:** Restaurantes suelen reflejar tendencias y cambios en el comportamiento del consumidor de manera más inmediata que otros sectores, permitiendo una rápida adaptación y estrategia de mercado.
 
+#### *Datos que respaldan la elección de nuestro alcance*
+- - - 
+(gráficos del EDA que justifiquen la elección de los 5 estados)
 
- ## **KPI´s** 📈
+## DATOS Y FUENTES
 
-- KPI: Identificación de Baches de Accesibilidad
+- Los archivos crudos con la información acerca de Google Maps y Yelp se encuentran en la siguiente ruta de Google Drive:
+[Enlace a Drive]("https://drive.google.com/drive/folders/1Wf7YkxA0aHI3GpoHc9Nh8_scf5BbD4DA")
+
+## PROCESO DEL PROYECTO
+
+### 1. Descarga de Datos
+- **Fuente**: Los datos se descargan desde Google Drive.
+- **Formato Inicial**: Los archivos están en formato JSON, PKL, PARQUET.
+
+### 2. Transformación de Datos
+- **Conversión de Formato**: Los archivos JSON Y PKL se convierten a formato Parquet para optimizar el almacenamiento y el procesamiento.
+- **Librerías Utilizadas**: `pandas`, `pyarrow`.
+
+### 3. ETL (Extract, Transform, Load)
+- **Extracción**: Se extraen los datos de los archivos Parquet.
+- **Transformación**: Se realizan limpiezas, normalización de datos y eliminación de duplicados.
+- **Carga**: Los datos transformados se cargan en una base de datos en BigQuery.
+- **Librerías Utilizadas**: `pandas`, `google-cloud-bigquery`.
+
+### 4. Análisis Exploratorio de Datos (EDA)
+- **Objetivo**: Obtener un entendimiento preliminar de los datos, identificar patrones y definir el alcance del análisis.
+- **Técnicas**: Estadísticas descriptivas, visualizaciones iniciales.
+- **Herramientas Utilizadas**: `pandas`, `matplotlib`, `seaborn`.
+
+### 5. Creación de Base de Datos en BigQuery
+- **Configuración**: Configuración y creación de esquemas en BigQuery.
+- **Carga de Datos**: Carga de los datos transformados a BigQuery para un procesamiento y análisis más eficientes.
+
+### 6. Desarrollo de Prototipos de Dashboard
+- **Equipo**: Análisis de datos.
+- **Herramientas**: Power BI.
+- **Objetivo**: Crear dashboards interactivos que visualicen los insights obtenidos de los datos.
+
+### 7. Preparación del Modelo de Recomendación
+- **Equipo**: Ciencia de datos, machine learning.
+- **Algoritmos Utilizados**: Sistemas de recomendación (Collaborative Filtering, Content-Based Filtering).
+- **Librerías Utilizadas**: `scikit-learn`, `tensorflow`.
+
+### 8. Despliegue del Modelo
+- **Framework**: FastAPI para la creación de APIs.
+- **Visualización**: Streamlit para crear una interfaz web interactiva que permita a los usuarios finales interactuar con el modelo de recomendación.
+
+## Tecnologías Utilizadas
+- **Python**: Principal lenguaje de programación.
+- **Pandas**: Para la manipulación y análisis de datos.
+- **BigQuery**: Para el almacenamiento y procesamiento de datos en la nube.
+- **Airflow**: Para la automatización de tareas y flujos de trabajo.
+- **Google Composer**: Para la orquestación de flujos de trabajo con Airflow.
+- **Power BI**: Para la creación de dashboards interactivos.
+- **Scikit-learn/TensorFlow**: Para el desarrollo de modelos de machine learning.
+- **FastAPI**: Para el despliegue de APIs.
+- **Streamlit**: Para la visualización de datos en una interfaz web.
+(INSERTAR LOGOS)
+
+## KPI´s 📈
+
+- **KPI: Identificación de Baches de Accesibilidad**
 
 Objetivo: Encontrar los estados en donde los negocios con accesibilidad sean inferiores al x% del total de negocios de ese rubro, indicando áreas con potencial de inversión para mejorar la accesibilidad.
 
 Métrica: Porcentaje de negocios accesibles en cada estado comparado con el total de negocios de ese rubro.
 
 
-- KPI: Satisfacción del Cliente en Relación a Reseñas
+- **KPI: Satisfacción del Cliente en Relación a Reseñas**
 
 Objetivo: Identificar los estados en donde hay comercios con alta cantidad de reseñas pero con bajo rating (baja satisfacción del cliente en zonas de alta concurrencia) indicando oportunidad de inversión.
 
 Métrica: Cantidad de reseñas vs. rating promedio de comercios en cada estado.
 
 
-- KPI: Tendencia de Crecimiento en Subcategorías
+- **KPI: Tendencia de Crecimiento en Subcategorías**
 
 Objetivo: Buscar subcategorías en las que en relación a la densidad de reseñas del trimestre anterior haya aumentado un x%, indicando una tendencia en alza y oportunidad de crecimiento en ese rubro.
 
@@ -102,7 +170,7 @@ Métrica: Incremento porcentual en la densidad de reseñas por subcategoría res
 
 ## **METODOLOGÍA DE TRABAJO** 
 
-(imagen)
+![SCRUM](Images\Metodologia_SCRUM.png)
 
 **METODOLOGÍA SCRUM**: Scrum es un marco de trabajo ágil para el desarrollo de productos que permite a equipos de trabajo abordar problemas complejos de forma eficiente, creativa y aportando el máximo de valor.
 
@@ -126,7 +194,7 @@ La utilización de iteraciones en forma de Sprints permite priorizar en todo mom
 
 ### **OTROS MÉTODOS DE ORGANIZACIÓN**  📊
 - - - 
-(CAPTURA GANTT)
+![Gantt](Images\Gantt_README.png)
 
 ## Diagrama de Gantt
 
@@ -136,7 +204,7 @@ La utilización de iteraciones en forma de Sprints permite priorizar en todo mom
 
 **Detección de Problemas**: Facilita la detección temprana de retrasos y acumulaciones de tareas, permitiendo acciones correctivas rápidas.
 
-(CAPTURA TRELLO)
+![Trello](Images\Trello_README.png)
 
 ## Trello
 
@@ -146,4 +214,11 @@ La utilización de iteraciones en forma de Sprints permite priorizar en todo mom
 
 **Flexibilidad**: Ofrece una visión general del progreso y permite ajustes rápidos, adaptándose a los cambios del proyecto.
 
+## **CONTACTO**
+
+- Aliskair Rodríguez: 
+- Débora Kellenberger: 
+- Julieta Trimarchi:
+- Mauricio Arce:
+- Agustín Cáceres: 
 
