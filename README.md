@@ -1,4 +1,4 @@
-![Encabezado](assets\Images\EncabezadoREADME.png)
+![Encabezado](assets/Images/EncabezadoREADME.png)
 
 # **PROYECTO GRUPAL**
 - - -
@@ -168,7 +168,7 @@ Métrica: Incremento porcentual en la densidad de reseñas por subcategoría res
 
 ## **METODOLOGÍA DE TRABAJO** 
 
-![SCRUM](assets\Images\Metodologia_SCRUM.png)
+![SCRUM](assets/Images/Metodologia_SCRUM.png)
 
 **METODOLOGÍA SCRUM**: Scrum es un marco de trabajo ágil para el desarrollo de productos que permite a equipos de trabajo abordar problemas complejos de forma eficiente, creativa y aportando el máximo de valor.
 
@@ -192,7 +192,7 @@ La utilización de iteraciones en forma de Sprints permite priorizar en todo mom
 
 ### **OTROS MÉTODOS DE ORGANIZACIÓN**  📊
 - - - 
-![Gantt](assets\Images\Gantt_README.png)
+![Gantt](assets/Images/Gantt_README.png)
 
 ## Diagrama de Gantt
 
@@ -202,7 +202,7 @@ La utilización de iteraciones en forma de Sprints permite priorizar en todo mom
 
 **Detección de Problemas**: Facilita la detección temprana de retrasos y acumulaciones de tareas, permitiendo acciones correctivas rápidas.
 
-![Trello](assets\Images\Trello_README.png)
+![Trello](assets/Images/Trello_README.png)
 
 ## Trello
 
