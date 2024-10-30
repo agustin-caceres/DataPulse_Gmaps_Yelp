@@ -1,4 +1,4 @@
-![Encabezado](Images\EncabezadoREADME.png)
+![Encabezado](assets\Images\EncabezadoREADME.png)
 
 # **PROYECTO GRUPAL**
 - - -
@@ -11,7 +11,7 @@ Este proyecto se centra en mejorar la efectividad y la practicidad de las estrat
 
 *¿Cómo lo haremos?* Realizando un análisis de mercado en una muestra del territorio, con un enfoque exclusivo en el sector gastronómico (restaurantes) en los cinco estados con mayor cantidad de establecimientos de este rubro. 
 
-*¿Cuáles son esos estados?:* Nueva York, Florida, Texas, New México y Pennsylvania.
+*¿Cuáles son esos estados?:* California, Nueva York, Florida, Texas y Pennsylvania.
 
 De esta forma buscamos garantizar resultados relevantes y de alta calidad, optimizando el impacto estratégico y dejando una puerta abierta a que el cliente vea, transite y reciba el feedback de los insights hallados para luego, de requerilo, continuar con otra etapa del análisis mas... *'à la carte'* 👨‍🍳 😉
 
@@ -23,13 +23,11 @@ De esta forma buscamos garantizar resultados relevantes y de alta calidad, optim
 
 ## ESTRUCTURA DEL PROYECTO
 
-- API/:
-- assets/:
-- FastApi/:
-- Images: Imágenes de documentación
-- notebooks/: Jupyter notebooks con los análisis.
-- Steamlit:
-- READM.md: Documentación.
+- assets/: Archivos estaticos, imagenes y reportes
+- Notebooks/: Jupyter notebooks con los análisis.
+- src/: Codigo fuente, modulos de aplicaciones y scripts.
+- READM.md: Documentación
+- requirements.txt
 
 ## **ENTENDIMIENTO DE LA SITUACION ACTUAL**
 
@@ -70,7 +68,7 @@ En esta etapa del proyecto, (el mísmo puede en un futuro y a pedido del cliente
 en este pilar turístico puede ser clave para la efectividad y la practicidad del proyecto, garantizando la relevancia, calidad y 
 utilidad de los resultados, optimizando el impacto estratégico para el cliente, y tomando como muestra a los cinco estados del territorio de EEUU que, según los datos obtenidos, poseen la mayor cantidad de comercios de los rubros antes mencionados.
 
-¿Cuáles son esos estados? **New York, Florida, Texas, New Mexico y Pennsylvania**
+¿Cuáles son esos estados? **California, New York, Florida, Texas y Pennsylvania**
 
 #### *Motivos*
 - - -
@@ -170,7 +168,7 @@ Métrica: Incremento porcentual en la densidad de reseñas por subcategoría res
 
 ## **METODOLOGÍA DE TRABAJO** 
 
-![SCRUM](Images\Metodologia_SCRUM.png)
+![SCRUM](assets\Images\Metodologia_SCRUM.png)
 
 **METODOLOGÍA SCRUM**: Scrum es un marco de trabajo ágil para el desarrollo de productos que permite a equipos de trabajo abordar problemas complejos de forma eficiente, creativa y aportando el máximo de valor.
 
@@ -194,7 +192,7 @@ La utilización de iteraciones en forma de Sprints permite priorizar en todo mom
 
 ### **OTROS MÉTODOS DE ORGANIZACIÓN**  📊
 - - - 
-![Gantt](Images\Gantt_README.png)
+![Gantt](assets\Images\Gantt_README.png)
 
 ## Diagrama de Gantt
 
@@ -204,7 +202,7 @@ La utilización de iteraciones en forma de Sprints permite priorizar en todo mom
 
 **Detección de Problemas**: Facilita la detección temprana de retrasos y acumulaciones de tareas, permitiendo acciones correctivas rápidas.
 
-![Trello](Images\Trello_README.png)
+![Trello](assets\Images\Trello_README.png)
 
 ## Trello
 
