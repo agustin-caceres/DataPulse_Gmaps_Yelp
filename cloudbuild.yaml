@@ -3,7 +3,6 @@ steps:
     args: ['-m', 'rsync', '-r', 'src/pipeline/DAGs/', 'gs://us-central1-composer-airflo-df63a85b-bucket/dags/']
 
 options:
-  logging: CLOUD_LOGGING_ONLY  
-  logs_bucket: 'gs://us-central1-composer-airflo-df63a85b-bucket/logs/' 
+  logging: CLOUD_LOGGING_ONLY   
 
 timeout: 1200s
