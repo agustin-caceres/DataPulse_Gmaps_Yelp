@@ -1,6 +1,6 @@
 steps:
   - name: 'gcr.io/cloud-builders/gsutil'
-    args: ['-m', 'rsync', '-r', 'src/pipeline/DAGs/', 'gs://us-central1-composer-airflo-df63a85b-bucket/dags/']
+    args: ['-m', 'rsync', '-r', 'src/Pipelines/DAGs/', 'gs://us-central1-composer-airflo-df63a85b-bucket/dags/']
 
 options:
   logging: CLOUD_LOGGING_ONLY   
