@@ -135,9 +135,7 @@ with DAG(
     
     listar_archivos = GCSListObjectsOperator(
         task_id='listar_archivos_en_gcs',
-        bucket=bucket_name,
-        # Especificar el output como xcom
-        xcom_push=True,
+        bucket=bucket_name
     )
     
     obtener_archivo_procesado = PythonOperator(
