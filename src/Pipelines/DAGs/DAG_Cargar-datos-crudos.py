@@ -16,7 +16,7 @@ from datetime import datetime
 nameDAG_base      = 'DAG_Cargar-datos-crudos-BQ'           # Nombre del DAG para identificar.
 project_id        = 'neon-gist-439401-k8'                  # ID del proyecto en Google Cloud.
 dataset           = '1'                                    # ID del dataset en BigQuery.
-email             = [Variable.get("SENDGRID_MAIL_TO")]     # Email de notificación.
+email             = ['agusca.saot@gmail.com']              # Email de notificación.
 owner             = 'Mauricio Arce'                        # Responsable del DAG.
 GBQ_CONNECTION_ID = 'bigquery_default'                     # Conexión de Airflow hacia BigQuery.
 bucket_name       = 'datos-crudos'                         # Nombre del bucket con los archivos crudos.
@@ -43,12 +43,12 @@ def obtener_archivos_procesados() -> list:
     """
     client = bigquery.Client()
     query = f"""
-        SELECT archivo_nombre 
+        SELECT nombre_archivo 
         FROM `{project_id}.{dataset}.archivos_procesados`
     """
     query_job = client.query(query)
     records = query_job.result()
-    return [record.archivo_nombre for record in records]
+    return [record.nombre_archivo for record in records]
 
 def registrar_archivo_procesado(nombre_archivo: str) -> None:
     """Registra un archivo como procesado en BigQuery.
@@ -61,7 +61,7 @@ def registrar_archivo_procesado(nombre_archivo: str) -> None:
     
     # Inserción del nuevo registro
     rows_to_insert = [
-        {"archivo_nombre": nombre_archivo,
+        {"nombre_archivo": nombre_archivo,
          "fecha_carga": datetime.now()}  
     ]
     
@@ -142,7 +142,7 @@ with DAG(
         xcom_push=True,
     )
     
-    obtener_archivos_procesados = PythonOperator(
+    obtener_archivo_procesado = PythonOperator(
         task_id='obtener_archivos_procesados',
         python_callable=obtener_archivos_procesados,
         provide_context=True
@@ -157,5 +157,5 @@ with DAG(
     fin = DummyOperator(task_id='fin')
 
     # Estructura del flujo de tareas
-    inicio >> listar_archivos >> obtener_archivos_procesados >> cargar_archivos >> fin
+    inicio >> listar_archivos >> obtener_archivo_procesado >> cargar_archivos >> fin
 
