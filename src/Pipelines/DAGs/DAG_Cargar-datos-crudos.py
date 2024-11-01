@@ -145,7 +145,7 @@ with DAG(
     )
     
     # Llama a cargar_nuevos_archivos y crea un TaskGroup
-    cargar_archivos = cargar_nuevos_archivos
+    cargar_archivos = cargar_nuevos_archivos()
     
     fin = DummyOperator(task_id='fin')
 
