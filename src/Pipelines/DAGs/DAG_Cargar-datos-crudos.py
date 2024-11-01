@@ -8,6 +8,7 @@ from airflow.utils.dates import days_ago
 from google.cloud import bigquery
 from datetime import timedelta
 from datetime import datetime
+from airflow.utils.task_group import TaskGroup
 
 #######################################################################################
 # PARÁMETROS
@@ -84,43 +85,40 @@ def cargar_nuevos_archivos(**context) -> None:
     # Filtrar archivos que no han sido procesados
     nuevos_archivos = [archivo for archivo in archivos if archivo not in archivos_procesados]
 
-    # Procesar cada nuevo archivo
-    for archivo in nuevos_archivos:
-        # Construcción del ID de tabla en función del nombre y carpeta de origen
-        path, file_name = archivo.split('/')
-        table_id = path  # Usar el nombre de la carpeta como ID de tabla
+    # Crear un grupo de tareas para cargar los nuevos archivos
+    with TaskGroup(group_id='cargar_archivos_group', tooltip='Carga de archivos a BigQuery') as cargar_archivos_group:
+        for archivo in nuevos_archivos:
+            path, file_name = archivo.split('/')
+            table_id = path
 
-        # Determinar el formato de archivo
-        if archivo.endswith('.json'):
-            source_format = 'NEWLINE_DELIMITED_JSON'
-        elif archivo.endswith('.csv'):
-            source_format = 'CSV'
-        elif archivo.endswith('.parquet'):
-            source_format = 'PARQUET'
-        else:
-            print(f"Formato no soportado para el archivo: {archivo}")
-            continue  # Salta al siguiente archivo si el formato no es soportado
-
-        # Crear tarea para cargar archivo a BigQuery
-        cargar_a_bigquery = GCSToBigQueryOperator(
-            task_id=f'cargar_{file_name.replace(".", "_")}_a_bigquery',  # Tarea por archivo
-            bucket=bucket_name,
-            source_objects=[archivo],
-            destination_project_dataset_table=f'{project_id}.{dataset}.{table_id}',  # Tabla destino común
-            source_format=source_format,
-            write_disposition='WRITE_APPEND',
-            gcp_conn_id=GBQ_CONNECTION_ID,
-            trigger_rule='one_success'  # Asegura que la tarea solo se ejecute si hay un éxito previo
-        )
-        
-        # Se ejecuta la carga
-        context['ti'].xcom_push(key='cargar_task', value=cargar_a_bigquery)
-
-        # Esperar la finalización de la tarea
-        cargar_a_bigquery.execute(context=context)
-
-        # Registrar el archivo procesado
-        registrar_archivo_procesado(file_name)
+            if archivo.endswith('.json'):
+                source_format = 'NEWLINE_DELIMITED_JSON'
+            elif archivo.endswith('.csv'):
+                source_format = 'CSV'
+            elif archivo.endswith('.parquet'):
+                source_format = 'PARQUET'
+            else:
+                print(f"Formato no soportado para el archivo: {archivo}")
+                continue  # Salta al siguiente archivo si el formato no es soportado
+            
+            # Crear tarea para cargar archivo a BigQuery
+            cargar_a_bigquery = GCSToBigQueryOperator(
+                task_id=f'cargar_{file_name.replace(".", "_")}_a_bigquery',  # Tarea por archivo
+                bucket=bucket_name,
+                source_objects=[archivo],
+                destination_project_dataset_table=f'{project_id}.{dataset}.{table_id}',  # Tabla destino común
+                source_format=source_format,
+                write_disposition='WRITE_APPEND',
+                gcp_conn_id=GBQ_CONNECTION_ID,
+            )
+            
+            # Registrar el archivo procesado después de la carga
+            cargar_a_bigquery >> PythonOperator(
+                task_id=f'registrar_{file_name.replace(".", "_")}_procesado',
+                python_callable=registrar_archivo_procesado,
+                op_kwargs={'nombre_archivo': file_name},
+            )
+    return cargar_archivos_group
 
 #######################################################################################
 # DEFINICIÓN DEL DAG
@@ -148,14 +146,10 @@ with DAG(
         provide_context=True
     )
     
-    cargar_archivos = PythonOperator(
-        task_id='cargar_nuevos_archivos',
-        python_callable=cargar_nuevos_archivos,
-        provide_context=True
-    )
-
+    # Llama a cargar_nuevos_archivos y crea un TaskGroup
+    cargar_archivos = cargar_nuevos_archivos
+    
     fin = DummyOperator(task_id='fin')
 
     # Estructura del flujo de tareas
     inicio >> listar_archivos >> obtener_archivo_procesado >> cargar_archivos >> fin
-
