@@ -15,7 +15,7 @@ def registrar_archivos_procesados(bucket_name: str, prefix: str, project_id: str
     for nombre_archivo in archivos:
         rows_to_insert.append({
             "nombre_archivo": nombre_archivo,
-            "fecha_carga": datetime.now()
+            "fecha_carga": datetime.now().isoformat()
         })
 
     # Insertar los archivos en la tabla de BigQuery
