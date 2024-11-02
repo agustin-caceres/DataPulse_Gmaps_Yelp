@@ -4,6 +4,7 @@ from airflow.operators.dummy import DummyOperator
 from datetime import datetime, timedelta
 from airflow.utils.dates import days_ago
 from functions.registrar_archivo import registrar_archivos_procesados
+from functions.desanidar_misc import desanidar_misc 
 
 #######################################################################################
 # PARÁMETROS
@@ -47,7 +48,16 @@ with DAG(
         }
     )
 
+    desanidar_columna = PythonOperator(
+        task_id='desanidar_misc',
+        python_callable=desanidar_misc,
+        op_kwargs={
+            'project_id': project_id,
+            'dataset': dataset
+        }
+    )
+
     fin = DummyOperator(task_id='fin')
 
     # Estructura del flujo de tareas
-    inicio >> registrar_archivos >> fin
+    inicio >> registrar_archivos >> desanidar_columna >> fin
