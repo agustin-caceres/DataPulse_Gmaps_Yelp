@@ -3,7 +3,7 @@ from airflow.operators.python import PythonOperator
 from airflow.operators.dummy import DummyOperator
 from datetime import datetime, timedelta
 from airflow.utils.dates import days_ago
-from Pipelines.functions.registrar_archivo import registrar_archivos_procesados
+from functions.registrar_archivo import registrar_archivos_procesados
 
 #######################################################################################
 # PARÁMETROS
