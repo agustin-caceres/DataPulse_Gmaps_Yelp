@@ -4,79 +4,71 @@ import json
 
 def dict_to_list(diccionario: dict) -> list:
     """
-    Devuelve el Diccionario de la columna `MISC` y lo retorna
-    como una lista de String "key: value" siempre y cuando el 
-    valor de la pareja no sea nulo.
+    Convierte el diccionario de la columna `MISC` en una lista de strings
+    "key: value" excluyendo pares donde el valor es nulo.
 
     Args:
-        diccionario (dict): diccionario recibido
+        diccionario (dict): diccionario recibido.
 
     Returns:
-        list: Lista a devolver
+        list: lista con los pares clave:valor no nulos.
     """
     return [f"{key}: {value}" for key, value in diccionario.items() if value is not None]
 
 def desanidar_misc(bucket_name: str, archivo: str, project_id: str, dataset: str) -> None:
     """
-    Toma un archivo JSON de Google Cloud Storage, extrae los valores de la columna 'MISC' 
-    y los guarda desanidados en BigQuery.
+    Toma un archivo JSON de Google Cloud Storage, extrae los valores de 'MISC' 
+    y los guarda desanidados en BigQuery, descartando registros donde 'MISC' es nulo.
 
-    Parámetros:
-    -----------
+    Args:
+    -------
     bucket_name : str
         Nombre del bucket en Google Cloud Storage.
     archivo : str
         Nombre del archivo JSON que contiene la columna 'MISC'.
     project_id : str
-        ID del proyecto en Google Cloud Platform donde se encuentra la tabla de destino.
+        ID del proyecto en Google Cloud Platform.
     dataset : str
-        Nombre del dataset en BigQuery donde se encuentra la tabla de destino 'miscelaneos'.
+        Nombre del dataset en BigQuery donde se encuentra la tabla 'miscelaneos'.
     """
 
-    # Inicializa el cliente de BigQuery
+    # Inicializa el cliente de BigQuery y el cliente de Cloud Storage
     client = bigquery.Client()
+    storage_client = storage.Client()
     
     # Define el ID de la tabla de destino
     table_id = f"{project_id}.{dataset}.miscelaneos"
-
-    # Inicializa el cliente de Cloud Storage
-    storage_client = storage.Client()
     
-    # Obtiene el blob (archivo) desde el bucket
+    # Lee el archivo JSON desde Cloud Storage
     blob = storage_client.bucket(bucket_name).blob(archivo)
-    
-    # Lee el contenido del archivo JSON
-    contenido_json = json.loads(blob.download_as_text())
-    
-    # Extrae el gmap_id del JSON
-    gmap_id = contenido_json.get('gmap_id', None)  # Cambia 'gmap_id' según la estructura de tu JSON
-    
-    if gmap_id is None:
-        print(f"No se encontró el gmap_id en el archivo {archivo}.")
-        return
+    contenido = blob.download_as_text()
 
-    # Extrae y desanida los datos de MISC
-    misc = contenido_json.get('MISC', {})
-    lista_misc = dict_to_list(misc)  # Convierte el diccionario en una lista
+    # Procesa cada línea del archivo como un objeto JSON
+    for linea in contenido.splitlines():
+        try:
+            contenido_json = json.loads(linea)
+        except json.JSONDecodeError as e:
+            print(f"Error de decodificación JSON en la línea: {e}")
+            continue
 
-    # Prepara los datos desanidados para insertar en BigQuery
-    rows_to_insert = []
-    
-    for item in lista_misc:
-        rows_to_insert.append({
-            "gmap_id": gmap_id,
-            "misc": item  # Almacena el valor desanidado
-        })
+        # Filtra registros sin información en 'MISC'
+        gmap_id = contenido_json.get('gmap_id')
+        misc = contenido_json.get('MISC')
 
-    # Inserta los datos desanidados en BigQuery
-    if rows_to_insert:
-        errors = client.insert_rows_json(table_id, rows_to_insert)
-        if errors:
-            print(f"Error al insertar los datos desanidados: {errors}")
+        if gmap_id is None or misc is None:
+            print(f"Registro sin 'gmap_id' o sin 'MISC' en archivo {archivo}. Se omite.")
+            continue
+
+        # Convierte el diccionario `MISC` en una lista usando `dict_to_list`
+        lista_misc = dict_to_list(misc)
+        rows_to_insert = [{"gmap_id": gmap_id, "misc": item} for item in lista_misc]
+
+        # Inserta los datos desanidados en BigQuery
+        if rows_to_insert:
+            errors = client.insert_rows_json(table_id, rows_to_insert)
+            if errors:
+                print(f"Error al insertar datos en BigQuery: {errors}")
+            else:
+                print(f"Datos del archivo {archivo} cargados exitosamente en BigQuery.")
         else:
-            print(f"Datos desanidados del archivo {archivo} cargados exitosamente en BigQuery.")
-    else:
-        print(f"No se encontraron datos para insertar desde el archivo {archivo}.")
-
-# Ejemplo de uso
-# desanidar_misc('tu_nombre_de_bucket', 'nombre_del_archivo.json', 'tu_project_id', 'tu_dataset')
+            print(f"Sin datos para insertar del archivo {archivo}.")
