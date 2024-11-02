@@ -3,6 +3,20 @@ from google.cloud import storage
 from datetime import datetime
 
 def registrar_archivos_procesados(bucket_name: str, prefix: str, project_id: str, dataset: str) -> None:
+    """
+    Registra el nombre del archivo en una tabla de BigQuery, que controla la fecha del procesamiento y el nombre para evitar duplicidades.
+
+    Args:
+        bucket_name (str): El nombre del bucket de Google Cloud Storage.
+        prefix (str): ruta y nombre de la carpeta en el bucket.
+        project_id (str): El ID del proyecto de Google Cloud.
+        dataset (str): El nombre del dataset en BigQuery donde se registrarán los datos.
+
+    Returns:
+        None: Esta función no devuelve ningún valor. Imprime mensajes sobre el resultado 
+        de la operación de inserción en BigQuery.
+    """
+    
     client = bigquery.Client()
     storage_client = storage.Client() 
     table_id = f"{project_id}.{dataset}.archivos_procesados"

@@ -9,7 +9,7 @@ from functions.registrar_archivo import registrar_archivos_procesados
 # PARÁMETROS
 #######################################################################################
 
-nameDAG_base      = 'Cargar-ruta-archivo-procesados'
+nameDAG_base      = 'Procesamiento ETL Google'
 project_id        = 'neon-gist-439401-k8'
 dataset           = '1'
 owner             = 'Mauricio Arce'
