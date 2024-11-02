@@ -9,7 +9,9 @@ def registrar_archivos_procesados(bucket_name: str, prefix: str, project_id: str
 
     # Listar archivos en el bucket GCS con el prefijo especificado
     blobs = storage_client.list_blobs(bucket_name, prefix=prefix)
-    archivos = [blob.name for blob in blobs] 
+    
+    # Filtrar solo archivos que terminan en .json
+    archivos = [blob.name for blob in blobs if blob.name.endswith('.json')] 
 
     rows_to_insert = []
     for nombre_archivo in archivos:
@@ -23,4 +25,4 @@ def registrar_archivos_procesados(bucket_name: str, prefix: str, project_id: str
     if errors:
         print(f"Error al insertar los archivos procesados: {errors}")
     else:
-        print("Archivos registrados exitosamente.")
+        print("Archivos registrados exitosamente.")  
