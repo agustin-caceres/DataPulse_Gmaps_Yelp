@@ -3,7 +3,7 @@ from google.cloud import storage
 from datetime import datetime
 
 
-def registrar_archivos_procesados(bucket_name: str, prefix: str, project_id: str, dataset: str) -> list:
+def registrar_archivos_procesados(bucket_name: str, prefix: str, project_id: str, dataset: str) -> str:
     """
     Detecta archivos nuevos en un bucket de Google Cloud Storage y registra los archivos procesados en BigQuery.
     Esta función evita reprocesar archivos ya registrados en la tabla de BigQuery.
@@ -21,8 +21,8 @@ def registrar_archivos_procesados(bucket_name: str, prefix: str, project_id: str
 
     Retorna:
     --------
-    list
-        Lista de archivos nuevos que no se han procesado previamente.
+    str
+        Nombre del primer archivo nuevo que no se ha procesado previamente o None si no hay archivos nuevos.
     """
 
     # Inicializa el cliente de BigQuery
@@ -46,22 +46,23 @@ def registrar_archivos_procesados(bucket_name: str, prefix: str, project_id: str
     # Filtra los archivos que aún no han sido procesados
     archivos_nuevos = [archivo for archivo in archivos if archivo not in archivos_procesados]
 
-    # Prepara los registros de archivos nuevos para insertarlos en BigQuery
-    rows_to_insert = [{
-        "nombre_archivo": nombre_archivo,
-        "fecha_carga": datetime.now().isoformat()
-    } for nombre_archivo in archivos_nuevos]
+    # Toma solo el primer archivo nuevo, si existe
+    archivo_a_procesar = archivos_nuevos[0] if archivos_nuevos else None
 
-    # Inserta los archivos nuevos en la tabla de BigQuery, si los hay
-    if rows_to_insert:
+    # Si hay archivos nuevos, los registra en BigQuery
+    if archivo_a_procesar:
+        rows_to_insert = [{
+            "nombre_archivo": archivo_a_procesar,
+            "fecha_carga": datetime.now().isoformat()
+        }]
+        
         errors = client.insert_rows_json(table_id, rows_to_insert)
         if errors:
-            print(f"Error al insertar los archivos procesados: {errors}")
+            print(f"Error al insertar el archivo procesado: {errors}")
         else:
-            print(f"Archivos nuevos registrados exitosamente: {archivos_nuevos}")
+            print(f"Archivo nuevo registrado exitosamente: {archivo_a_procesar}")
     else:
         print("No se encontraron archivos nuevos para procesar.")
 
-    # Retorna la lista de archivos nuevos detectados
-    return archivos_nuevos
-
+    # Retorna el nombre del primer archivo nuevo detectado o None
+    return archivo_a_procesar
