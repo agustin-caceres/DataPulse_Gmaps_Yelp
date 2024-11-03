@@ -32,16 +32,15 @@ def crear_tabla_temporal(project_id: str, dataset: str, temp_table: str, schema:
 
 ###########################################################################
 
-def cargar_archivos_en_tabla_temporal(bucket_name: str, archivos: str, project_id: str, dataset: str, temp_table: str) -> None:
+def cargar_archivos_en_tabla_temporal(bucket_name: str, archivos: list, project_id: str, dataset: str, temp_table: str) -> None:
     """
     Carga múltiples archivos JSON desde Google Cloud Storage a la tabla temporal en BigQuery.
     """
 
-    # Convierte 'archivos' a lista si es una cadena de texto
-    if isinstance(archivos, str):
-        archivos = json.loads(archivos)  # Convierte de JSON string a lista
+    print(f"Archivos recibidos: {archivos}")  # Imprimir la lista de archivos
 
-    if not archivos:
+    # Asegúrate de que 'archivos' es una lista no vacía
+    if not isinstance(archivos, list) or not archivos:
         raise ValueError("La lista de archivos está vacía o no es válida.")
     
     client = bigquery.Client()
@@ -53,8 +52,11 @@ def cargar_archivos_en_tabla_temporal(bucket_name: str, archivos: str, project_i
         contenido = blob.download_as_text()
 
         # Carga todo el archivo como un JSON
-        contenido_json = json.loads(contenido)
-        
+        try:
+            contenido_json = json.loads(contenido)
+        except json.JSONDecodeError as e:
+            raise ValueError(f"Error al decodificar el contenido del archivo {archivo}: {e}")
+
         # Asegura que es una lista de objetos JSON
         if not isinstance(contenido_json, list):
             raise ValueError(f"El archivo {archivo} no contiene un array de objetos JSON.")
