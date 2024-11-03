@@ -1,6 +1,7 @@
 # Librerias
 from airflow import DAG
 from airflow.operators.python import PythonOperator
+from airflow.providers.google.cloud.transfers.gcs_to_bigquery import GCSToBigQueryOperator
 from airflow.operators.dummy import DummyOperator
 from datetime import timedelta
 from airflow.utils.dates import days_ago
@@ -52,11 +53,13 @@ temp_table_general_schema = [
         bigquery.SchemaField("Accessibility", "STRING", mode="REPEATED"),
         bigquery.SchemaField("Planning", "STRING", mode="REPEATED"),
         bigquery.SchemaField("Payments", "STRING", mode="REPEATED"),
+        bigquery.SchemaField("Highlights", "STRING", mode="REPEATED"),  # Campo agregado
     ]),
     bigquery.SchemaField("state", "STRING", mode="NULLABLE"),
     bigquery.SchemaField("relative_results", "STRING", mode="REPEATED"),
     bigquery.SchemaField("url", "STRING", mode="NULLABLE"),
 ]
+
 
 #######################################################################################
 # DEFINICIÓN DEL DAG 
@@ -96,17 +99,15 @@ with DAG(
     )
 
    # Tarea 3: Cargar los archivos JSON en la tabla temporal
-    cargar_archivo_temp_task = PythonOperator(
-        task_id='cargar_archivo_en_tabla_temporal',
-        python_callable=cargar_json_a_bigquery,
-        op_kwargs={
-            'bucket_name': bucket_name,
-            'archivo': "{{ ti.xcom_pull(task_ids='registrar_archivos_procesados') }}",
-            'project_id': project_id,
-            'dataset': dataset,
-            'temp_table': temp_table_general,
-            'schema': temp_table_general_schema
-        }
+    # Tarea 3: Cargar los archivos JSON en la tabla temporal
+    cargar_json = GCSToBigQueryOperator(
+        task_id='cargar_json',
+        bucket=bucket_name,
+        source_objects=["g_sitios/*.json"],  # Usa un patrón para cargar todos los archivos .json en la carpeta g_sitios
+        destination_project_dataset_table=f'{project_id}.{dataset}.{temp_table_general}',  # Especifica la tabla temporal
+        source_format='NEWLINE_DELIMITED_JSON',
+        create_disposition='CREATE_IF_NEEDED',
+        write_disposition='WRITE_APPEND',
     )
     
     # Tarea 4: Registrar el nombre de los archivos cargados en BigQuery, para control.
@@ -123,6 +124,6 @@ with DAG(
     fin = DummyOperator(task_id='fin')
 
     # Estructura del flujo de tareas
-    inicio >> registrar_archivos >> crear_tabla_temp >> cargar_archivo_temp_task >>  registrar_archivo_en_bq >> fin
+    inicio >> registrar_archivos >> crear_tabla_temp >> cargar_json >>  registrar_archivo_en_bq >> fin
 
     
