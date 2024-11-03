@@ -38,39 +38,42 @@ def cargar_archivos_en_tabla_temporal(bucket_name: str, archivos: list, project_
     Carga múltiples archivos JSON desde Google Cloud Storage a la tabla temporal en BigQuery.
     """
 
-    print(f"Archivos recibidos: {archivos}")  # Imprimir la lista de archivos
-
-    # Asegúrate de que 'archivos' es una lista no vacía
-    if not isinstance(archivos, list) or not archivos:
-        raise ValueError("La lista de archivos está vacía o no es válida.")
-    
+    # Inicializa el cliente de BigQuery y el cliente de Cloud Storage
     client = bigquery.Client()
     storage_client = storage.Client()
 
+    if not archivos or not isinstance(archivos, list):
+        raise ValueError("La lista de archivos está vacía o no es válida.")
+
     for archivo in archivos:
-        # Lee el archivo JSON desde Cloud Storage
-        blob = storage_client.bucket(bucket_name).blob(archivo)
-        contenido = blob.download_as_text()
-
-        # Carga todo el archivo como un JSON
         try:
+            # Lee el archivo JSON desde Cloud Storage
+            blob = storage_client.bucket(bucket_name).blob(archivo)
+            contenido = blob.download_as_text()
+
+            # Carga todo el archivo como un JSON
             contenido_json = json.loads(contenido)
+            
+            # Asegura que es una lista de objetos JSON
+            if not isinstance(contenido_json, list):
+                raise ValueError(f"El archivo {archivo} no contiene un array de objetos JSON.")
+
+            # Inserta los datos en la tabla temporal
+            table_id = f"{project_id}.{dataset}.{temp_table}"
+            errors = client.insert_rows_json(table_id, contenido_json)
+            
+            if errors:
+                raise RuntimeError(f"Error al insertar datos del archivo {archivo}: {errors}")
+            
+            print(f"Datos del archivo {archivo} cargados exitosamente en la tabla temporal.")
+        
         except json.JSONDecodeError as e:
-            raise ValueError(f"Error al decodificar el contenido del archivo {archivo}: {e}")
-
-        # Asegura que es una lista de objetos JSON
-        if not isinstance(contenido_json, list):
-            raise ValueError(f"El archivo {archivo} no contiene un array de objetos JSON.")
-
-        # Inserta los datos en la tabla temporal
-        table_id = f"{project_id}.{dataset}.{temp_table}"
-        errors = client.insert_rows_json(table_id, contenido_json)
-        
-        # Si hay errores al insertar, lanza una excepción para que el DAG maneje el error
-        if errors:
-            raise RuntimeError(f"Error al insertar datos del archivo {archivo}: {errors}")
-        
-        print(f"Datos del archivo {archivo} cargados exitosamente en la tabla temporal.")
+            print(f"Error de decodificación JSON en el archivo {archivo}: {e}")
+        except Exception as e:
+            print(f"Error al procesar el archivo {archivo}: {e}")
+    
+    # Cierra los clientes de BigQuery
+    client.close()
 
 
 ###########################################################################

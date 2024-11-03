@@ -88,19 +88,19 @@ with DAG(
         provide_context=True,
     )
 
-    # Tarea 3: Cargar el archivo JSON en la tabla temporal
+   # Tarea 3: Cargar los archivos JSON en la tabla temporal
     cargar_archivo_temp_task = PythonOperator(
-    task_id='cargar_archivo_en_tabla_temporal',
-    python_callable=cargar_archivos_en_tabla_temporal,
-    op_kwargs={
-        'bucket_name': bucket_name,
-        'archivos': '{{ task_instance.xcom_pull(task_ids="registrar_archivos_procesados") }}',
-        'project_id': project_id,
-        'dataset': dataset,
-        'temp_table': temp_table_general
-    },
-    on_failure_callback=lambda context: print(f"Error en la tarea: {context['task_instance'].task_id}"),
-)
+        task_id='cargar_archivo_en_tabla_temporal',
+        python_callable=cargar_archivos_en_tabla_temporal,
+        op_kwargs={
+            'bucket_name': bucket_name,
+            'archivos': "{{ task_instance.xcom_pull(task_ids='registrar_archivos_procesados') }}",  # Cambiado a task_instance
+            'project_id': project_id,
+            'dataset': dataset,
+            'temp_table': temp_table_general,
+        },
+        on_failure_callback=lambda context: print(f"Error en la tarea: {context['task_instance'].task_id}"),
+    )
     
     # Tarea 4: Registrar el nombre de los archivos cargados en BigQuery, para control.
     registrar_archivo_en_bq = PythonOperator(
