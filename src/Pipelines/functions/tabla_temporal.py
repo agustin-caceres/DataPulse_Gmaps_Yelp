@@ -116,16 +116,23 @@ def mover_datos_y_borrar_temp(project_id: str, dataset: str, temp_table: str, fi
 
 ###########################################################################
 
+
 def cargar_archivos_en_tabla_temporal_v_premium(bucket_name: str, archivos: list, project_id: str, dataset: str, temp_table: str) -> None:
     """
     Carga múltiples archivos (JSON, Parquet, PKL) desde Google Cloud Storage a la tabla temporal en BigQuery.
     """
-    print(f"Archivos recibidos para cargar: {archivos}")  # Log de archivos recibidos
+    # Imprimir el tipo y contenido completo de `archivos`
+    print(f"Tipo de 'archivos' recibido: {type(archivos)}")
+    print(f"Contenido de 'archivos' recibido: {archivos}")
 
     # Verificación inicial de la lista de archivos
-    if not isinstance(archivos, list) or not archivos:
-        print("Error: La lista de archivos está vacía o no es válida.")
-        raise ValueError("La lista de archivos está vacía o no es válida.")
+    if not isinstance(archivos, list):
+        print("Error: 'archivos' no es una lista válida.")
+        raise ValueError("La lista de archivos no es válida.")
+    
+    if len(archivos) == 0 or all(archivo.strip() == "" for archivo in archivos):
+        print("Error: La lista de archivos está vacía o contiene entradas inválidas.")
+        raise ValueError("La lista de archivos está vacía o contiene entradas inválidas.")
     
     client = bigquery.Client()
     storage_client = storage.Client()
@@ -138,16 +145,16 @@ def cargar_archivos_en_tabla_temporal_v_premium(bucket_name: str, archivos: list
                 print(f"Advertencia: {archivo} parece ser un directorio y no un archivo. Saltando...")
                 continue
 
-            # Identificar el formato del archivo
+            # Leer el archivo desde GCS según su formato
             blob = storage_client.bucket(bucket_name).blob(archivo)
             print(f"Leyendo archivo {archivo} desde GCS...")
 
-            # Procesar archivos según el formato
+            # Procesar según el formato
             if archivo.endswith(".json"):
                 contenido = blob.download_as_text()
                 contenido_json = json.loads(contenido)
 
-                # Asegura que el contenido JSON es una lista de objetos
+                # Verificar que el contenido JSON es una lista de objetos
                 if not isinstance(contenido_json, list):
                     raise ValueError(f"El archivo {archivo} no contiene un array de objetos JSON.")
                 
