@@ -49,20 +49,5 @@ def registrar_archivos_procesados(bucket_name: str, prefix: str, project_id: str
     # Toma solo el primer archivo nuevo, si existe
     archivo_a_procesar = archivos_nuevos[0] if archivos_nuevos else None
 
-    # Si hay archivos nuevos, los registra en BigQuery
-    if archivo_a_procesar:
-        rows_to_insert = [{
-            "nombre_archivo": archivo_a_procesar,
-            "fecha_carga": datetime.now().isoformat()
-        }]
-        
-        errors = client.insert_rows_json(table_id, rows_to_insert)
-        if errors:
-            print(f"Error al insertar el archivo procesado: {errors}")
-        else:
-            print(f"Archivo nuevo registrado exitosamente: {archivo_a_procesar}")
-    else:
-        print("No se encontraron archivos nuevos para procesar.")
-
     # Retorna el nombre del primer archivo nuevo detectado o None
     return archivo_a_procesar

@@ -7,7 +7,7 @@ from airflow.utils.dates import days_ago
 from google.cloud import bigquery
 
 # Funciones
-from functions.v2_registrar_archivo import obtener_archivos_nuevos, registrar_archivos_en_bq
+from functions.registrar_archivo import registrar_archivos_procesados
 from functions.tabla_temporal import crear_tabla_temporal, cargar_archivos_en_tabla_temporal
 
 ######################################################################################
@@ -65,7 +65,7 @@ with DAG(
     # Tarea 1: Registrar archivos en una tabla que controlara cuales ya fueron procesados y cuales no.
     registrar_archivos = PythonOperator(
         task_id='registrar_archivos_procesados',
-        python_callable=obtener_archivos_nuevos,
+        python_callable=registrar_archivos_procesados,
         op_kwargs={
             'bucket_name': bucket_name,
             'prefix': prefix,
