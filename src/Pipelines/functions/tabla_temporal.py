@@ -3,6 +3,7 @@ from google.cloud import storage
 import json
 import pandas as pd
 from io import BytesIO
+from io import StringIO
 
 ###########################################################################
 
@@ -50,33 +51,31 @@ def cargar_archivo_en_tabla_temporal(bucket_name: str, archivo: str, project_id:
     client = bigquery.Client()
     storage_client = storage.Client()
 
-    try:
-        # Lee el archivo JSON desde Cloud Storage
-        blob = storage_client.bucket(bucket_name).blob(archivo)
-        contenido = blob.download_as_text()
+    # Lee el archivo JSON desde Cloud Storage
+    blob = storage_client.bucket(bucket_name).blob(archivo)
+    contenido = blob.download_as_text()
 
-        # Carga el contenido del archivo en un DataFrame de pandas
-        df = pd.read_json(contenido, lines=True)
+    # Carga el contenido del archivo en un DataFrame de pandas
+    df = pd.read_json(StringIO(contenido), lines=True)
 
-        # Asegura que el DataFrame no está vacío
-        if df.empty:
-            raise ValueError(f"El archivo {archivo} no contiene datos.")
-
-        # Inserta los datos en la tabla temporal
-        table_id = f"{project_id}.{dataset}.{temp_table}"
-        job = client.load_table_from_dataframe(df, table_id)
-
-        # Espera a que se complete el trabajo de carga
-        job.result()  # Esto bloqueará hasta que el trabajo se complete
-
-        if job.error_result:
-            raise RuntimeError(f"Error al insertar datos del archivo {archivo}: {job.error_result}")
-
-    except json.JSONDecodeError as e:
-        print(f"Error de decodificación JSON en el archivo {archivo}: {e}")
-    except Exception as e:
-        print(f"Error al procesar el archivo {archivo}: {e}")
+    # Limpiar y convertir la columna 'hours'
+    df['hours'] = df['hours'].astype(str)  
+    df['hours'] = df['hours'].fillna('')
     
+    # Asegura que el DataFrame no está vacío
+    if df.empty:
+        raise ValueError(f"El archivo {archivo} no contiene datos.")
+
+    # Inserta los datos en la tabla temporal
+    table_id = f"{project_id}.{dataset}.{temp_table}"
+    job = client.load_table_from_dataframe(df, table_id)
+
+    # Espera a que se complete el trabajo de carga
+    job.result()  # Esto bloqueará hasta que el trabajo se complete
+
+    if job.error_result:
+        raise RuntimeError(f"Error al insertar datos del archivo {archivo}: {job.error_result}")
+
     # Cierra el cliente de BigQuery
     client.close()
 
