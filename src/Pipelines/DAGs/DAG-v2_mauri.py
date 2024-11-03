@@ -106,7 +106,7 @@ with DAG(
         op_kwargs={
             'project_id': project_id,
             'dataset': dataset,
-            'archivos_nuevos':"{{ ti.xcom_pull(task_ids='registrar_archivos_procesados') }}",
+            'archivo_nuevo': "{{ task_instance.xcom_pull(task_ids='registrar_archivos_procesados') }}",
         }
     )
 
