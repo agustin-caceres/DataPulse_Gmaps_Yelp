@@ -34,18 +34,18 @@ default_args = {
 temp_table_general_schema = [
     bigquery.SchemaField("name", "STRING", mode="NULLABLE"),
     bigquery.SchemaField("address", "STRING", mode="NULLABLE"),
-    bigquery.SchemaField("gmap_id", "STRING", mode="REQUIRED"),
+    bigquery.SchemaField("gmap_id", "STRING", mode="REQUIRED"), 
     bigquery.SchemaField("description", "STRING", mode="NULLABLE"),
     bigquery.SchemaField("latitude", "FLOAT", mode="NULLABLE"),
     bigquery.SchemaField("longitude", "FLOAT", mode="NULLABLE"),
-    bigquery.SchemaField("category", "STRING", mode="REPEATED"),  # Asume una lista de strings
+    bigquery.SchemaField("category", "STRING", mode="REPEATED"), 
     bigquery.SchemaField("avg_rating", "FLOAT", mode="NULLABLE"),
     bigquery.SchemaField("num_of_reviews", "INTEGER", mode="NULLABLE"),
-    bigquery.SchemaField("price", "STRING", mode="NULLABLE"),
-    bigquery.SchemaField("hours", "STRING", mode="NULLABLE"),     # Almacena las horas como texto JSON
-    bigquery.SchemaField("MISC", "STRING", mode="NULLABLE"),      # Almacena MISC como texto JSON
+    bigquery.SchemaField("price", "STRING", mode="NULLABLE"),  
+    bigquery.SchemaField("hours", "STRING", mode="NULLABLE"),     
+    bigquery.SchemaField("MISC", "STRING", mode="NULLABLE"),  
     bigquery.SchemaField("state", "STRING", mode="NULLABLE"),
-    bigquery.SchemaField("relative_results", "STRING", mode="NULLABLE"),  # Almacena como texto JSON
+    bigquery.SchemaField("relative_results", "STRING", mode="NULLABLE"), 
     bigquery.SchemaField("url", "STRING", mode="NULLABLE"),
 ]
 

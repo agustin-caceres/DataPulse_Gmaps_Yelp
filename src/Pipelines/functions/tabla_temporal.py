@@ -3,7 +3,6 @@ from google.cloud import storage
 import json
 import pandas as pd
 from io import BytesIO
-import logging
 
 ###########################################################################
 
@@ -37,25 +36,20 @@ def crear_tabla_temporal(project_id: str, dataset: str, temp_table: str, schema:
 
 def cargar_archivos_en_tabla_temporal(bucket_name: str, archivos: list, project_id: str, dataset: str, temp_table: str) -> None:
     """
-    Carga múltiples archivos JSON desde Google Cloud Storage a la tabla temporal en BigQuery.
+    Carga múltiples archivos JSON en formato DataFrame desde Google Cloud Storage a la tabla temporal en BigQuery.
+    
+    Args:
+        bucket_name (str): Nombre del bucket de Google Cloud Storage.
+        archivos (list): Lista de nombres de archivos JSON.
+        project_id (str): ID del proyecto de Google Cloud.
+        dataset (str): Nombre del dataset de BigQuery.
+        temp_table (str): Nombre de la tabla temporal en BigQuery.
     """
 
     # Inicializa el cliente de BigQuery y el cliente de Cloud Storage
     client = bigquery.Client()
     storage_client = storage.Client()
 
-    # Asegúrate de que archivos es una lista
-    if isinstance(archivos, str):
-        # Si archivos es una cadena, intenta convertirlo a una lista
-        try:
-            archivos = eval(archivos)  # Nota: eval puede ser peligroso; considera alternativas más seguras.
-        except Exception as e:
-            logging.error(f"Error al evaluar la cadena de archivos: {e}")
-            raise ValueError("La lista de archivos no se pudo convertir de la cadena.")
-        
-    # Verificación del valor de archivos
-    print(f"Contenido de 'archivos': {archivos}")
-    
     if not archivos or not isinstance(archivos, list):
         raise ValueError("La lista de archivos está vacía o no es válida.")
 
@@ -65,23 +59,21 @@ def cargar_archivos_en_tabla_temporal(bucket_name: str, archivos: list, project_
             blob = storage_client.bucket(bucket_name).blob(archivo)
             contenido = blob.download_as_text()
 
-            # Carga todo el archivo como un JSON
-            contenido_json = json.loads(contenido)
-            
-            # Asegura que es una lista de objetos JSON
-            if not isinstance(contenido_json, list):
-                raise ValueError(f"El archivo {archivo} no contiene un array de objetos JSON.")
+            # Carga el contenido del archivo en un DataFrame de pandas
+            df = pd.read_json(contenido, lines=True)
+
+            # Asegura que el DataFrame no está vacío
+            if df.empty:
+                raise ValueError(f"El archivo {archivo} no contiene datos.")
 
             # Inserta los datos en la tabla temporal
             table_id = f"{project_id}.{dataset}.{temp_table}"
-            errors = client.insert_rows_json(table_id, contenido_json)
-            
+            errors = client.insert_rows_from_dataframe(table_id, df)
+
             if errors:
                 raise RuntimeError(f"Error al insertar datos del archivo {archivo}: {errors}")
-            
-            print(f"Datos del archivo {archivo} cargados exitosamente en la tabla temporal.")
         
-        except json.JSONDecodeError as e:
+        except pd.errors.JSONDecodeError as e:
             print(f"Error de decodificación JSON en el archivo {archivo}: {e}")
         except Exception as e:
             print(f"Error al procesar el archivo {archivo}: {e}")

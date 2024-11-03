@@ -4,6 +4,15 @@ from datetime import datetime
 def obtener_archivos_nuevos(bucket_name: str, prefix: str, project_id: str, dataset: str) -> list:
     """
     Detecta archivos nuevos en un bucket de Google Cloud Storage comparando con los archivos ya registrados en BigQuery.
+    
+    Args:
+        bucket_name (str): Nombre del bucket de Cloud Storage.
+        prefix (str): Prefijo para filtrar los archivos en el bucket.
+        project_id (str): ID del proyecto de Google Cloud.
+        dataset (str): Nombre del dataset de BigQuery.
+
+    Returns:
+        list: Lista de archivos nuevos detectados.
     """
     try:
         # Inicializa el cliente de BigQuery y de Cloud Storage
@@ -14,13 +23,11 @@ def obtener_archivos_nuevos(bucket_name: str, prefix: str, project_id: str, data
         table_id = f"{project_id}.{dataset}.archivos_procesados"
         
         # Consulta para obtener la lista de archivos ya procesados en BigQuery
-        print("Consultando archivos procesados en BigQuery...")
         query = f"SELECT nombre_archivo FROM `{table_id}`"
         query_job = client.query(query)
         archivos_procesados = {row.nombre_archivo for row in query_job}
         
         # Lista de archivos actuales en el bucket de Cloud Storage con el prefijo especificado
-        print(f"Listando archivos en el bucket {bucket_name} con prefijo '{prefix}'...")
         blobs = storage_client.list_blobs(bucket_name, prefix=prefix)
         archivos = [blob.name for blob in blobs]
 
@@ -32,7 +39,7 @@ def obtener_archivos_nuevos(bucket_name: str, prefix: str, project_id: str, data
     
     except Exception as e:
         print(f"Error en obtener_archivos_nuevos: {e}")
-        return []
+        return []  # Retorna una lista vacía en caso de error
 
 
 def registrar_archivos_en_bq(project_id: str, dataset: str, archivos_nuevos: list) -> None:
