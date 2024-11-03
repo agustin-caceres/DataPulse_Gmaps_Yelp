@@ -64,8 +64,6 @@ def registrar_archivos_en_bq(project_id: str, dataset: str, archivos_nuevos: lis
                 print(f"Archivos nuevos registrados exitosamente: {archivos_nuevos}")
     except Exception as e:
         print(f"Error en registrar_archivos_en_bq: {e}")
-<<<<<<< Updated upstream
-=======
 
 
 def obtener_archivos_nuevos_version_premium(bucket_name: str, prefix: str, project_id: str, dataset: str) -> list:
@@ -92,4 +90,3 @@ def obtener_archivos_nuevos_version_premium(bucket_name: str, prefix: str, proje
 
     print(f"Archivos nuevos detectados: {archivos_nuevos}")
     return archivos_nuevos
->>>>>>> Stashed changes
