@@ -34,18 +34,27 @@ default_args = {
 temp_table_general_schema = [
     bigquery.SchemaField("name", "STRING", mode="NULLABLE"),
     bigquery.SchemaField("address", "STRING", mode="NULLABLE"),
-    bigquery.SchemaField("gmap_id", "STRING", mode="REQUIRED"), 
+    bigquery.SchemaField("gmap_id", "STRING", mode="REQUIRED"),
     bigquery.SchemaField("description", "STRING", mode="NULLABLE"),
     bigquery.SchemaField("latitude", "FLOAT", mode="NULLABLE"),
     bigquery.SchemaField("longitude", "FLOAT", mode="NULLABLE"),
-    bigquery.SchemaField("category", "STRING", mode="REPEATED"), 
+    bigquery.SchemaField("category", "STRING", mode="REPEATED"),
     bigquery.SchemaField("avg_rating", "FLOAT", mode="NULLABLE"),
     bigquery.SchemaField("num_of_reviews", "INTEGER", mode="NULLABLE"),
-    bigquery.SchemaField("price", "STRING", mode="NULLABLE"),  
-    bigquery.SchemaField("hours", "STRING", mode="NULLABLE"),     
-    bigquery.SchemaField("MISC", "STRING", mode="NULLABLE"),  
+    bigquery.SchemaField("price", "STRING", mode="NULLABLE"),
+    bigquery.SchemaField("hours", "RECORD", mode="REPEATED", fields=[
+        bigquery.SchemaField("day", "STRING", mode="REQUIRED"),
+        bigquery.SchemaField("time", "STRING", mode="REQUIRED"),
+    ]),
+    bigquery.SchemaField("MISC", "RECORD", mode="NULLABLE", fields=[
+        bigquery.SchemaField("Service options", "STRING", mode="REPEATED"),
+        bigquery.SchemaField("Health & safety", "STRING", mode="REPEATED"),
+        bigquery.SchemaField("Accessibility", "STRING", mode="REPEATED"),
+        bigquery.SchemaField("Planning", "STRING", mode="REPEATED"),
+        bigquery.SchemaField("Payments", "STRING", mode="REPEATED"),
+    ]),
     bigquery.SchemaField("state", "STRING", mode="NULLABLE"),
-    bigquery.SchemaField("relative_results", "STRING", mode="NULLABLE"), 
+    bigquery.SchemaField("relative_results", "STRING", mode="REPEATED"),
     bigquery.SchemaField("url", "STRING", mode="NULLABLE"),
 ]
 
