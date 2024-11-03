@@ -32,11 +32,15 @@ def crear_tabla_temporal(project_id: str, dataset: str, temp_table: str, schema:
 
 ###########################################################################
 
-def cargar_archivos_en_tabla_temporal(bucket_name: str, archivos: list, project_id: str, dataset: str, temp_table: str) -> None:
+def cargar_archivos_en_tabla_temporal(bucket_name: str, archivos: str, project_id: str, dataset: str, temp_table: str) -> None:
     """
     Carga múltiples archivos JSON desde Google Cloud Storage a la tabla temporal en BigQuery.
     """
-    
+
+    # Convierte 'archivos' a lista si es una cadena de texto
+    if isinstance(archivos, str):
+        archivos = json.loads(archivos)  # Convierte de JSON string a lista
+
     if not archivos:
         raise ValueError("La lista de archivos está vacía o no es válida.")
     

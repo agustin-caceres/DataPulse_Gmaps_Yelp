@@ -5,7 +5,6 @@ from airflow.operators.dummy import DummyOperator
 from datetime import timedelta
 from airflow.utils.dates import days_ago
 from google.cloud import bigquery
-from ast import literal_eval
 
 # Funciones
 from functions.v2_registrar_archivo import obtener_archivos_nuevos, registrar_archivos_en_bq
@@ -95,14 +94,14 @@ with DAG(
     python_callable=cargar_archivos_en_tabla_temporal,
     op_kwargs={
         'bucket_name': bucket_name,
-        'archivos': literal_eval("{{ ti.xcom_pull(task_ids='registrar_archivos_procesados') }}"),
+        'archivos': "{{ ti.xcom_pull(task_ids='registrar_archivos_procesados') }}",
         'project_id': project_id,
         'dataset': dataset,
         'temp_table': temp_table_general
     },
     on_failure_callback=lambda context: print(f"Error en la tarea: {context['task_instance'].task_id}"),
 )
-
+    
     # Tarea 4: Registrar el nombre de los archivos cargados en BigQuery, para control.
     registrar_archivo_en_bq = PythonOperator(
         task_id='registrar_archivo_en_bq',
