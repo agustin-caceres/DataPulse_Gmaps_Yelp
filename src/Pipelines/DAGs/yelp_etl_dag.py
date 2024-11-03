@@ -75,7 +75,7 @@ with DAG(
             'flat_data': "{{ ti.xcom_pull(task_ids='extract_task') }}",
             'project_id': project_id,
             'dataset': dataset,
-            'table_name': 'tabla_desanidada'  # Nombre de la tabla en BigQuery
+            'table_name': 'tablas_desanidadas'  # Nombre de la tabla en BigQuery
         }
     )
 
