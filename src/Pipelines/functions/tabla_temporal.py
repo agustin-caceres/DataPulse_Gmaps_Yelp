@@ -130,10 +130,14 @@ def mover_datos_y_borrar_temp(project_id: str, dataset: str, temp_table: str, fi
 ###########################################################################
 
 
-def cargar_archivos_en_tabla_temporal_v_premium(bucket_name: str, archivos: list, project_id: str, dataset: str, temp_table: str) -> None:
+def cargar_archivos_en_tabla_temporal_v_premium(bucket_name: str, archivos, project_id: str, dataset: str, temp_table: str) -> None:
     """
     Carga múltiples archivos (JSON, Parquet, PKL) desde Google Cloud Storage a la tabla temporal en BigQuery.
     """
+    # Asegurar que 'archivos' es una lista
+    if isinstance(archivos, str):
+        archivos = eval(archivos) if archivos.startswith("[") and archivos.endswith("]") else [archivos]
+
     # Imprimir el tipo y contenido completo de `archivos`
     print(f"Tipo de 'archivos' recibido: {type(archivos)}")
     print(f"Contenido de 'archivos' recibido: {archivos}")
