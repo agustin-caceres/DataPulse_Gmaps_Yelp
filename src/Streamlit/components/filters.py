@@ -12,7 +12,7 @@ def user_preferences_filter():
     preferences = {}
     # Filtro de ubicación con los estados seleccionados
     preferences['ubicacion'] = st.sidebar.selectbox(
-        "📍 Ubicación", 
+        "📍 Ubicación", https://drive.google.com/file/d/1-AytD795J2SM-urMJA0rsNKs4prVjdGU/view?usp=sharing
         ["Nueva York", "Florida", "Texas", "Nuevo México", "Pensilvania"]
     )
     preferences['tipo_de_comida'] = st.sidebar.selectbox("🍽️ Tipo de comida", ["Todos", "Italiana", "China", "Mexicana", "Japonesa"])
