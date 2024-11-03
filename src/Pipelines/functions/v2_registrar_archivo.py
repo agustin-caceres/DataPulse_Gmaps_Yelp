@@ -40,7 +40,11 @@ def obtener_archivos_nuevos(bucket_name: str, prefix: str, project_id: str, data
         archivos_nuevos = [archivo for archivo in archivos if archivo not in archivos_procesados]
         print(f"Archivos nuevos detectados: {archivos_nuevos}")
 
-        return archivos_nuevos
+        # Toma solo el primer archivo nuevo, si existe
+        archivo_a_procesar = archivos_nuevos[0] if archivos_nuevos else []
+
+        # Retorna el nombre del primer archivo nuevo detectado o None
+        return archivo_a_procesar
     
     except Exception as e:
         print(f"Error en obtener_archivos_nuevos: {e}")
