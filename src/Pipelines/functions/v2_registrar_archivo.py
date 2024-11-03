@@ -35,24 +35,6 @@ def obtener_archivos_nuevos(bucket_name: str, prefix: str, project_id: str, data
         print(f"Error en obtener_archivos_nuevos: {e}")
         return []
 
-<<<<<<< HEAD
-    # Consulta para obtener la lista de archivos ya procesados en BigQuery
-    query = f"SELECT nombre_archivo FROM `{table_id}`"
-    query_job = client.query(query)
-    archivos_procesados = {row.nombre_archivo for row in query_job}  # Convierte los resultados en un conjunto para búsqueda rápida
-
-    # Lista de archivos actuales en el bucket de Cloud Storage con el prefijo especificado
-    blobs = storage_client.list_blobs(bucket_name, prefix=prefix)
-    archivos = [blob.name for blob in blobs]
-
-    # Filtra los archivos que aún no han sido procesados
-    archivos_nuevos = [archivo for archivo in archivos if archivo not in archivos_procesados]
-    logging.info(f"Archivos nuevos a procesar: {archivos_nuevos}")
-    
-    return archivos_nuevos
-=======
->>>>>>> c3a6f6d53ff4760a1efd567abd825d0d1d2bdf54
-
 def registrar_archivos_en_bq(project_id: str, dataset: str, archivos_nuevos: list) -> None:
     """
     Registra archivos nuevos en la tabla 'archivos_procesados' de BigQuery.
@@ -80,16 +62,5 @@ def registrar_archivos_en_bq(project_id: str, dataset: str, archivos_nuevos: lis
                 print(f"Error al insertar los archivos procesados: {errors}")
             else:
                 print(f"Archivos nuevos registrados exitosamente: {archivos_nuevos}")
-        else:
-<<<<<<< HEAD
-            print(f"Archivos nuevos registrados exitosamente: {archivos_nuevos}")
-    else:
-        print("No hay archivos nuevos para registrar en BigQuery.")
-        
-=======
-            print("No hay archivos nuevos para registrar en BigQuery.")
-    
     except Exception as e:
         print(f"Error en registrar_archivos_en_bq: {e}")
-
->>>>>>> c3a6f6d53ff4760a1efd567abd825d0d1d2bdf54

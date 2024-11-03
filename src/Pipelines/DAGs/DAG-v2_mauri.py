@@ -8,6 +8,7 @@ from google.cloud import bigquery
 
 # Funciones
 from functions.registrar_archivo import registrar_archivos_procesados
+from functions.v2_registrar_archivo import registrar_archivos_en_bq
 from functions.tabla_temporal import crear_tabla_temporal, cargar_archivos_en_tabla_temporal
 
 ######################################################################################
