@@ -50,7 +50,7 @@ temp_table_general_schema = [
 ]
 
 #######################################################################################
-# DEFINICIÓN DEL DAG
+# DEFINICIÓN DEL DAG 
 #######################################################################################
 
 with DAG(
@@ -92,7 +92,7 @@ with DAG(
         python_callable=cargar_archivo_en_tabla_temporal,
         op_kwargs={
             'bucket_name': bucket_name,
-            'archivos': "{{ ti.xcom_pull(task_ids='registrar_archivos_procesados') }}",
+            'archivo': "{{ ti.xcom_pull(task_ids='registrar_archivos_procesados') }}",
             'project_id': project_id,
             'dataset': dataset,
             'temp_table': temp_table_general,
