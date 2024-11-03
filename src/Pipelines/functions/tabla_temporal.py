@@ -75,8 +75,14 @@ def cargar_json_a_bigquery(bucket_name: str, archivo: str, project_id: str, data
     blob = bucket.blob(archivo)
     json_data = blob.download_as_text()
 
-    # Carga y transforma el JSON
-    data_list = json.loads(json_data)
+    # Manejo de errores en la carga del JSON
+    try:
+        # Asume que el archivo es un NDJSON (un objeto JSON por línea)
+        data_list = [json.loads(line) for line in json_data.strip().split('\n')]
+    except json.JSONDecodeError as e:
+        raise RuntimeError(f"Error al decodificar JSON en el archivo {archivo}: {str(e)}")
+
+    # Carga y transforma los datos
     transformed_data = [transformar_horas(data) for data in data_list]
 
     # Crea la tabla si no existe
