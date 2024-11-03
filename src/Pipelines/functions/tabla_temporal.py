@@ -35,56 +35,46 @@ def crear_tabla_temporal(project_id: str, dataset: str, temp_table: str, schema:
 
 ###########################################################################
 
-def cargar_archivo_en_tabla_temporal(bucket_name: str, archivo: str, project_id: str, dataset: str, temp_table: str) -> None:
+def cargar_json_a_bigquery(bucket_name: str, archivo: str, project_id: str, dataset: str, temp_table: str, schema: list) -> None:
     """
-    Carga un archivo JSON en formato DataFrame desde Google Cloud Storage a la tabla temporal en BigQuery.
+    Carga un archivo JSON desde Google Cloud Storage a una tabla en BigQuery.
     
     Args:
         bucket_name (str): Nombre del bucket de Google Cloud Storage.
-        archivo (str): Nombre del archivo.
+        archivo (str): Nombre del archivo JSON.
         project_id (str): ID del proyecto de Google Cloud.
         dataset (str): Nombre del dataset de BigQuery.
-        temp_table (str): Nombre de la tabla temporal en BigQuery.
+        temp_table (str): Nombre de la tabla en BigQuery.
+        schema (list): Esquema de la tabla de BigQuery.
     """
 
-    # Inicializa el cliente de BigQuery y el cliente de Cloud Storage
+    # Inicializa el cliente de BigQuery
     client = bigquery.Client()
-    storage_client = storage.Client()
 
-    # Lee el archivo JSON desde Cloud Storage
-    blob = storage_client.bucket(bucket_name).blob(archivo)
-    contenido = blob.download_as_text()
+    # Construye la URI del archivo en Google Cloud Storage
+    uri = f"gs://{bucket_name}/{archivo}"
 
-    # Carga el contenido del archivo en un DataFrame de pandas
-    df = pd.read_json(StringIO(contenido), lines=True)
-
-    # Limpia y convierte las columnas
-    columnas_a_convertir = ['hours', 'category', 'MISC', 'relative_results']
-
-    for col in columnas_a_convertir:
-        # Usamos fillna para reemplazar NaN con una cadena vacía solo si lo deseas
-        df[col] = df[col].replace({None: ''})
-        # Convertimos a string solo si la columna contiene datos válidos
-        if df[col].notna().any():  
-            df[col] = df[col].astype(str)
-
-    
-    # Asegura que el DataFrame no está vacío
-    if df.empty:
-        raise ValueError(f"El archivo {archivo} no contiene datos.")
-
-    # Inserta los datos en la tabla temporal
+    # Crea la tabla si no existe
     table_id = f"{project_id}.{dataset}.{temp_table}"
-    job = client.load_table_from_dataframe(df, table_id)
+    table = bigquery.Table(table_id, schema=schema)
+    table = client.create_table(table, exists_ok=True)  # Si existe, no hace nada
 
+    # Carga el archivo JSON a la tabla
+    job_config = bigquery.LoadJobConfig(
+        source_format=bigquery.SourceFormat.NEWLINE_DELIMITED_JSON,
+        write_disposition=bigquery.WriteDisposition.WRITE_APPEND  # Cambia según lo que necesites
+    )
+
+    # Cargar el archivo JSON
+    load_job = client.load_table_from_uri(uri, table_id, job_config=job_config)
+    
     # Espera a que se complete el trabajo de carga
-    job.result()  # Esto bloqueará hasta que el trabajo se complete
+    load_job.result()  # Esto bloqueará hasta que el trabajo se complete
 
-    if job.error_result:
-        raise RuntimeError(f"Error al insertar datos del archivo {archivo}: {job.error_result}")
+    if load_job.error_result:
+        raise RuntimeError(f"Error al cargar el archivo JSON {archivo}: {load_job.error_result}")
 
-    # Cierra el cliente de BigQuery
-    client.close()
+    print(f"Archivo {archivo} cargado exitosamente en {table_id}.")
 
 ###########################################################################
 
