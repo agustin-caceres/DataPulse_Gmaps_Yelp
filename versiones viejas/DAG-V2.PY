@@ -8,7 +8,8 @@ from google.cloud import bigquery
 
 # Funciones
 from functions.v2_registrar_archivo import registrar_archivos_procesados
-from functions.tabla_temporal import crear_tabla_temporal, cargar_archivos_en_tabla_temporal
+#from functions.v2_desanidar_misc import desanidar_misc
+from functions.tabla_temporal import crear_tabla_temporal, cargar_archivo_en_tabla_temporal, mover_datos_y_borrar_temp
 
 ######################################################################################
 # PARÁMETROS
@@ -21,7 +22,10 @@ owner              = 'Mauricio Arce'
 GBQ_CONNECTION_ID  = 'bigquery_default'
 bucket_name        = 'datos-crudos'
 prefix             = 'g_sitios/'
+# Por ahora haremos prueba piloto para una sola columna con una sola tabla (misc)
 temp_table_general = 'data_cruda'
+#temp_table         = 'miscelaneo' # Aqui deberian crearse 3 tablas temporales que son las columnas desanidadas del archivo ingresado (misc,relative_results,hours).
+#final_table        = 'g_misc' # Aqui deberian enviarse cada columna desanidada a su tabla final (g_misc,g_relative_results,g_hours)
 
 default_args = {
     'owner': owner,
@@ -49,6 +53,13 @@ temp_table_general_schema = [
     bigquery.SchemaField("url", "STRING", mode="NULLABLE"),
 ]
 
+
+# Definir el esquema de la tabla temporal (aqui se deberria definir las columnas de las 3 tablas temporales.) Por ahora solo de miscelaneo.
+#temp_table_misc = [
+#    bigquery.SchemaField("gmap_id", "STRING", mode="REQUIRED"),
+#    bigquery.SchemaField("misc", "STRING", mode="NULLABLE"),
+#]
+
 #######################################################################################
 # DEFINICIÓN DEL DAG
 #######################################################################################
@@ -71,8 +82,7 @@ with DAG(
             'prefix': prefix,
             'project_id': project_id,
             'dataset': dataset
-        },
-        provide_context=True,
+        }
     )
 
     # Tarea 2: Crear la tabla temporal en BigQuery de todo el Json.
@@ -84,17 +94,16 @@ with DAG(
             'dataset': dataset,
             'temp_table': temp_table_general,
             'schema': temp_table_general_schema 
-        },
-        provide_context=True,
+        }
     )
 
     # Tarea 3: Cargar el archivo JSON en la tabla temporal
     cargar_archivo_temp_task = PythonOperator(
         task_id='cargar_archivo_en_tabla_temporal',
-        python_callable=cargar_archivos_en_tabla_temporal,
+        python_callable=cargar_archivo_en_tabla_temporal,
         op_kwargs={
             'bucket_name': bucket_name,
-            'archivos': '{{ task_instance.xcom_pull(task_ids="registrar_archivos") }}',
+            'archivo': "{{ ti.xcom_pull(task_ids='registrar_archivos_procesados') }}",
             'project_id': project_id,
             'dataset': dataset,
             'temp_table': temp_table_general
