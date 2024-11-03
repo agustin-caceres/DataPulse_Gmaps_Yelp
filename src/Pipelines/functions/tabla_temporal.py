@@ -58,21 +58,15 @@ def cargar_archivo_en_tabla_temporal(bucket_name: str, archivo: str, project_id:
     # Carga el contenido del archivo en un DataFrame de pandas
     df = pd.read_json(StringIO(contenido), lines=True)
 
-    # Limpiar y convertir la columna
-    df['hours'] = df['hours'].astype(str)  
-    df['hours'] = df['hours'].fillna('')
-    
-    # Limpiar y convertir la columna
-    df['category'] = df['category'].astype(str)  
-    df['category'] = df['category'].fillna('')
-    
-    # Limpiar y convertir la columna
-    df['MISC'] = df['MISC'].astype(str)  
-    df['MISC'] = df['MISC'].fillna('')
-    
-    # Limpiar y convertir la columna
-    df['relative_results'] = df['relative_results'].astype(str)
-    df['relative_results'] = df['relative_results'].fillna('')
+    # Limpia y convierte las columnas
+    columnas_a_convertir = ['hours', 'category', 'MISC', 'relative_results']
+
+    for col in columnas_a_convertir:
+        # Usamos fillna para reemplazar NaN con una cadena vacía solo si lo deseas
+        df[col] = df[col].replace({None: ''})
+        # Convertimos a string solo si la columna contiene datos válidos
+        if df[col].notna().any():  
+            df[col] = df[col].astype(str)
 
     
     # Asegura que el DataFrame no está vacío
