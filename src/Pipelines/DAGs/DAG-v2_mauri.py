@@ -72,7 +72,6 @@ with DAG(
             'project_id': project_id,
             'dataset': dataset
         },
-        provide_context=True,
     )
 
     # Tarea 2: Crear la tabla temporal en BigQuery de todo el Json.
@@ -93,7 +92,7 @@ with DAG(
         python_callable=cargar_archivos_en_tabla_temporal,
         op_kwargs={
             'bucket_name': bucket_name,
-            'archivos': "{{ ti.xcom_pull(task_ids='registrar_archivos_procesados') }}",
+            'archivos': "{{ task_instance.xcom_pull(task_ids='registrar_archivos_procesados') }}",
             'project_id': project_id,
             'dataset': dataset,
             'temp_table': temp_table_general,
@@ -107,8 +106,8 @@ with DAG(
         op_kwargs={
             'project_id': project_id,
             'dataset': dataset,
-            'archivos_nuevos': "{{ ti.xcom_pull(task_ids='registrar_archivos_procesados') }}"
-        },
+            'archivos_nuevos': "{{ task_instance.xcom_pull(task_ids='registrar_archivos_procesados') }}",
+        }
     )
 
     fin = DummyOperator(task_id='fin')
