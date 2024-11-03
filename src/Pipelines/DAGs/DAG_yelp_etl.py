@@ -4,6 +4,9 @@ from airflow.operators.python import PythonOperator
 from airflow.operators.dummy import DummyOperator
 from datetime import timedelta
 from airflow.utils.dates import days_ago
+from google.cloud import bigquery
+
+# Funciones
 from functions.bigquery_utils import crear_tabla_temporal, cargar_archivo_gcs_a_bigquery
 
 ######################################################################################
