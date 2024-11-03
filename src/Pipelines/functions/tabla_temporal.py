@@ -35,49 +35,40 @@ def crear_tabla_temporal(project_id: str, dataset: str, temp_table: str, schema:
 def cargar_archivos_en_tabla_temporal(bucket_name: str, archivos: list, project_id: str, dataset: str, temp_table: str) -> None:
     """
     Carga múltiples archivos JSON desde Google Cloud Storage a la tabla temporal en BigQuery.
-
-    Args:
-    -------
-    bucket_name : str
-        Nombre del bucket en Google Cloud Storage.
-    archivos : list
-        Lista de nombres de archivos JSON que contienen los datos.
-    project_id : str
-        ID del proyecto en Google Cloud Platform.
-    dataset : str
-        Nombre del dataset en BigQuery.
-    temp_table : str
-        Nombre de la tabla temporal en BigQuery donde se insertarán los datos.
     """
     
     client = bigquery.Client()
     storage_client = storage.Client()
 
     for archivo in archivos:
-        # Lee el archivo JSON desde Cloud Storage
-        blob = storage_client.bucket(bucket_name).blob(archivo)
-        contenido = blob.download_as_text()
+        try:
+            # Lee el archivo JSON desde Cloud Storage
+            blob = storage_client.bucket(bucket_name).blob(archivo)
+            contenido = blob.download_as_text()
 
-        # Procesa cada línea como un objeto JSON e inserta en la tabla temporal
-        rows_to_insert = []
-        for linea in contenido.splitlines():
-            try:
-                contenido_json = json.loads(linea)
-                rows_to_insert.append(contenido_json)  # Inserta todo el JSON en la fila
-            except json.JSONDecodeError as e:
-                print(f"Error de decodificación JSON en la línea: {e}")
-                continue
+            # Procesa cada línea como un objeto JSON e inserta en la tabla temporal
+            rows_to_insert = []
+            for linea in contenido.splitlines():
+                try:
+                    contenido_json = json.loads(linea)
+                    rows_to_insert.append(contenido_json)
+                except json.JSONDecodeError as e:
+                    print(f"Error de decodificación JSON en la línea: {e}")
+                    continue
 
-        # Inserta los datos en la tabla temporal
-        table_id = f"{project_id}.{dataset}.{temp_table}"
-        if rows_to_insert:  # Solo intenta insertar si hay filas para insertar
-            errors = client.insert_rows_json(table_id, rows_to_insert)
-            if errors:
-                print(f"Error al insertar datos del archivo {archivo} en la tabla temporal: {errors}")
+            # Inserta los datos en la tabla temporal
+            table_id = f"{project_id}.{dataset}.{temp_table}"
+            if rows_to_insert:
+                errors = client.insert_rows_json(table_id, rows_to_insert)
+                if errors:
+                    print(f"Error al insertar datos del archivo {archivo}: {errors} (Total filas: {len(rows_to_insert)})")
+                else:
+                    print(f"Datos del archivo {archivo} cargados exitosamente en la tabla temporal.")
             else:
-                print(f"Datos del archivo {archivo} cargados exitosamente en la tabla temporal.")
-        else:
-            print(f"No se encontraron datos para cargar del archivo {archivo}.")
+                print(f"No se encontraron datos para cargar del archivo {archivo}.")
+        
+        except Exception as e:
+            print(f"Error al procesar el archivo {archivo}: {str(e)}")
 
 
 ###########################################################################

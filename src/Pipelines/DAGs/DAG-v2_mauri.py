@@ -98,7 +98,9 @@ with DAG(
             'project_id': project_id,
             'dataset': dataset,
             'temp_table': temp_table_general
-        }
+        },
+        on_failure_callback=lambda context: print(f"Error en la tarea: {context['task_instance'].task_id}"),
+        do_xcom_push=True
     )
 
     fin = DummyOperator(task_id='fin')
