@@ -41,34 +41,26 @@ def cargar_archivos_en_tabla_temporal(bucket_name: str, archivos: list, project_
     storage_client = storage.Client()
 
     for archivo in archivos:
-        try:
-            # Lee el archivo JSON desde Cloud Storage
-            blob = storage_client.bucket(bucket_name).blob(archivo)
-            contenido = blob.download_as_text()
+        # Lee el archivo JSON desde Cloud Storage
+        blob = storage_client.bucket(bucket_name).blob(archivo)
+        contenido = blob.download_as_text()
 
-            # Procesa cada línea como un objeto JSON e inserta en la tabla temporal
-            rows_to_insert = []
-            for linea in contenido.splitlines():
-                try:
-                    contenido_json = json.loads(linea)
-                    rows_to_insert.append(contenido_json)
-                except json.JSONDecodeError as e:
-                    print(f"Error de decodificación JSON en la línea: {e}")
-                    continue
-
-            # Inserta los datos en la tabla temporal
-            table_id = f"{project_id}.{dataset}.{temp_table}"
-            if rows_to_insert:
-                errors = client.insert_rows_json(table_id, rows_to_insert)
-                if errors:
-                    print(f"Error al insertar datos del archivo {archivo}: {errors} (Total filas: {len(rows_to_insert)})")
-                else:
-                    print(f"Datos del archivo {archivo} cargados exitosamente en la tabla temporal.")
-            else:
-                print(f"No se encontraron datos para cargar del archivo {archivo}.")
+        # Carga todo el archivo como un JSON
+        contenido_json = json.loads(contenido)
         
-        except Exception as e:
-            print(f"Error al procesar el archivo {archivo}: {str(e)}")
+        # Asegura que es una lista de objetos JSON
+        if not isinstance(contenido_json, list):
+            raise ValueError(f"El archivo {archivo} no contiene un array de objetos JSON.")
+
+        # Inserta los datos en la tabla temporal
+        table_id = f"{project_id}.{dataset}.{temp_table}"
+        errors = client.insert_rows_json(table_id, contenido_json)
+        
+        # Si hay errores al insertar, lanza una excepción para que el DAG maneje el error
+        if errors:
+            raise RuntimeError(f"Error al insertar datos del archivo {archivo}: {errors}")
+        
+        print(f"Datos del archivo {archivo} cargados exitosamente en la tabla temporal.")
 
 
 ###########################################################################
