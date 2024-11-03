@@ -8,23 +8,24 @@ from google.cloud import bigquery
 
 # Funciones
 from functions.v2_registrar_archivo import registrar_archivos_procesados
-from functions.v2_desanidar_misc import desanidar_misc
+#from functions.v2_desanidar_misc import desanidar_misc
 from functions.tabla_temporal import crear_tabla_temporal, cargar_archivo_en_tabla_temporal, mover_datos_y_borrar_temp
 
 ######################################################################################
 # PARÁMETROS
 ######################################################################################
 
-nameDAG_base      = 'ETL_Storage_to_BQ'
-project_id        = 'neon-gist-439401-k8'
-dataset           = '1'
-owner             = 'Mauricio Arce'
-GBQ_CONNECTION_ID = 'bigquery_default'
-bucket_name       = 'datos-crudos'
-prefix            = 'g_sitios/'
+nameDAG_base       = 'ETL_Storage_to_BQ'
+project_id         = 'neon-gist-439401-k8'
+dataset            = '1'
+owner              = 'Mauricio Arce'
+GBQ_CONNECTION_ID  = 'bigquery_default'
+bucket_name        = 'datos-crudos'
+prefix             = 'g_sitios/'
 # Por ahora haremos prueba piloto para una sola columna con una sola tabla (misc)
-temp_table        = 'miscelaneo' # Aqui deberian crearse 3 tablas temporales que son las columnas desanidadas del archivo ingresado (misc,relative_results,hours).
-final_table       = 'g_misc' # Aqui deberian enviarse cada columna desanidada a su tabla final (g_misc,g_relative_results,g_hours)
+temp_table_general = 'data_cruda'
+#temp_table         = 'miscelaneo' # Aqui deberian crearse 3 tablas temporales que son las columnas desanidadas del archivo ingresado (misc,relative_results,hours).
+#final_table        = 'g_misc' # Aqui deberian enviarse cada columna desanidada a su tabla final (g_misc,g_relative_results,g_hours)
 
 default_args = {
     'owner': owner,
@@ -33,7 +34,8 @@ default_args = {
     'retry_delay': timedelta(minutes=2),
 }
 
-temp_table_schema = [
+# Tabla temporal de la metadata cruda que se va a desanidar y procesar.
+temp_table_general_schema = [
     bigquery.SchemaField("name", "STRING", mode="NULLABLE"),
     bigquery.SchemaField("address", "STRING", mode="NULLABLE"),
     bigquery.SchemaField("gmap_id", "STRING", mode="REQUIRED"),
@@ -53,10 +55,10 @@ temp_table_schema = [
 
 
 # Definir el esquema de la tabla temporal (aqui se deberria definir las columnas de las 3 tablas temporales.) Por ahora solo de miscelaneo.
-temp_table_schema = [
-    bigquery.SchemaField("gmap_id", "STRING", mode="REQUIRED"),
-    bigquery.SchemaField("misc", "STRING", mode="NULLABLE"),
-]
+#temp_table_misc = [
+#    bigquery.SchemaField("gmap_id", "STRING", mode="REQUIRED"),
+#    bigquery.SchemaField("misc", "STRING", mode="NULLABLE"),
+#]
 
 #######################################################################################
 # DEFINICIÓN DEL DAG
@@ -83,15 +85,15 @@ with DAG(
         }
     )
 
-    # Tarea 2: Crear la tabla temporal en BigQuery de cada columna anidada.
+    # Tarea 2: Crear la tabla temporal en BigQuery de todo el Json.
     crear_tabla_temp = PythonOperator(
         task_id='crear_tabla_temporal',
         python_callable=crear_tabla_temporal,
         op_kwargs={
             'project_id': project_id,
             'dataset': dataset,
-            'temp_table': temp_table,
-            'schema': temp_table_schema  # Pasa el esquema definido en el DAG
+            'temp_table': temp_table_general,
+            'schema': temp_table_general_schema 
         }
     )
 
@@ -104,37 +106,11 @@ with DAG(
             'archivo': "{{ ti.xcom_pull(task_ids='registrar_archivos_procesados') }}",
             'project_id': project_id,
             'dataset': dataset,
-            'temp_table': temp_table
-        }
-    )
-
-    # Tarea 4: Desanidar misc y procesar el archivo en la tabla temporal
-    procesar_misc_task = PythonOperator(
-        task_id='desanidar_misc',
-        python_callable=desanidar_misc,
-        op_kwargs={
-            'bucket_name': bucket_name,
-            'archivo': "{{ ti.xcom_pull(task_ids='registrar_archivos_procesados') }}",
-            'project_id': project_id,
-            'dataset': dataset,
-            'temp_table': temp_table  # Procesar en la tabla temporal
-        }
-    )
-
-
-    # Tarea 5: Mover datos de la tabla temporal a la final y eliminar la temporal
-    mover_datos_y_borrar_temp_task = PythonOperator(
-        task_id='mover_datos_y_borrar_temp',
-        python_callable=mover_datos_y_borrar_temp,
-        op_kwargs={
-            'project_id': project_id,
-            'dataset': dataset,
-            'temp_table': temp_table,
-            'final_table': final_table
+            'temp_table': temp_table_general
         }
     )
 
     fin = DummyOperator(task_id='fin')
 
     # Estructura del flujo de tareas
-    inicio >> registrar_archivos >> crear_tabla_temp >> procesar_misc_task >> mover_datos_y_borrar_temp_task >> fin
+    inicio >> registrar_archivos >> crear_tabla_temp >> cargar_archivo_temp_task >> fin
