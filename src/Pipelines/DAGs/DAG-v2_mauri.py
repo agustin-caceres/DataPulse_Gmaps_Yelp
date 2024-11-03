@@ -92,7 +92,7 @@ with DAG(
         python_callable=cargar_archivos_en_tabla_temporal,
         op_kwargs={
             'bucket_name': bucket_name,
-            'archivos': "{{ task_instance.xcom_pull(task_ids='registrar_archivos_procesados') }}",
+            'archivos': "{{ ti.xcom_pull(task_ids='registrar_archivos_procesados') }}",
             'project_id': project_id,
             'dataset': dataset,
             'temp_table': temp_table_general,
@@ -106,7 +106,7 @@ with DAG(
         op_kwargs={
             'project_id': project_id,
             'dataset': dataset,
-            'archivos_nuevos': "{{ task_instance.xcom_pull(task_ids='registrar_archivos_procesados') }}",
+            'archivos_nuevos':"{{ ti.xcom_pull(task_ids='registrar_archivos_procesados') }}",
         }
     )
 
