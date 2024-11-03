@@ -94,10 +94,10 @@ with DAG(
         python_callable=cargar_archivos_en_tabla_temporal,
         op_kwargs={
             'bucket_name': bucket_name,
-            'archivos':  "{{ ti.xcom_pull(task_ids='registrar_archivos_procesados') }}",
+            'archivos': "{{ task_instance.xcom_pull(task_ids='registrar_archivos_procesados') }}",  # Cambiado a task_instance
             'project_id': project_id,
             'dataset': dataset,
-            'temp_table': temp_table_general
+            'temp_table': temp_table_general,
         },
         on_failure_callback=lambda context: print(f"Error en la tarea: {context['task_instance'].task_id}"),
     )
