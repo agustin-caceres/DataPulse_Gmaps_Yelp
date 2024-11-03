@@ -50,9 +50,6 @@ def cargar_archivos_en_tabla_temporal(bucket_name: str, archivos: list, project_
     client = bigquery.Client()
     storage_client = storage.Client()
 
-    if not archivos or not isinstance(archivos, list):
-        raise ValueError("La lista de archivos está vacía o no es válida.")
-
     for archivo in archivos:
         try:
             # Lee el archivo JSON desde Cloud Storage
