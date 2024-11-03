@@ -136,7 +136,7 @@ def cargar_archivos_en_tabla_temporal_v_premium(bucket_name: str, archivos, proj
     # Verificación inicial de `archivos` y conversión si es necesario
     if isinstance(archivos, str):
         try:
-            archivos = json.loads(archivos)  # Intentar convertir a lista si es un JSON en forma de string
+            archivos = json.loads(archivos)  # Convertir a lista si es un JSON en forma de string
         except json.JSONDecodeError as e:
             raise ValueError("Error al decodificar 'archivos'. Asegúrate de que sea una lista válida.") from e
 
@@ -149,25 +149,23 @@ def cargar_archivos_en_tabla_temporal_v_premium(bucket_name: str, archivos, proj
 
     for archivo in archivos:
         try:
-            # Verificar que el archivo no sea solo el prefijo del directorio
             if archivo.endswith('/'):
                 print(f"Advertencia: {archivo} parece ser un directorio y no un archivo. Saltando...")
                 continue
 
-            # Leer el archivo desde GCS según su formato
             blob = storage_client.bucket(bucket_name).blob(archivo)
             print(f"Leyendo archivo {archivo} desde GCS...")
 
-            # Procesar según el formato
             if archivo.endswith(".json"):
                 contenido = blob.download_as_text()
-                contenido_json = json.loads(contenido)
-
-                # Verificar que el contenido JSON es una lista de objetos
-                if not isinstance(contenido_json, list):
-                    raise ValueError(f"El archivo {archivo} no contiene un array de objetos JSON.")
-                
-                datos = contenido_json
+                # Manejo de JSON en múltiples líneas (objetos JSON separados por línea)
+                datos = []
+                for line in contenido.strip().splitlines():
+                    try:
+                        datos.append(json.loads(line))
+                    except json.JSONDecodeError:
+                        print(f"Error en línea JSON en archivo {archivo}: {line}")
+                        continue  # Saltar líneas mal formadas
 
             elif archivo.endswith(".parquet"):
                 contenido = blob.download_as_bytes()
@@ -194,3 +192,4 @@ def cargar_archivos_en_tabla_temporal_v_premium(bucket_name: str, archivos, proj
         except Exception as e:
             print(f"Error al procesar el archivo {archivo}: {e}")
             raise  # Relanzar el error para que Airflow lo maneje
+
