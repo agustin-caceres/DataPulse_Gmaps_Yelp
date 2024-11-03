@@ -8,7 +8,7 @@ from google.cloud import bigquery
 
 # Funciones
 from functions.v2_registrar_archivo import obtener_archivos_nuevos, registrar_archivos_en_bq
-from functions.tabla_temporal import crear_tabla_temporal, cargar_archivos_en_tabla_temporal
+from functions.tabla_temporal import crear_tabla_temporal, cargar_archivo_en_tabla_temporal
 
 ######################################################################################
 # PARÁMETROS
@@ -89,7 +89,7 @@ with DAG(
    # Tarea 3: Cargar los archivos JSON en la tabla temporal
     cargar_archivo_temp_task = PythonOperator(
         task_id='cargar_archivo_en_tabla_temporal',
-        python_callable=cargar_archivos_en_tabla_temporal,
+        python_callable=cargar_archivo_en_tabla_temporal,
         op_kwargs={
             'bucket_name': bucket_name,
             'archivos': "{{ ti.xcom_pull(task_ids='registrar_archivos_procesados') }}",
