@@ -116,7 +116,8 @@ def cargar_archivo_gcs_a_bigquery(bucket_name: str, file_path: str, project_id: 
 
 def transformar_checkin(df: pd.DataFrame) -> pd.DataFrame:
     """
-    Transforma el DataFrame de `checkin.json` separando el campo `date` en filas individuales.
+    Transforma el DataFrame de `checkin.json` separando el campo `date` en filas individuales
+    manteniendo el formato completo de fecha.
 
     Args:
         df (pd.DataFrame): DataFrame original de `checkin.json`.
@@ -124,7 +125,15 @@ def transformar_checkin(df: pd.DataFrame) -> pd.DataFrame:
     Returns:
         pd.DataFrame: DataFrame transformado con fechas separadas en filas individuales.
     """
-    return df.assign(date=df['date'].str.split(', ')).explode('date').reset_index(drop=True)
+    # Separar el campo 'date' en múltiples fechas sin romper el formato
+    df = df.assign(date=df['date'].str.split(', ')).explode('date').reset_index(drop=True)
+
+    # Convertir el campo 'date' en formato datetime
+    df['date'] = pd.to_datetime(df['date'], errors='coerce', format='%Y-%m-%d %H:%M:%S')
+
+    # Filtrar filas donde 'date' no es nulo (si alguna fecha no se pudo convertir, se eliminará)
+    df = df.dropna(subset=['date'])
+    return df
 
 
 # Diccionario de transformaciones basado en el nombre del archivo
