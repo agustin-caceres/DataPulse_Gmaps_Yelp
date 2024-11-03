@@ -123,14 +123,17 @@ def cargar_archivos_en_tabla_temporal_v_premium(bucket_name: str, archivos, proj
     """
     Carga múltiples archivos (JSON, Parquet, PKL) desde Google Cloud Storage a la tabla temporal en BigQuery.
     """
-    # Verificar y convertir `archivos` a una lista si es una cadena JSON
-    if isinstance(archivos, str):
-        archivos = json.loads(archivos)  # Intentar convertir a lista si es un JSON en forma de string
-
+    # Imprimir el tipo y contenido de `archivos`
     print(f"Tipo de 'archivos' recibido: {type(archivos)}")
     print(f"Contenido de 'archivos' recibido: {archivos}")
 
-    # Verificación inicial de la lista de archivos
+    # Verificación inicial de `archivos` y conversión si es necesario
+    if isinstance(archivos, str):
+        try:
+            archivos = json.loads(archivos)  # Intentar convertir a lista si es un JSON en forma de string
+        except json.JSONDecodeError as e:
+            raise ValueError("Error al decodificar 'archivos'. Asegúrate de que sea una lista válida.") from e
+
     if not isinstance(archivos, list) or not archivos:
         raise ValueError("La lista de archivos no es válida o está vacía.")
 
