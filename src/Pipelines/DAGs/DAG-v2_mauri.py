@@ -72,6 +72,7 @@ with DAG(
             'project_id': project_id,
             'dataset': dataset
         },
+        provide_context=True,
     )
 
     # Tarea 2: Crear la tabla temporal en BigQuery de todo el Json.
@@ -99,17 +100,6 @@ with DAG(
         },
         on_failure_callback=lambda context: print(f"Error en la tarea: {context['task_instance'].task_id}"),
     )
-
-    # Agregar una tarea de depuración
-    def log_archivos(**kwargs):
-        archivos = kwargs['ti'].xcom_pull(task_ids='registrar_archivos_procesados')
-        print(f"Archivos obtenidos: {archivos}")  # Agrega este log
-
-    log_archivos_task = PythonOperator(
-        task_id='log_archivos_obtenidos',
-        python_callable=log_archivos,
-        provide_context=True,
-    )
     
     # Tarea 4: Registrar el nombre de los archivos cargados en BigQuery, para control.
     registrar_archivo_en_bq = PythonOperator(
@@ -125,6 +115,6 @@ with DAG(
     fin = DummyOperator(task_id='fin')
 
     # Estructura del flujo de tareas
-    inicio >> registrar_archivos >> crear_tabla_temp >> cargar_archivo_temp_task >> log_archivos_task >> registrar_archivo_en_bq >> fin
+    inicio >> registrar_archivos >> crear_tabla_temp >> cargar_archivo_temp_task >>  registrar_archivo_en_bq >> fin
 
     

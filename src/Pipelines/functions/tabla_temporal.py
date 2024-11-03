@@ -3,6 +3,7 @@ from google.cloud import storage
 import json
 import pandas as pd
 from io import BytesIO
+import logging
 
 ###########################################################################
 
@@ -43,6 +44,18 @@ def cargar_archivos_en_tabla_temporal(bucket_name: str, archivos: list, project_
     client = bigquery.Client()
     storage_client = storage.Client()
 
+    # Asegúrate de que archivos es una lista
+    if isinstance(archivos, str):
+        # Si archivos es una cadena, intenta convertirlo a una lista
+        try:
+            archivos = eval(archivos)  # Nota: eval puede ser peligroso; considera alternativas más seguras.
+        except Exception as e:
+            logging.error(f"Error al evaluar la cadena de archivos: {e}")
+            raise ValueError("La lista de archivos no se pudo convertir de la cadena.")
+        
+    # Verificación del valor de archivos
+    print(f"Contenido de 'archivos': {archivos}")
+    
     if not archivos or not isinstance(archivos, list):
         raise ValueError("La lista de archivos está vacía o no es válida.")
 
