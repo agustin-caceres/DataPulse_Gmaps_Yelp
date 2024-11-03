@@ -1,6 +1,5 @@
 from google.cloud import bigquery, storage  
 from datetime import datetime
-import logging
 
 def obtener_archivos_nuevos(bucket_name: str, prefix: str, project_id: str, dataset: str) -> list:
     """
@@ -34,6 +33,7 @@ def obtener_archivos_nuevos(bucket_name: str, prefix: str, project_id: str, data
     except Exception as e:
         print(f"Error en obtener_archivos_nuevos: {e}")
         return []
+
 
 def registrar_archivos_en_bq(project_id: str, dataset: str, archivos_nuevos: list) -> None:
     """

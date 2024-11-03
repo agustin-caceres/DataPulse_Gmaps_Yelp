@@ -7,8 +7,7 @@ from airflow.utils.dates import days_ago
 from google.cloud import bigquery
 
 # Funciones
-from functions.registrar_archivo import registrar_archivos_procesados
-from functions.v2_registrar_archivo import registrar_archivos_en_bq
+from functions.v2_registrar_archivo import obtener_archivos_nuevos, registrar_archivos_en_bq
 from functions.tabla_temporal import crear_tabla_temporal, cargar_archivos_en_tabla_temporal
 
 ######################################################################################
@@ -66,14 +65,13 @@ with DAG(
     # Tarea 1: Registrar archivos en una tabla que controlara cuales ya fueron procesados y cuales no.
     registrar_archivos = PythonOperator(
         task_id='registrar_archivos_procesados',
-        python_callable=registrar_archivos_procesados,
+        python_callable=obtener_archivos_nuevos,
         op_kwargs={
             'bucket_name': bucket_name,
             'prefix': prefix,
             'project_id': project_id,
             'dataset': dataset
         },
-        provide_context=True,
     )
 
     # Tarea 2: Crear la tabla temporal en BigQuery de todo el Json.
@@ -86,7 +84,6 @@ with DAG(
             'temp_table': temp_table_general,
             'schema': temp_table_general_schema 
         },
-        provide_context=True,
     )
 
    # Tarea 3: Cargar los archivos JSON en la tabla temporal
@@ -95,12 +92,23 @@ with DAG(
         python_callable=cargar_archivos_en_tabla_temporal,
         op_kwargs={
             'bucket_name': bucket_name,
-            'archivos': "{{ task_instance.xcom_pull(task_ids='registrar_archivos_procesados') }}",  # Cambiado a task_instance
+            'archivos': "{{ task_instance.xcom_pull(task_ids='registrar_archivos_procesados') }}",
             'project_id': project_id,
             'dataset': dataset,
             'temp_table': temp_table_general,
         },
         on_failure_callback=lambda context: print(f"Error en la tarea: {context['task_instance'].task_id}"),
+    )
+
+    # Agregar una tarea de depuración
+    def log_archivos(**kwargs):
+        archivos = kwargs['ti'].xcom_pull(task_ids='registrar_archivos_procesados')
+        print(f"Archivos obtenidos: {archivos}")  # Agrega este log
+
+    log_archivos_task = PythonOperator(
+        task_id='log_archivos_obtenidos',
+        python_callable=log_archivos,
+        provide_context=True,
     )
     
     # Tarea 4: Registrar el nombre de los archivos cargados en BigQuery, para control.
@@ -117,4 +125,6 @@ with DAG(
     fin = DummyOperator(task_id='fin')
 
     # Estructura del flujo de tareas
-    inicio >> registrar_archivos >> crear_tabla_temp >> cargar_archivo_temp_task >> registrar_archivo_en_bq >> fin
+    inicio >> registrar_archivos >> crear_tabla_temp >> cargar_archivo_temp_task >> log_archivos_task >> registrar_archivo_en_bq >> fin
+
+    
