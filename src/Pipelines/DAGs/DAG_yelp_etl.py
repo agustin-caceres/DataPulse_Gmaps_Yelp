@@ -7,8 +7,8 @@ from airflow.utils.dates import days_ago
 from google.cloud import bigquery
 
 # Funciones
-from functions.v2_registrar_archivo import obtener_archivos_nuevos_version_premium, registrar_archivos_en_bq
 from functions.tabla_temporal import crear_tabla_temporal, cargar_archivos_en_tabla_temporal_v_premium
+from functions.v2_registrar_archivo import obtener_archivos_nuevos_y_registrar
 
 ######################################################################################
 # PARÁMETROS PARA DATOS DE YELP
@@ -22,6 +22,7 @@ GBQ_CONNECTION_ID  = 'bigquery_default'
 bucket_name        = 'datos-crudos'
 prefix             = 'Yelp/'
 temp_table_general = 'checkin_temp'
+temp_table_archivos = 'archivos_nuevos'
 
 default_args = {
     'owner': owner,
@@ -33,7 +34,7 @@ default_args = {
 # Esquema de la tabla temporal para checkin.json de Yelp
 temp_table_general_schema = [
     bigquery.SchemaField("business_id", "STRING", mode="REQUIRED"),
-    bigquery.SchemaField("date", "STRING", mode="REPEATED"),  # Lista de fechas como strings
+    bigquery.SchemaField("date", "STRING", mode="REPEATED"),
 ]
 
 #######################################################################################
@@ -49,19 +50,20 @@ with DAG(
 
     inicio = DummyOperator(task_id='inicio')
 
-    # Tarea 1: Registrar archivos en una tabla que controla cuáles ya fueron procesados.
+    # Tarea 1: Registrar archivos nuevos en BigQuery
     registrar_archivos = PythonOperator(
-        task_id='registrar_archivos_procesados',
-        python_callable=obtener_archivos_nuevos_version_premium,
+        task_id='registrar_archivos_nuevos',
+        python_callable=obtener_archivos_nuevos_y_registrar,
         op_kwargs={
             'bucket_name': bucket_name,
             'prefix': prefix,
             'project_id': project_id,
-            'dataset': dataset
+            'dataset': dataset,
+            'temp_table': temp_table_archivos
         },
     )
 
-    # Tarea 2: Crear la tabla temporal en BigQuery para checkin.json
+    # Tarea 2: Crear la tabla temporal en BigQuery
     crear_tabla_temp = PythonOperator(
         task_id='crear_tabla_temporal',
         python_callable=crear_tabla_temporal,
@@ -69,35 +71,29 @@ with DAG(
             'project_id': project_id,
             'dataset': dataset,
             'temp_table': temp_table_general,
-            'schema': temp_table_general_schema 
+            'schema': temp_table_general_schema
         },
     )
 
-    # Tarea 3: Cargar el archivo en la tabla temporal
+    # Tarea 3: Cargar los archivos en la tabla temporal
+    def cargar_archivos_task(**kwargs):
+        client = bigquery.Client()
+        table_id = f"{project_id}.{dataset}.{temp_table_archivos}"
+        
+        # Consulta para obtener archivos registrados como nuevos en BigQuery
+        query = f"SELECT nombre_archivo FROM `{table_id}`"
+        archivos = [row.nombre_archivo for row in client.query(query)]
+        
+        # Llamada a la función de carga con la lista de archivos obtenida
+        cargar_archivos_en_tabla_temporal_v_premium(bucket_name=bucket_name, archivos=archivos,
+                                                    project_id=project_id, dataset=dataset, temp_table=temp_table_general)
+
     cargar_archivo_temp_task = PythonOperator(
         task_id='cargar_archivo_en_tabla_temporal',
-        python_callable=cargar_archivos_en_tabla_temporal_v_premium,
-        op_kwargs={
-            'bucket_name': bucket_name,
-            'archivos': "{{ task_instance.xcom_pull(task_ids='registrar_archivos_procesados') }}",
-            'project_id': project_id,
-            'dataset': dataset,
-            'temp_table': temp_table_general
-        },
-    )
-    
-    # Tarea 4: Registrar el nombre de los archivos cargados en BigQuery para control.
-    registrar_archivo_en_bq = PythonOperator(
-        task_id='registrar_archivo_en_bq',
-        python_callable=registrar_archivos_en_bq,
-        op_kwargs={
-            'project_id': project_id,
-            'dataset': dataset,
-            'archivos_nuevos': "{{ ti.xcom_pull(task_ids='registrar_archivos_procesados') }}"
-        },
+        python_callable=cargar_archivos_task,
     )
 
     fin = DummyOperator(task_id='fin')
 
     # Estructura del flujo de tareas
-    inicio >> registrar_archivos >> crear_tabla_temp >> cargar_archivo_temp_task >> registrar_archivo_en_bq >> fin
+    inicio >> registrar_archivos >> crear_tabla_temp >> cargar_archivo_temp_task >> fin

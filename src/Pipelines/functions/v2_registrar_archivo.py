@@ -91,27 +91,27 @@ def registrar_archivos_en_bq(project_id: str, dataset: str, archivos_nuevos: lis
 
 
 
-def obtener_archivos_nuevos_version_premium(bucket_name: str, prefix: str, project_id: str, dataset: str) -> list:
+def obtener_archivos_nuevos_y_registrar(bucket_name: str, prefix: str, project_id: str, dataset: str, temp_table: str) -> None:
     """
-    Detecta archivos nuevos en un bucket de Google Cloud Storage comparando con los archivos ya registrados en BigQuery.
+    Detecta archivos nuevos en un bucket de Google Cloud Storage y los registra en una tabla temporal en BigQuery.
     """
     client = bigquery.Client()
     storage_client = storage.Client()
-    table_id = f"{project_id}.{dataset}.archivos_procesados"
-
-    # Consulta para obtener la lista de archivos ya procesados en BigQuery
-    print("Consultando archivos procesados en BigQuery...")
+    table_id = f"{project_id}.{dataset}.{temp_table}"
+    
+    # Obtener lista de archivos procesados desde la tabla en BigQuery
     query = f"SELECT nombre_archivo FROM `{table_id}`"
     query_job = client.query(query)
     archivos_procesados = {row.nombre_archivo for row in query_job}
 
-    # Lista de archivos actuales en el bucket de Cloud Storage con el prefijo especificado
-    print(f"Listando archivos en el bucket {bucket_name} con prefijo '{prefix}'...")
+    # Obtener lista de archivos actuales en el bucket de Cloud Storage
     blobs = storage_client.list_blobs(bucket_name, prefix=prefix)
-    archivos = [blob.name for blob in blobs if not blob.name.endswith('/')]  # Filtrar directorios
+    archivos_nuevos = [blob.name for blob in blobs if blob.name not in archivos_procesados and not blob.name.endswith('/')]
 
-    # Filtra los archivos que aún no han sido procesados
-    archivos_nuevos = [archivo for archivo in archivos if archivo not in archivos_procesados]
-
-    print(f"Archivos nuevos detectados: {archivos_nuevos}")
-    return archivos_nuevos
+    # Registrar archivos nuevos en la tabla temporal
+    if archivos_nuevos:
+        rows_to_insert = [{"nombre_archivo": archivo, "fecha_carga": datetime.now().isoformat()} for archivo in archivos_nuevos]
+        client.insert_rows_json(table_id, rows_to_insert)
+        print(f"Archivos nuevos registrados exitosamente: {archivos_nuevos}")
+    else:
+        print("No se encontraron archivos nuevos para registrar.")
