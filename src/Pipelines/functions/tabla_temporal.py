@@ -122,23 +122,21 @@ def mover_datos_y_borrar_temp(project_id: str, dataset: str, temp_table: str, fi
 ###########################################################################
 
 
-def cargar_archivos_en_tabla_temporal_v_premium(bucket_name: str, archivos: list, project_id: str, dataset: str, temp_table: str) -> None:
+def cargar_archivos_en_tabla_temporal_v_premium(bucket_name: str, archivos, project_id: str, dataset: str, temp_table: str) -> None:
     """
     Carga múltiples archivos (JSON, Parquet, PKL) desde Google Cloud Storage a la tabla temporal en BigQuery.
     """
-    # Imprimir el tipo y contenido completo de `archivos`
+    # Verificar y convertir `archivos` a una lista si es una cadena JSON
+    if isinstance(archivos, str):
+        archivos = json.loads(archivos)  # Intentar convertir a lista si es un JSON en forma de string
+
     print(f"Tipo de 'archivos' recibido: {type(archivos)}")
     print(f"Contenido de 'archivos' recibido: {archivos}")
 
     # Verificación inicial de la lista de archivos
-    if not isinstance(archivos, list):
-        print("Error: 'archivos' no es una lista válida.")
-        raise ValueError("La lista de archivos no es válida.")
-    
-    if len(archivos) == 0 or all(archivo.strip() == "" for archivo in archivos):
-        print("Error: La lista de archivos está vacía o contiene entradas inválidas.")
-        raise ValueError("La lista de archivos está vacía o contiene entradas inválidas.")
-    
+    if not isinstance(archivos, list) or not archivos:
+        raise ValueError("La lista de archivos no es válida o está vacía.")
+
     client = bigquery.Client()
     storage_client = storage.Client()
     table_id = f"{project_id}.{dataset}.{temp_table}"

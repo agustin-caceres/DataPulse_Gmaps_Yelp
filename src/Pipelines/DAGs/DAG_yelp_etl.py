@@ -49,7 +49,7 @@ with DAG(
 
     inicio = DummyOperator(task_id='inicio')
 
-    # Tarea 1: Registrar archivos en una tabla que controlara cuales ya fueron procesados y cuales no.
+    # Tarea 1: Registrar archivos en una tabla que controla cuáles ya fueron procesados.
     registrar_archivos = PythonOperator(
         task_id='registrar_archivos_procesados',
         python_callable=obtener_archivos_nuevos_version_premium,
@@ -59,7 +59,6 @@ with DAG(
             'project_id': project_id,
             'dataset': dataset
         },
-        provide_context=True,
     )
 
     # Tarea 2: Crear la tabla temporal en BigQuery para checkin.json
@@ -72,7 +71,6 @@ with DAG(
             'temp_table': temp_table_general,
             'schema': temp_table_general_schema 
         },
-        provide_context=True,
     )
 
     # Tarea 3: Cargar el archivo en la tabla temporal
@@ -81,12 +79,11 @@ with DAG(
         python_callable=cargar_archivos_en_tabla_temporal_v_premium,
         op_kwargs={
             'bucket_name': bucket_name,
-            'archivos': '{{ task_instance.xcom_pull(task_ids="registrar_archivos_procesados") }}',
+            'archivos': "{{ task_instance.xcom_pull(task_ids='registrar_archivos_procesados') }}",
             'project_id': project_id,
             'dataset': dataset,
             'temp_table': temp_table_general
         },
-        on_failure_callback=lambda context: print(f"Error en la tarea: {context['task_instance'].task_id}"),
     )
     
     # Tarea 4: Registrar el nombre de los archivos cargados en BigQuery para control.
