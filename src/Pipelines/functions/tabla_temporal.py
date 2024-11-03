@@ -35,6 +35,24 @@ def crear_tabla_temporal(project_id: str, dataset: str, temp_table: str, schema:
 
 ###########################################################################
 
+def transformar_horas(data):
+    """
+    Transforma la estructura del campo 'hours' en el formato requerido por BigQuery.
+
+    Args:
+        data (dict): Un diccionario que representa un registro.
+
+    Returns:
+        dict: Un diccionario modificado con el campo 'hours' en el formato correcto.
+    """
+    # Verifica si 'hours' existe y es del tipo adecuado
+    if 'hours' in data and isinstance(data['hours'], list):
+        # Transforma la lista de listas en la lista de registros
+        data['hours'] = [
+            {"day": hour[0], "time": hour[1]} for hour in data['hours']
+        ]
+    return data
+
 def cargar_json_a_bigquery(bucket_name: str, archivo: str, project_id: str, dataset: str, temp_table: str, schema: list) -> None:
     """
     Carga un archivo JSON desde Google Cloud Storage a una tabla en BigQuery.
@@ -48,26 +66,41 @@ def cargar_json_a_bigquery(bucket_name: str, archivo: str, project_id: str, data
         schema (list): Esquema de la tabla de BigQuery.
     """
 
-    # Inicializa el cliente de BigQuery
-    client = bigquery.Client()
+    # Inicializa el cliente de BigQuery y de Google Cloud Storage
+    bigquery_client = bigquery.Client()
+    storage_client = storage.Client()
 
-    # Construye la URI del archivo en Google Cloud Storage
-    uri = f"gs://{bucket_name}/{archivo}"
+    # Lee el archivo JSON desde Google Cloud Storage
+    bucket = storage_client.bucket(bucket_name)
+    blob = bucket.blob(archivo)
+    json_data = blob.download_as_text()
+
+    # Carga y transforma el JSON
+    data_list = json.loads(json_data)
+    transformed_data = [transformar_horas(data) for data in data_list]
 
     # Crea la tabla si no existe
     table_id = f"{project_id}.{dataset}.{temp_table}"
     table = bigquery.Table(table_id, schema=schema)
-    table = client.create_table(table, exists_ok=True)  # Si existe, no hace nada
+    table = bigquery_client.create_table(table, exists_ok=True)  # Si existe, no hace nada
 
-    # Carga el archivo JSON a la tabla
+    # Carga el archivo JSON transformado a la tabla
     job_config = bigquery.LoadJobConfig(
         source_format=bigquery.SourceFormat.NEWLINE_DELIMITED_JSON,
         write_disposition=bigquery.WriteDisposition.WRITE_APPEND  # Cambia según lo que necesites
     )
 
-    # Cargar el archivo JSON
-    load_job = client.load_table_from_uri(uri, table_id, job_config=job_config)
-    
+    # Convierte la lista de diccionarios a un formato que BigQuery puede cargar
+    temp_blob = f"temp_{archivo}"
+    temp_blob_obj = bucket.blob(temp_blob)
+    temp_blob_obj.upload_from_string("\n".join(json.dumps(record) for record in transformed_data))
+
+    # Construye la URI del archivo temporal en Google Cloud Storage
+    uri = f"gs://{bucket_name}/{temp_blob}"
+
+    # Carga el archivo JSON transformado
+    load_job = bigquery_client.load_table_from_uri(uri, table_id, job_config=job_config)
+
     # Espera a que se complete el trabajo de carga
     load_job.result()  # Esto bloqueará hasta que el trabajo se complete
 
@@ -76,6 +109,10 @@ def cargar_json_a_bigquery(bucket_name: str, archivo: str, project_id: str, data
 
     print(f"Archivo {archivo} cargado exitosamente en {table_id}.")
 
+    # Limpia el blob temporal después de la carga
+    temp_blob_obj.delete()
+    
+    
 ###########################################################################
 
 def mover_datos_y_borrar_temp(project_id: str, dataset: str, temp_table: str, final_table: str) -> str:
