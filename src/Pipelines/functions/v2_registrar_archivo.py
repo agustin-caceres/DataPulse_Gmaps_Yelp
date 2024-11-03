@@ -1,5 +1,6 @@
 from google.cloud import bigquery, storage  
 from datetime import datetime
+import logging
 
 def obtener_archivos_nuevos(bucket_name: str, prefix: str, project_id: str, dataset: str) -> list:
     """
@@ -40,7 +41,8 @@ def obtener_archivos_nuevos(bucket_name: str, prefix: str, project_id: str, data
 
     # Filtra los archivos que aún no han sido procesados
     archivos_nuevos = [archivo for archivo in archivos if archivo not in archivos_procesados]
-
+    logging.info(f"Archivos nuevos a procesar: {archivos_nuevos}")
+    
     return archivos_nuevos
 
 def registrar_archivos_en_bq(project_id: str, dataset: str, archivos_nuevos: list) -> None:
@@ -70,3 +72,4 @@ def registrar_archivos_en_bq(project_id: str, dataset: str, archivos_nuevos: lis
             print(f"Archivos nuevos registrados exitosamente: {archivos_nuevos}")
     else:
         print("No hay archivos nuevos para registrar en BigQuery.")
+        
