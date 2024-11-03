@@ -2,6 +2,7 @@ from google.cloud import bigquery
 from google.cloud import storage
 import json
 import pandas as pd
+from io import BytesIO
 
 ###########################################################################
 
@@ -115,15 +116,15 @@ def mover_datos_y_borrar_temp(project_id: str, dataset: str, temp_table: str, fi
 
 ###########################################################################
 
-
 def cargar_archivos_en_tabla_temporal_v_premium(bucket_name: str, archivos: list, project_id: str, dataset: str, temp_table: str) -> None:
     """
     Carga múltiples archivos (JSON, Parquet, PKL) desde Google Cloud Storage a la tabla temporal en BigQuery.
     """
-    print(f"Archivos recibidos: {archivos}")  # Log de archivos recibidos
+    print(f"Archivos recibidos para cargar: {archivos}")  # Log de archivos recibidos
 
     # Verificación inicial de la lista de archivos
     if not isinstance(archivos, list) or not archivos:
+        print("Error: La lista de archivos está vacía o no es válida.")
         raise ValueError("La lista de archivos está vacía o no es válida.")
     
     client = bigquery.Client()
@@ -132,12 +133,17 @@ def cargar_archivos_en_tabla_temporal_v_premium(bucket_name: str, archivos: list
 
     for archivo in archivos:
         try:
+            # Verificar que el archivo no sea solo el prefijo del directorio
+            if archivo.endswith('/'):
+                print(f"Advertencia: {archivo} parece ser un directorio y no un archivo. Saltando...")
+                continue
+
             # Identificar el formato del archivo
             blob = storage_client.bucket(bucket_name).blob(archivo)
             print(f"Leyendo archivo {archivo} desde GCS...")
 
+            # Procesar archivos según el formato
             if archivo.endswith(".json"):
-                # Procesar JSON
                 contenido = blob.download_as_text()
                 contenido_json = json.loads(contenido)
 
@@ -148,19 +154,18 @@ def cargar_archivos_en_tabla_temporal_v_premium(bucket_name: str, archivos: list
                 datos = contenido_json
 
             elif archivo.endswith(".parquet"):
-                # Procesar Parquet
                 contenido = blob.download_as_bytes()
-                df = pd.read_parquet(pd.io.common.BytesIO(contenido))
-                datos = df.to_dict(orient="records")  # Convertir DataFrame en lista de diccionarios
+                df = pd.read_parquet(BytesIO(contenido))
+                datos = df.to_dict(orient="records")
 
             elif archivo.endswith(".pkl"):
-                # Procesar PKL
                 contenido = blob.download_as_bytes()
-                df = pd.read_pickle(pd.io.common.BytesIO(contenido))
-                datos = df.to_dict(orient="records")  # Convertir DataFrame en lista de diccionarios
+                df = pd.read_pickle(BytesIO(contenido))
+                datos = df.to_dict(orient="records")
 
             else:
-                raise ValueError(f"Formato de archivo no soportado: {archivo}")
+                print(f"Advertencia: Formato de archivo no soportado ({archivo}). Saltando...")
+                continue
 
             # Insertar datos en la tabla temporal
             print(f"Cargando datos del archivo {archivo} en la tabla temporal {temp_table}...")
