@@ -1,12 +1,10 @@
-from google.cloud import bigquery
-from google.cloud import storage  
+from google.cloud import bigquery, storage  
 from datetime import datetime
 
-def registrar_archivos_procesados(bucket_name: str, prefix: str, project_id: str, dataset: str) -> list:
+def obtener_archivos_nuevos(bucket_name: str, prefix: str, project_id: str, dataset: str) -> list:
     """
-    Detecta archivos nuevos en un bucket de Google Cloud Storage y registra los archivos procesados en BigQuery.
-    Esta función evita reprocesar archivos ya registrados en la tabla de BigQuery.
-
+    Detecta archivos nuevos en un bucket de Google Cloud Storage comparando con los archivos ya registrados en BigQuery.
+    
     Parámetros:
     -----------
     bucket_name : str
@@ -23,11 +21,9 @@ def registrar_archivos_procesados(bucket_name: str, prefix: str, project_id: str
     list
         Lista con los nombres de los archivos nuevos que no se han procesado previamente.
     """
-
-    # Inicializa el cliente de BigQuery
-    client = bigquery.Client()
     
-    # Inicializa el cliente de Cloud Storage
+    # Inicializa el cliente de BigQuery y de Cloud Storage
+    client = bigquery.Client()
     storage_client = storage.Client() 
     
     # Define el ID de la tabla de BigQuery en formato "project.dataset.table"
@@ -45,16 +41,32 @@ def registrar_archivos_procesados(bucket_name: str, prefix: str, project_id: str
     # Filtra los archivos que aún no han sido procesados
     archivos_nuevos = [archivo for archivo in archivos if archivo not in archivos_procesados]
 
-    # Registra todos los archivos nuevos en BigQuery
+    return archivos_nuevos
+
+def registrar_archivos_en_bq(project_id: str, dataset: str, archivos_nuevos: list) -> None:
+    """
+    Registra archivos nuevos en la tabla 'archivos_procesados' de BigQuery.
+    
+    Parámetros:
+    -----------
+    project_id : str
+        ID del proyecto en Google Cloud Platform donde se encuentra la tabla de BigQuery.
+    dataset : str
+        Nombre del dataset en BigQuery donde se encuentra la tabla "archivos_procesados".
+    archivos_nuevos : list
+        Lista de nombres de archivos nuevos a registrar.
+    """
+    
     if archivos_nuevos:
+        client = bigquery.Client()
+        table_id = f"{project_id}.{dataset}.archivos_procesados"
+        
         rows_to_insert = [{"nombre_archivo": archivo, "fecha_carga": datetime.now().isoformat()} for archivo in archivos_nuevos]
         errors = client.insert_rows_json(table_id, rows_to_insert)
+        
         if errors:
             print(f"Error al insertar los archivos procesados: {errors}")
         else:
             print(f"Archivos nuevos registrados exitosamente: {archivos_nuevos}")
     else:
-        print("No se encontraron archivos nuevos para procesar.")
-
-    # Retorna la lista de archivos nuevos detectados
-    return archivos_nuevos
+        print("No hay archivos nuevos para registrar en BigQuery.")

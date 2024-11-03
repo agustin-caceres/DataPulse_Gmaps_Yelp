@@ -5,9 +5,10 @@ from airflow.operators.dummy import DummyOperator
 from datetime import timedelta
 from airflow.utils.dates import days_ago
 from google.cloud import bigquery
+from ast import literal_eval
 
 # Funciones
-from functions.v2_registrar_archivo import registrar_archivos_procesados
+from functions.v2_registrar_archivo import obtener_archivos_nuevos, registrar_archivos_en_bq
 from functions.tabla_temporal import crear_tabla_temporal, cargar_archivos_en_tabla_temporal
 
 ######################################################################################
@@ -65,7 +66,7 @@ with DAG(
     # Tarea 1: Registrar archivos en una tabla que controlara cuales ya fueron procesados y cuales no.
     registrar_archivos = PythonOperator(
         task_id='registrar_archivos_procesados',
-        python_callable=registrar_archivos_procesados,
+        python_callable=obtener_archivos_nuevos,
         op_kwargs={
             'bucket_name': bucket_name,
             'prefix': prefix,
@@ -90,20 +91,30 @@ with DAG(
 
     # Tarea 3: Cargar el archivo JSON en la tabla temporal
     cargar_archivo_temp_task = PythonOperator(
-        task_id='cargar_archivo_en_tabla_temporal',
-        python_callable=cargar_archivos_en_tabla_temporal,
+    task_id='cargar_archivo_en_tabla_temporal',
+    python_callable=cargar_archivos_en_tabla_temporal,
+    op_kwargs={
+        'bucket_name': bucket_name,
+        'archivos': literal_eval("{{ ti.xcom_pull(task_ids='registrar_archivos_procesados') }}"),
+        'project_id': project_id,
+        'dataset': dataset,
+        'temp_table': temp_table_general
+    },
+    on_failure_callback=lambda context: print(f"Error en la tarea: {context['task_instance'].task_id}"),
+)
+
+    # Tarea 4: Registrar el nombre de los archivos cargados en BigQuery, para control.
+    registrar_archivo_en_bq = PythonOperator(
+        task_id='registrar_archivo_en_bq',
+        python_callable=registrar_archivos_en_bq,
         op_kwargs={
-            'bucket_name': bucket_name,
-            'archivos': "{{ ti.xcom_pull(task_ids='registrar_archivos_procesados') }}",
             'project_id': project_id,
             'dataset': dataset,
-            'temp_table': temp_table_general
+            'archivos_nuevos': "{{ ti.xcom_pull(task_ids='registrar_archivos_procesados') }}"
         },
-        on_failure_callback=lambda context: print(f"Error en la tarea: {context['task_instance'].task_id}"),
-        do_xcom_push=True
     )
 
     fin = DummyOperator(task_id='fin')
 
     # Estructura del flujo de tareas
-    inicio >> registrar_archivos >> crear_tabla_temp >> cargar_archivo_temp_task >> fin
+    inicio >> registrar_archivos >> crear_tabla_temp >> cargar_archivo_temp_task >> registrar_archivo_en_bq >> fin

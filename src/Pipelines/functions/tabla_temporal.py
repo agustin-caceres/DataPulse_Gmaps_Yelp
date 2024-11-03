@@ -37,6 +37,9 @@ def cargar_archivos_en_tabla_temporal(bucket_name: str, archivos: list, project_
     Carga múltiples archivos JSON desde Google Cloud Storage a la tabla temporal en BigQuery.
     """
     
+    if not archivos:
+        raise ValueError("La lista de archivos está vacía o no es válida.")
+    
     client = bigquery.Client()
     storage_client = storage.Client()
 
