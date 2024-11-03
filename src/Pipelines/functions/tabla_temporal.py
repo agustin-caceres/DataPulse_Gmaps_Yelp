@@ -40,7 +40,7 @@ def cargar_archivos_en_tabla_temporal(bucket_name: str, archivos: list, project_
     
     Args:
         bucket_name (str): Nombre del bucket de Google Cloud Storage.
-        archivos (list): Lista de nombres de archivos JSON.
+        archivos (list): Lista de nombres de archivos.
         project_id (str): ID del proyecto de Google Cloud.
         dataset (str): Nombre del dataset de BigQuery.
         temp_table (str): Nombre de la tabla temporal en BigQuery.
@@ -65,12 +65,15 @@ def cargar_archivos_en_tabla_temporal(bucket_name: str, archivos: list, project_
 
             # Inserta los datos en la tabla temporal
             table_id = f"{project_id}.{dataset}.{temp_table}"
-            errors = client.insert_rows_from_dataframe(table_id, df)
+            job = client.load_table_from_dataframe(df, table_id)
 
-            if errors:
-                raise RuntimeError(f"Error al insertar datos del archivo {archivo}: {errors}")
-        
-        except pd.errors.JSONDecodeError as e:
+            # Espera a que se complete el trabajo de carga
+            job.result()  # Esto bloqueará hasta que el trabajo se complete
+
+            if job.error_result:
+                raise RuntimeError(f"Error al insertar datos del archivo {archivo}: {job.error_result}")
+
+        except json.JSONDecodeError as e:
             print(f"Error de decodificación JSON en el archivo {archivo}: {e}")
         except Exception as e:
             print(f"Error al procesar el archivo {archivo}: {e}")
