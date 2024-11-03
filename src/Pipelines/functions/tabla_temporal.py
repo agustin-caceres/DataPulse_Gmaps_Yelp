@@ -1,6 +1,8 @@
 from google.cloud import bigquery
 from google.cloud import storage
 import json
+import pandas as pd
+from io import BytesIO
 
 ###########################################################################
 
@@ -110,3 +112,69 @@ def mover_datos_y_borrar_temp(project_id: str, dataset: str, temp_table: str, fi
     table_id = f"{project_id}.{dataset}.{temp_table}"
     client.delete_table(table_id, not_found_ok=True)
     return f"Datos movidos a {final_table} y tabla temporal {temp_table} eliminada."
+
+
+###########################################################################
+
+def cargar_archivos_en_tabla_temporal_v_premium(bucket_name: str, archivos: list, project_id: str, dataset: str, temp_table: str) -> None:
+    """
+    Carga múltiples archivos (JSON, Parquet, PKL) desde Google Cloud Storage a la tabla temporal en BigQuery.
+    """
+    print(f"Archivos recibidos para cargar: {archivos}")  # Log de archivos recibidos
+
+    # Verificación inicial de la lista de archivos
+    if not isinstance(archivos, list) or not archivos:
+        print("Error: La lista de archivos está vacía o no es válida.")
+        raise ValueError("La lista de archivos está vacía o no es válida.")
+    
+    client = bigquery.Client()
+    storage_client = storage.Client()
+    table_id = f"{project_id}.{dataset}.{temp_table}"
+
+    for archivo in archivos:
+        try:
+            # Verificar que el archivo no sea solo el prefijo del directorio
+            if archivo.endswith('/'):
+                print(f"Advertencia: {archivo} parece ser un directorio y no un archivo. Saltando...")
+                continue
+
+            # Identificar el formato del archivo
+            blob = storage_client.bucket(bucket_name).blob(archivo)
+            print(f"Leyendo archivo {archivo} desde GCS...")
+
+            # Procesar archivos según el formato
+            if archivo.endswith(".json"):
+                contenido = blob.download_as_text()
+                contenido_json = json.loads(contenido)
+
+                # Asegura que el contenido JSON es una lista de objetos
+                if not isinstance(contenido_json, list):
+                    raise ValueError(f"El archivo {archivo} no contiene un array de objetos JSON.")
+                
+                datos = contenido_json
+
+            elif archivo.endswith(".parquet"):
+                contenido = blob.download_as_bytes()
+                df = pd.read_parquet(BytesIO(contenido))
+                datos = df.to_dict(orient="records")
+
+            elif archivo.endswith(".pkl"):
+                contenido = blob.download_as_bytes()
+                df = pd.read_pickle(BytesIO(contenido))
+                datos = df.to_dict(orient="records")
+
+            else:
+                print(f"Advertencia: Formato de archivo no soportado ({archivo}). Saltando...")
+                continue
+
+            # Insertar datos en la tabla temporal
+            print(f"Cargando datos del archivo {archivo} en la tabla temporal {temp_table}...")
+            errors = client.insert_rows_json(table_id, datos)
+            if errors:
+                raise RuntimeError(f"Error al insertar datos del archivo {archivo}: {errors}")
+            
+            print(f"Datos del archivo {archivo} cargados exitosamente en la tabla temporal.")
+
+        except Exception as e:
+            print(f"Error al procesar el archivo {archivo}: {e}")
+            raise  # Relanzar el error para que Airflow lo maneje
