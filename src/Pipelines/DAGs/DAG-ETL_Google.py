@@ -2,17 +2,17 @@
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 from airflow.providers.google.cloud.transfers.gcs_to_bigquery import GCSToBigQueryOperator
+from airflow.providers.google.cloud.operators.gcs import GCSListObjectsOperator
 from airflow.operators.dummy import DummyOperator
 from datetime import timedelta
 from airflow.utils.dates import days_ago
-from google.cloud import bigquery
 
 # Funciones
-#from functions.funcion import alguna funcion que use
+from functions.v2_desanidar_misc import procesar_archivo
 
-######################################################################################
-# PARÁMETROS
-######################################################################################
+###################################################################################### 
+# PARÁMETROS 
+###################################################################################### 
 
 nameDAG_base         = 'ETL_Storage_to_BQ'             # Nombre del DAG en Airflow.
 project_id           = 'neon-gist-439401-k8'           # ID del proyecto en Cloud.
@@ -31,7 +31,7 @@ default_args = {
     'retry_delay': timedelta(minutes=2),
 }
 
-#######################################################################################
+####################################################################################### 
 # DEFINICIÓN DEL DAG 
 #######################################################################################
 
@@ -43,32 +43,37 @@ with DAG(
 ) as dag:
 
     inicio = DummyOperator(task_id='inicio')
-
-    # Tarea 1: Carga los archivos del bucket de no-procesados a bigquery.
-    cargar_archivos_no_procesados = GCSToBigQueryOperator(
-    task_id='cargar_archivos_no_procesados',
-    bucket=bucket_no_procesados,
-    source_objects=[prefix + '*.json'],
-    destination_project_dataset_table=f'{project_id}.{dataset}.{tabla_temporal}',
-    source_format='NEWLINE_DELIMITED_JSON',  
-    write_disposition='WRITE_TRUNCATE',
-    gcp_conn_id='google_cloud_default',
-    autodetect=True
-)
-
-
-    # Tarea 2: Verificar que el archivo se haya cargado correctamente
-    validacion_carga = 'BigQueryCheckOperator('
     
+    # Tarea 1: Listar los archivos en el bucket de entrada
+    listar_archivos = GCSListObjectsOperator(
+        task_id='listar_archivos',
+        bucket=bucket_no_procesados,
+        prefix=prefix,  
+    )
     
-   # Tarea 3: Mover el archivo al bucket de procesados si la validación es exitosa
-    mover_a_procesados = 'GCSToGCSOperator('
-    
-    # Tarea 4: Registrar el nombre de los archivos cargados en BigQuery, para control. en una tabla de archivos_procesados.
-    registrar_archivo_en_bq = 'PythonOperator('
+    # Tarea 2: Arreglar los arrays JSON de cada archivo y guardarlo en un bucket nuevo.
+    procesar_archivo_task = PythonOperator(
+        task_id='procesar_archivo',
+        python_callable=procesar_archivo,
+        op_kwargs={
+            'bucket_entrada': bucket_no_procesados,
+            'bucket_procesado': bucket_procesados,
+            'archivos': "{{ ti.xcom_pull(task_ids='listar_archivos') }}",
+        },
+    )
+
+    # Tarea 3: Subir los archivos procesados a una tabla temporal en BigQuery
+    subir_a_bq_task = GCSToBigQueryOperator(
+        task_id='subir_a_bq',
+        bucket=bucket_procesados,              
+        source_objects=['*'],                    
+        destination_project_dataset_table=f"{project_id}.{dataset}.{tabla_temporal}", 
+        source_format='NEWLINE_DELIMITED_JSON',
+        write_disposition='WRITE_APPEND', 
+    )
 
     fin = DummyOperator(task_id='fin')
 
-    # Estructura del flujo de tareas
-    inicio >> cargar_archivos_no_procesados >> fin
-    #inicio >> cargar_archivos_no_procesados >> validacion_carga >> mover_a_procesados >>  registrar_archivo_en_bq >> fin
+    # Flujo de tareas.
+    inicio >> listar_archivos >> procesar_archivo_task >> subir_a_bq_task >> fin
+
