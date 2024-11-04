@@ -58,7 +58,7 @@ with DAG(
         op_kwargs={
             'bucket_entrada': bucket_no_procesados,
             'bucket_procesado': bucket_procesados,
-            'archivos': "{{ ti.xcom_pull(task_ids='listar_archivos') }}",
+            'archivo': "{{ ti.xcom_pull(task_ids='listar_archivos') }}",
         },
     )
 
