@@ -14,16 +14,16 @@ from google.cloud import bigquery
 # PARÁMETROS
 ######################################################################################
 
-nameDAG_base         = 'ETL_Storage_to_BQ'      # Nombre del DAG en Airflow.
-project_id           = 'neon-gist-439401-k8'    # ID del proyecto en Cloud.
-dataset              = '1'                      # ID dataset en BigQuery.
-owner                = 'Mauricio Arce'          # Responsable del DAG.
-GBQ_CONNECTION_ID    = 'bigquery_default'       # Conexion de Airflow hacia BigQuery.
-GCS_CONNECTION_ID    = 'google_cloud_default'   # Conexion de Airflow hacia Storage.
-bucket_no_procesados = 'datos-crudos'           # Bucket de los archivos no procesados.
-prefix               = 'g_sitios/'              # Carpeta donde se encuentran los archivos dentro del bucket.
-bucket_procesados    = 'temporal-procesados'    # Bucket donde se transferira los archivos no procesados una vez cargados en BQ.
-tabla_temporal       = 'tabla-temporal'         # Tabla temporal en Bigquery donde se subiran los archivos crudos para procesarlos. 
+nameDAG_base         = 'ETL_Storage_to_BQ'              # Nombre del DAG en Airflow.
+project_id           = 'neon-gist-439401-k8'            # ID del proyecto en Cloud.
+dataset              = '1'                              # ID dataset en BigQuery.
+owner                = 'Mauricio Arce'                  # Responsable del DAG.
+GBQ_CONNECTION_ID    = 'bigquery_default'               # Conexion de Airflow hacia BigQuery.
+GCS_CONNECTION_ID    = 'google_cloud_storage_default'   # Conexion de Airflow hacia Storage.
+bucket_no_procesados = 'datos-crudos'                   # Bucket de los archivos no procesados.
+prefix               = 'g_sitios/'                      # Carpeta donde se encuentran los archivos dentro del bucket.
+bucket_procesados    = 'temporal-procesados'            # Bucket donde se transferira los archivos no procesados una vez cargados en BQ.
+tabla_temporal       = 'tabla-temporal'                 # Tabla temporal en Bigquery donde se subiran los archivos crudos para procesarlos. 
 
 default_args = {
     'owner': owner,
