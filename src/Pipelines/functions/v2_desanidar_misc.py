@@ -78,20 +78,15 @@ def desanidar_misc(bucket_name: str, archivo: str, bucket_procesado: str) -> Non
 
 #########################################################################################
 
-def procesar_archivos(bucket_entrada: str, bucket_procesado: str, archivos: list) -> None:
-    """
-    Procesa todos los archivos JSON, desanida la columna 'MISC' y los guarda en el bucket procesado.
-
-    Args:
-        bucket_entrada (str): Nombre del bucket de entrada donde se encuentran los archivos.
-        bucket_procesado (str): Nombre del bucket donde se guardarán los archivos procesados.
-        archivos (list): Lista de archivos a procesar.
-    """
-    if not archivos or not isinstance(archivos, list):
+def procesar_archivos(bucket_entrada: str, bucket_procesado: str, archivos: list, prefix:str) -> None:
+    if archivos is None or not isinstance(archivos, list) or not archivos:
         print("No se encontraron archivos o la lista no es válida.")
         return
 
+    print(f"Archivos a procesar: {archivos}")
+
     for archivo in archivos:
-        print(f"Procesando archivo: {archivo}")  # Para depuración
-        desanidar_misc(bucket_name=bucket_entrada, archivo=archivo, bucket_procesado=bucket_procesado)
+        archivo_completo = f"{bucket_entrada}/{prefix}/{archivo}"
+        print(f"Procesando archivo: {archivo_completo}")
+        desanidar_misc(bucket_name=bucket_entrada, archivo=archivo_completo, bucket_procesado=bucket_procesado)
 

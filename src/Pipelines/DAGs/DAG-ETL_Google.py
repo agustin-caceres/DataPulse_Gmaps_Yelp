@@ -48,13 +48,10 @@ with DAG(
     listar_archivos = GCSListObjectsOperator(
         task_id='listar_archivos',
         bucket=bucket_no_procesados,
-        prefix=prefix,  
+        prefix=prefix, 
+        xcom=True, 
     )
     
-    # Tarea 2: Arreglar los arrays JSON de cada archivo y guardarlo en un bucket nuevo.
-    # Función auxiliar para procesar todos los archivos listados
-
-
     # Tarea 2: Procesar todos los archivos
     procesar_archivos_task = PythonOperator(
         task_id='procesar_archivos',
