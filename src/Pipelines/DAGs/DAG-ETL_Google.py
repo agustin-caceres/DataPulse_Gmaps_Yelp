@@ -52,16 +52,19 @@ with DAG(
     )
     
     # Tarea 2: Arreglar los arrays JSON de cada archivo y guardarlo en un bucket nuevo.
-    procesar_archivo_task = PythonOperator(
-        task_id='procesar_archivo',
+    # Función auxiliar para procesar todos los archivos listados
+
+
+    # Tarea 2: Procesar todos los archivos
+    procesar_archivos_task = PythonOperator(
+        task_id='procesar_archivos',
         python_callable=procesar_archivo,
         op_kwargs={
             'bucket_entrada': bucket_no_procesados,
             'bucket_procesado': bucket_procesados,
-            'archivo': "{{ ti.xcom_pull(task_ids='listar_archivos') }}",
+            'archivos': "{{ task_instance.xcom_pull(task_ids='listar_archivos') }}",
         },
     )
-
     # Tarea 3: Subir los archivos procesados a una tabla temporal en BigQuery
     subir_a_bq_task = GCSToBigQueryOperator(
         task_id='subir_a_bq',
@@ -75,5 +78,5 @@ with DAG(
     fin = DummyOperator(task_id='fin')
 
     # Flujo de tareas.
-    inicio >> listar_archivos >> procesar_archivo_task >> subir_a_bq_task >> fin
+    inicio >> listar_archivos >> procesar_archivos_task >> subir_a_bq_task >> fin
 
