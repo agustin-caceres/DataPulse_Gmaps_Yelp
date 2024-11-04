@@ -23,15 +23,6 @@ def desanidar_misc(bucket_name: str, archivo: str, bucket_procesado: str) -> Non
     """
     Toma un archivo JSON de Google Cloud Storage, extrae y desanida la columna 'MISC' 
     y guarda el resultado en un bucket de Google Cloud Storage en formato NDJSON.
-
-    Args:
-    -------
-    bucket_name : str
-        Nombre del bucket en Google Cloud Storage donde se encuentra el archivo original.
-    archivo : str
-        Nombre del archivo JSON que contiene la columna 'MISC'.
-    bucket_procesado : str
-        Nombre del bucket de Google Cloud Storage donde se guardará el archivo desanidado.
     """
     # Inicializa el cliente de Cloud Storage
     storage_client = storage.Client()
@@ -63,6 +54,10 @@ def desanidar_misc(bucket_name: str, archivo: str, bucket_procesado: str) -> Non
             print(f"Registro sin 'gmap_id' o sin 'MISC' en archivo {archivo}. Se omite.")
             continue
 
+        if not isinstance(misc, dict):
+            print(f"'MISC' no es un diccionario en el registro con gmap_id {gmap_id}. Se omite.")
+            continue
+
         # Convierte el diccionario `MISC` en una lista usando `dict_to_list`
         lista_misc = dict_to_list(misc)
 
@@ -83,7 +78,7 @@ def desanidar_misc(bucket_name: str, archivo: str, bucket_procesado: str) -> Non
 
 #########################################################################################
 
-def procesar_archivo(bucket_entrada: str, bucket_procesado: str, archivos: list) -> None:
+def procesar_archivos(bucket_entrada: str, bucket_procesado: str, archivos: list) -> None:
     """
     Procesa todos los archivos JSON, desanida la columna 'MISC' y los guarda en el bucket procesado.
 
@@ -92,6 +87,11 @@ def procesar_archivo(bucket_entrada: str, bucket_procesado: str, archivos: list)
         bucket_procesado (str): Nombre del bucket donde se guardarán los archivos procesados.
         archivos (list): Lista de archivos a procesar.
     """
+    if not archivos or not isinstance(archivos, list):
+        print("No se encontraron archivos o la lista no es válida.")
+        return
+
     for archivo in archivos:
-        # Asegúrate de que el nombre del archivo es correcto
+        print(f"Procesando archivo: {archivo}")  # Para depuración
         desanidar_misc(bucket_name=bucket_entrada, archivo=archivo, bucket_procesado=bucket_procesado)
+

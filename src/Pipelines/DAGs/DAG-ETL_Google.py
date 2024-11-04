@@ -8,7 +8,7 @@ from datetime import timedelta
 from airflow.utils.dates import days_ago
 
 # Funciones
-from functions.v2_desanidar_misc import procesar_archivo
+from functions.v2_desanidar_misc import procesar_archivos
 
 ###################################################################################### 
 # PARÁMETROS 
@@ -58,7 +58,7 @@ with DAG(
     # Tarea 2: Procesar todos los archivos
     procesar_archivos_task = PythonOperator(
         task_id='procesar_archivos',
-        python_callable=procesar_archivo,
+        python_callable=procesar_archivos,
         op_kwargs={
             'bucket_entrada': bucket_no_procesados,
             'bucket_procesado': bucket_procesados,
