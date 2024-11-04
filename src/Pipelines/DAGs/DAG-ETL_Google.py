@@ -52,7 +52,7 @@ with DAG(
     destination_project_dataset_table=f'{project_id}.{dataset}.{tabla_temporal}',
     source_format='NEWLINE_DELIMITED_JSON',  
     write_disposition='WRITE_TRUNCATE',
-    gcp_conn_id='google_cloud_default'
+    gcp_conn_id='google_cloud_default',
     autodetect=True
 )
 
