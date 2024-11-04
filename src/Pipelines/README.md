@@ -7,6 +7,7 @@ Este proyecto implementa un pipeline ETL (Extracción, Transformación, Carga) u
 - **Google Cloud Platform (GCP)**:
   - BigQuery para el almacenamiento y procesamiento de datos.
   - Google Cloud Storage (GCS) para almacenar los archivos fuente.
+  - Google Composer para administrar la arquitectura de Airflow.
 - **Apache Airflow**: Orquestación del pipeline ETL.
 - **Python**: Desarrollo de funciones auxiliares y transformación de datos.
 
