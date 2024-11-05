@@ -2,6 +2,7 @@ from google.cloud import bigquery
 from google.cloud import storage
 import json
 
+################################################################ 
 def dict_to_list(diccionario: dict) -> list:
     """
     Convierte el diccionario de la columna `MISC` en una lista de strings
@@ -14,6 +15,8 @@ def dict_to_list(diccionario: dict) -> list:
         list: lista con los pares clave:valor no nulos.
     """
     return [f"{key}: {value}" for key, value in diccionario.items() if value is not None]
+
+################################################################ 
 
 def desanidar_misc(bucket_name: str, archivo: str, project_id: str, dataset: str) -> None:
     """
@@ -72,3 +75,49 @@ def desanidar_misc(bucket_name: str, archivo: str, project_id: str, dataset: str
                 print(f"Datos del archivo {archivo} cargados exitosamente en BigQuery.")
         else:
             print(f"Sin datos para insertar del archivo {archivo}.")
+
+################################################################ 
+
+def actualizar_misc_con_atributos(project_id: str, dataset: str) -> None:
+    """
+    Actualiza la tabla 'miscelaneos' en BigQuery, agregando las columnas 'category' y 'atributo'
+    a partir de la columna 'misc', además de renombrar 'gmap_id' a 'id_negocio'.
+
+    Args:
+    -------
+    project_id : str
+        ID del proyecto en Google Cloud Platform.
+    dataset : str
+        Nombre del dataset en BigQuery donde se encuentra la tabla 'miscelaneos'.
+    """
+    client = bigquery.Client()
+    table_id = f"{project_id}.{dataset}.miscelaneos"
+
+    # Consulta SQL para renombrar la columna y dividir 'misc' en 'category' y 'atributo'
+    query = f"""
+    WITH updated_misc AS (
+        SELECT 
+            id_negocio,
+            SPLIT(misc, ':')[SAFE_OFFSET(0)] AS category,  -- Extrae la categoría
+            TRIM(SPLIT(misc, ':')[SAFE_OFFSET(1)]) AS atributo  -- Extrae el contenido después de ':'
+        FROM `{table_id}`
+        WHERE misc IS NOT NULL
+    ),
+    exploded AS (
+        SELECT 
+            id_negocio,
+            category,
+            REGEXP_EXTRACT(atributo, r"'(.*?)'") AS atributo  -- Extrae los textos dentro de comillas
+        FROM updated_misc
+        WHERE atributo IS NOT NULL
+    )
+    -- Inserta los datos en la tabla original, desanidando las filas
+    INSERT INTO `{table_id}` (id_negocio, category, atributo)
+    SELECT id_negocio, category, atributo
+    FROM exploded
+    """
+
+    # Ejecuta la consulta
+    query_job = client.query(query)
+    query_job.result()  # Espera a que termine la consulta
+    print("Tabla 'miscelaneos' actualizada con éxito.")
