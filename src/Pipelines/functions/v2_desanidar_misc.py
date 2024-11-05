@@ -1,5 +1,10 @@
+import logging
 from google.cloud import storage
 import json
+
+# Configura el logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 ################################################################################################
 
@@ -29,28 +34,22 @@ def procesar_archivos(bucket_entrada: str, bucket_procesado: str, archivos: list
         archivos (list): Lista de nombres de archivos a procesar.
         prefix (str): Prefijo que indica la carpeta dentro del bucket.
     """
-    # Imprimir los archivos antes de la validación
-    print(f"Archivos recibidos para procesar: {archivos}")
+    # Filtrar archivos para incluir solo los archivos JSON y eliminar carpetas
+    archivos_json = [archivo for archivo in archivos if archivo.endswith('.json') and not archivo.endswith('/')]
 
-    # Filtrar archivos para incluir solo los archivos JSON
-    archivos_json = [archivo for archivo in archivos if archivo.endswith('.json')]
+    logger.info(f"Archivos recibidos para procesar: {archivos}")
+    logger.info(f"Archivos a procesar: {archivos_json}")
 
-    if archivos_json is None or not isinstance(archivos_json, list) or not archivos_json:
-        print("No se encontraron archivos o la lista no es válida.")
+    if not archivos_json:
+        logger.warning("No se encontraron archivos JSON o la lista no es válida.")
         return
-
-    print(f"Archivos a procesar: {archivos_json}")
 
     for archivo in archivos_json:
         # Procesa cada archivo individualmente
-        print(f"Procesando archivo: {archivo}")
+        logger.info(f"Procesando archivo: {archivo}")
         desanidar_misc(bucket_name=bucket_entrada, archivo=archivo, bucket_procesado=bucket_procesado, prefix=prefix)
 
-            
 ################################################################################################
-
-from google.cloud import storage
-import json
 
 def desanidar_misc(bucket_name: str, archivo: str, bucket_procesado: str, prefix: str) -> None:
     """
@@ -79,7 +78,7 @@ def desanidar_misc(bucket_name: str, archivo: str, bucket_procesado: str, prefix
     try:
         contenido = blob.download_as_text()
     except Exception as e:
-        print(f"Error al descargar el archivo {archivo_completo}: {e}")
+        logger.error(f"Error al descargar el archivo {archivo_completo}: {e}")
         return
 
     # Lista para almacenar los registros desanidados
@@ -90,7 +89,7 @@ def desanidar_misc(bucket_name: str, archivo: str, bucket_procesado: str, prefix
         try:
             contenido_json = json.loads(linea)
         except json.JSONDecodeError as e:
-            print(f"Error de decodificación JSON en la línea: {e}")
+            logger.warning(f"Error de decodificación JSON en la línea: {e}")
             continue
 
         # Extrae gmap_id y MISC
@@ -98,11 +97,11 @@ def desanidar_misc(bucket_name: str, archivo: str, bucket_procesado: str, prefix
         misc = contenido_json.get('MISC')
 
         if gmap_id is None or misc is None:
-            print(f"Registro sin 'gmap_id' o sin 'MISC' en archivo {archivo_completo}. Se omite.")
+            logger.warning(f"Registro sin 'gmap_id' o sin 'MISC' en archivo {archivo_completo}. Se omite.")
             continue
 
         if not isinstance(misc, dict):
-            print(f"'MISC' no es un diccionario en el registro con gmap_id {gmap_id}. Se omite.")
+            logger.warning(f"'MISC' no es un diccionario en el registro con gmap_id {gmap_id}. Se omite.")
             continue
 
         # Convierte el diccionario `MISC` en una lista usando `dict_to_list`
@@ -121,7 +120,4 @@ def desanidar_misc(bucket_name: str, archivo: str, bucket_procesado: str, prefix
         for registro in registros_desanidados:
             f.write(json.dumps(registro) + "\n")
     
-    print(f"Archivo desanidado guardado en {bucket_procesado} como {nombre_archivo_procesado}.")
-
-
-
+    logger.info(f"Archivo desanidado guardado en {bucket_procesado} como {nombre_archivo_procesado}.")
