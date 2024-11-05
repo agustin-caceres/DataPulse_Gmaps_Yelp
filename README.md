@@ -92,6 +92,7 @@ centrarse en sectores directamente relacionados con su núcleo de negocio para o
 
 - Los archivos crudos con la información acerca de Google Maps y Yelp se encuentran en la siguiente ruta de Google Drive:
 [Enlace a Drive]("https://drive.google.com/drive/folders/1Wf7YkxA0aHI3GpoHc9Nh8_scf5BbD4DA")
+- Diccionario de datos: [Enlace al Diccionario de Datos]("assets/Diccionario_de_datos-PF.xlsx")
 
 ## PROCESO DEL PROYECTO
 
@@ -142,6 +143,7 @@ centrarse en sectores directamente relacionados con su núcleo de negocio para o
 - **Scikit-learn/TensorFlow**: Para el desarrollo de modelos de machine learning.
 - **FastAPI**: Para el despliegue de APIs.
 - **Streamlit**: Para la visualización de datos en una interfaz web.
+- **Lucidchart**: plataforma en línea para la creación de diagramas de forma colaborativa.
 (INSERTAR LOGOS)
 
 ## KPI´s 📈
