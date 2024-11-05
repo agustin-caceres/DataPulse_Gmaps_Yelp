@@ -76,5 +76,3 @@ with DAG(
 
     # Flujo de tareas.
     inicio >> listar_archivos >> procesar_archivos_task >> subir_a_bq_task >> fin
-
-datos-crudos/g_sitios
