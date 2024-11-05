@@ -49,7 +49,6 @@ with DAG(
     task_id='listar_archivos',
     bucket=bucket_no_procesados,
     prefix=prefix, 
-    xcom_push=True, 
     )
     
     # Tarea 2: Procesar todos los archivos
