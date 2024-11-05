@@ -93,7 +93,7 @@ def actualizar_misc_con_atributos(project_id: str, dataset: str) -> None:
     client = bigquery.Client()
     table_id = f"{project_id}.{dataset}.miscelaneos"
 
-    # Consulta SQL para renombrar la columna y dividir 'misc' en 'category' y 'atributo'
+    # Consulta SQL para extraer y preparar los datos
     query = f"""
     WITH updated_misc AS (
         SELECT 
@@ -111,13 +111,21 @@ def actualizar_misc_con_atributos(project_id: str, dataset: str) -> None:
         FROM updated_misc
         WHERE atributo IS NOT NULL
     )
-    -- Inserta los datos en la tabla original, desanidando las filas
-    INSERT INTO `{table_id}` (id_negocio, category, atributo)
     SELECT id_negocio, category, atributo
     FROM exploded
     """
 
-    # Ejecuta la consulta
-    query_job = client.query(query)
-    query_job.result()  # Espera a que termine la consulta
+    # Ejecuta la consulta para extraer los datos preparados
+    extract_query_job = client.query(query)
+    results = extract_query_job.result()  # Espera a que termine la consulta
+
+    # Inserta los datos en la tabla original, desanidando las filas
+    insert_query = f"""
+    INSERT INTO `{table_id}` (id_negocio, category, atributo)
+    VALUES ({','.join([f"('{row.id_negocio}', '{row.category}', '{row.atributo}')" for row in results])})
+    """
+
+    # Ejecuta la consulta de inserción
+    insert_query_job = client.query(insert_query)
+    insert_query_job.result()  # Espera a que termine la consulta
     print("Tabla 'miscelaneos' actualizada con éxito.")
