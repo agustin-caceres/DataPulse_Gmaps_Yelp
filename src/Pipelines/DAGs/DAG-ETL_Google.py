@@ -62,6 +62,7 @@ with DAG(
             'archivos': "{{ task_instance.xcom_pull(task_ids='listar_archivos') }}",
         },
     )
+    
     # Tarea 3: Subir los archivos procesados a una tabla temporal en BigQuery
     subir_a_bq_task = GCSToBigQueryOperator(
         task_id='subir_a_bq',
@@ -75,4 +76,4 @@ with DAG(
     fin = DummyOperator(task_id='fin')
 
     # Flujo de tareas.
-    inicio >> listar_archivos >> procesar_archivos_task >> subir_a_bq_task >> fin
+    inicio >> listar_archivos >> procesar_archivos_task >> fin

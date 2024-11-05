@@ -34,10 +34,14 @@ def procesar_archivos(bucket_entrada: str, bucket_procesado: str, archivos: list
         archivos (list): Lista de nombres de archivos a procesar.
         prefix (str): Prefijo que indica la carpeta dentro del bucket.
     """
-    # Filtrar archivos para incluir solo los archivos JSON y eliminar carpetas
-    archivos_json = [archivo for archivo in archivos if archivo.endswith('.json') and not archivo.endswith('/')]
-
     logger.info(f"Archivos recibidos para procesar: {archivos}")
+
+    # Filtrar archivos para incluir solo los archivos JSON y eliminar carpetas
+    archivos_json = [archivo for archivo in archivos if archivo.endswith('.json')]
+
+    # Asegurarse de que no se incluyan carpetas
+    archivos_json = [archivo for archivo in archivos_json if not archivo.endswith('/')]
+
     logger.info(f"Archivos a procesar: {archivos_json}")
 
     if not archivos_json:
