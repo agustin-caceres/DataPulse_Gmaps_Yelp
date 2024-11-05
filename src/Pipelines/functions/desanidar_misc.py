@@ -78,12 +78,10 @@ def desanidar_misc(bucket_name: str, archivo: str, project_id: str, dataset: str
 
 ################################################################ 
 
-from google.cloud import bigquery
-
 def actualizar_misc_con_atributos(project_id: str, dataset: str) -> None:
     """
-    Actualiza la tabla 'miscelaneos' en BigQuery, agregando las columnas 'category' y 'atributo'
-    a partir de la columna 'MISC', además de renombrar 'gmap_id' a 'id_negocio'.
+    Actualiza la tabla 'miscelaneos' en BigQuery, creando una nueva tabla temporal que agrega
+    las columnas 'category' y 'atributo' a partir de la columna 'MISC'.
 
     Args:
     -------
@@ -94,24 +92,34 @@ def actualizar_misc_con_atributos(project_id: str, dataset: str) -> None:
     """
     client = bigquery.Client()
     table_id = f"{project_id}.{dataset}.miscelaneos"
+    temp_table_id = f"{project_id}.{dataset}.temp_miscelaneos"
 
-    # Paso 1: Agregar las columnas 'category' y 'atributo' a la tabla, si no existen
-    alter_table_query = f"""
-    ALTER TABLE `{table_id}`
-    ADD COLUMN IF NOT EXISTS category STRING,
-    ADD COLUMN IF NOT EXISTS atributo STRING
+    # Consulta SQL para crear la tabla temporal con los datos procesados
+    query = f"""
+    CREATE OR REPLACE TABLE `{temp_table_id}` AS
+    WITH updated_misc AS (
+        SELECT 
+            gmap_id,
+            SPLIT(MISC, ':')[SAFE_OFFSET(0)] AS category,  -- Extrae la categoría
+            TRIM(SPLIT(MISC, ':')[SAFE_OFFSET(1)]) AS atributo  -- Extrae el contenido después de ':'
+        FROM `{table_id}`
+        WHERE MISC IS NOT NULL
+    ),
+    exploded AS (
+        SELECT 
+            gmap_id,
+            category,
+            REGEXP_EXTRACT(atributo, r"'(.*?)'") AS atributo  -- Extrae los textos dentro de comillas
+        FROM updated_misc
+        WHERE atributo IS NOT NULL
+    )
+    SELECT gmap_id, category, atributo
+    FROM exploded
     """
-    client.query(alter_table_query).result()  # Ejecuta la consulta para alterar la tabla
 
-    # Paso 2: Actualizar las columnas 'category' y 'atributo' con los valores procesados de 'MISC'
-    update_query = f"""
-    UPDATE `{table_id}`
-    SET
-        category = SPLIT(MISC, ':')[SAFE_OFFSET(0)],  -- Extrae la categoría
-        atributo = TRIM(SPLIT(MISC, ':')[SAFE_OFFSET(1)])  -- Extrae el contenido después de ':'
-    WHERE MISC IS NOT NULL
-    """
-    client.query(update_query).result()  # Ejecuta la consulta para actualizar la tabla
+    # Ejecuta la consulta para crear la tabla temporal
+    extract_query_job = client.query(query)
+    extract_query_job.result()  # Espera a que termine la consulta
 
-    print("Tabla 'miscelaneos' actualizada con éxito.")
+    print(f"Tabla temporal '{temp_table_id}' creada con éxito.")
 
