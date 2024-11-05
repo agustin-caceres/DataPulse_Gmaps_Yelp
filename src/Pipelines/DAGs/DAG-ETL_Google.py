@@ -1,19 +1,16 @@
-# Librerias
+# DAG_Desanidar_Mover.py
 from airflow import DAG
 from airflow.operators.python import PythonOperator
-from airflow.operators.dummy import DummyOperator
 from datetime import timedelta
 from airflow.utils.dates import days_ago
-from google.cloud import storage
 
-# Funciones
-from functions.mover_archivos import mover_archivos
-######################################################## PARAMETROS
+from functions.v2_desanidar_misc import desanidar_y_mover_archivo
 
-nameDAG_base        = 'Mover_Archivos_GCS_Subcarpeta'
-bucket_source       = 'datos-crudos'
-bucket_destino      = 'temporal-procesados'
-subcarpeta          = 'g_sitios/'  
+# Parámetros de configuración
+nameDAG_base = 'DAG_Desanidar_Mover'
+bucket_source = 'datos-crudos'
+bucket_destino = 'temporal-procesados'
+archivo = 'g_sitios/ejemplo.json'
 
 default_args = {
     'owner': 'Mauricio Arce',
@@ -21,8 +18,6 @@ default_args = {
     'retries': 1,
     'retry_delay': timedelta(minutes=1),
 }
-
-######################################################## DAG
 
 # Definición del DAG
 with DAG(
@@ -32,16 +27,22 @@ with DAG(
     catchup=False,
 ) as dag:
 
-    inicio = DummyOperator(task_id='inicio')
-
-    # Tarea 1: Mover archivos de un bucket a otro
-    mover_archivos_task = PythonOperator(
-        task_id='mover_archivos_g_sitios',
-        python_callable=mover_archivos,
-        op_args=[bucket_destino, bucket_source, subcarpeta],
+    # Tarea para desanidar y mover el archivo
+    desanidar_y_mover_task = PythonOperator(
+        task_id='desanidar_y_mover_archivo',
+        python_callable=desanidar_y_mover_archivo,
+        op_kwargs={
+            'bucket_source': bucket_source,
+            'archivo': archivo,
+            'bucket_destino': bucket_destino,
+        },
     )
-    
-    fin = DummyOperator(task_id='fin')
 
-    # Estructura del flujo de tareas
-    inicio >> mover_archivos_task >> fin
+    # Tarea Dummy para indicar el final del flujo
+    fin_task = PythonOperator(
+        task_id='fin_proceso',
+        python_callable=lambda: print("Proceso de desanidado y movimiento completo."),
+    )
+
+    # Definir flujo de tareas
+    desanidar_y_mover_task >> fin_task
