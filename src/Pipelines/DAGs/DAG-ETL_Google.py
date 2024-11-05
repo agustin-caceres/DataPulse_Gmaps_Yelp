@@ -1,38 +1,37 @@
-# Librerias
 from airflow import DAG
+from airflow.providers.google.cloud.transfers.gcs import GCSCopyObjectOperator
 from airflow.operators.python import PythonOperator
-from airflow.providers.google.cloud.transfers.gcs_to_bigquery import GCSToBigQueryOperator
-from airflow.providers.google.cloud.operators.gcs import GCSListObjectsOperator
-from airflow.operators.dummy import DummyOperator
 from datetime import timedelta
 from airflow.utils.dates import days_ago
+from google.cloud import storage
 
-# Funciones
-from functions.v2_desanidar_misc import procesar_archivos
+#######################################################################################
+# PARÁMETROS
+#######################################################################################
 
-###################################################################################### 
-# PARÁMETROS 
-###################################################################################### 
-
-nameDAG_base         = 'ETL_Storage_to_BQ6'            # Nombre del DAG en Airflow.
-project_id           = 'neon-gist-439401-k8'           # ID del proyecto en Cloud.
-dataset              = '1'                             # ID dataset en BigQuery.
-owner                = 'Mauricio Arce'                 # Responsable del DAG.
-GBQ_CONNECTION_ID    = 'bigquery_default'              # Conexion de Airflow hacia BigQuery.
-bucket_no_procesados = 'datos-crudos'                  # Bucket de los archivos no procesados.
-prefix               = 'g_sitios/'                     # Carpeta donde se encuentran los archivos dentro del bucket.
-bucket_procesados    = 'temporal-procesados'           # Bucket donde se transferira los archivos no procesados una vez cargados en BQ.
-tabla_temporal       = 'tabla-temporal'                # Tabla temporal en Bigquery donde se subiran los archivos crudos para procesarlos. 
+nameDAG_base = 'Transferencia_Todos_Los_Archivos_GCS'
+bucket_source = 'datos-crudos' 
+bucket_destino = 'temporal-procesados'  
 
 default_args = {
-    'owner': owner,
+    'owner': 'Mauricio Arce',
     'start_date': days_ago(1),
     'retries': 1,
-    'retry_delay': timedelta(minutes=2),
+    'retry_delay': timedelta(minutes=1),
 }
 
-####################################################################################### 
-# DEFINICIÓN DEL DAG 
+#######################################################################################
+# FUNCIÓN PARA LISTAR ARCHIVOS EN UN BUCKET
+#######################################################################################
+
+def listar_archivos(bucket_name, prefix='g_sitios/'):
+    """Lista todos los archivos en el bucket especificado dentro del prefijo dado y devuelve sus rutas."""
+    client = storage.Client()
+    blobs = client.list_blobs(bucket_name, prefix=prefix)
+    return [blob.name for blob in blobs if not blob.name.endswith('/')]  # Filtrar solo archivos, no directorios
+
+#######################################################################################
+# DEFINICIÓN DEL DAG
 #######################################################################################
 
 with DAG(
@@ -42,38 +41,34 @@ with DAG(
     catchup=False
 ) as dag:
 
-    inicio = DummyOperator(task_id='inicio')
-    
-    # Tarea 1: Listar los archivos en el bucket de entrada
-    listar_archivos = GCSListObjectsOperator(
-    task_id='listar_archivos',
-    bucket=bucket_no_procesados,
-    prefix=prefix, 
-    )
-    
-    # Tarea 2: Procesar todos los archivos
-    procesar_archivos_task = PythonOperator(
-        task_id='procesar_archivos',
-        python_callable=procesar_archivos,
-        op_kwargs={
-            'bucket_entrada': bucket_no_procesados,
-            'bucket_procesado': bucket_procesados,
-            'prefix': prefix,
-            'archivos': "{{ task_instance.xcom_pull(task_ids='listar_archivos') }}",
-        },
-    )
-    
-    # Tarea 3: Subir los archivos procesados a una tabla temporal en BigQuery
-    subir_a_bq_task = GCSToBigQueryOperator(
-        task_id='subir_a_bq',
-        bucket=bucket_procesados,              
-        source_objects=['*'],                    
-        destination_project_dataset_table=f"{project_id}.{dataset}.{tabla_temporal}", 
-        source_format='NEWLINE_DELIMITED_JSON',
-        write_disposition='WRITE_APPEND', 
+    # Tarea 1: Listar archivos en el bucket de origen
+    listar_archivos_task = PythonOperator(
+        task_id='listar_archivos',
+        python_callable=listar_archivos,
+        op_kwargs={'bucket_name': bucket_source},
+        do_xcom_push=True  # Permitir que la tarea devuelva la lista de archivos
     )
 
-    fin = DummyOperator(task_id='fin')
+    # Tarea 2: Copiar archivos a bucket de destino
+    def copiar_archivos(**kwargs):
+        # Obtener la lista de archivos del XCom
+        archivos = kwargs['ti'].xcom_pull(task_ids='listar_archivos')
+        for archivo in archivos:
+            transferir_archivo = GCSCopyObjectOperator(
+                task_id=f'transferir_{archivo.replace("/", "_")}',  # Crear un ID único para cada tarea
+                source_bucket=bucket_source,
+                source_object=archivo,
+                destination_bucket=bucket_destino,
+                destination_object=archivo,  # Mantiene la misma ruta en el bucket de destino
+                move_object=False  # Cambiar a True si deseas mover los archivos
+            )
+            transferir_archivo.execute(context=kwargs)
 
-    # Flujo de tareas.
-    inicio >> listar_archivos >> procesar_archivos_task >> fin
+    transferir_archivos_task = PythonOperator(
+        task_id='transferir_archivos',
+        python_callable=copiar_archivos,
+        provide_context=True 
+    )
+
+    # Estructura del flujo de tareas
+    listar_archivos_task >> transferir_archivos_task
