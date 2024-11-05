@@ -1,6 +1,7 @@
 from airflow import DAG
 from airflow.providers.google.cloud.transfers.gcs import GCSCopyObjectOperator
 from airflow.providers.google.cloud.operators.gcs import GCSListObjectsOperator
+from airflow.operators.python import PythonOperator
 from datetime import timedelta
 from airflow.utils.dates import days_ago
 
@@ -8,7 +9,7 @@ from airflow.utils.dates import days_ago
 # PARÁMETROS
 #######################################################################################
 
-nameDAG_base = 'Transferencia_Todos_Los_Archivos_GCS'
+nameDAG_base = 'Transferencia_Todos_Los_Archivos_GCS1'
 bucket_source = 'datos-crudos' 
 bucket_destino = 'temporal-procesados'  
 prefix = 'g_sitios/'  # Prefijo para los archivos en el bucket
