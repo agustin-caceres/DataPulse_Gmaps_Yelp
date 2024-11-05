@@ -72,6 +72,7 @@ with DAG(
             'project_id': project_id,
             'dataset': dataset,
             'table_name': temp_table_general
+            'chunk_size': 50000  # Ajustar valor según sea necesario
         },
     )
 

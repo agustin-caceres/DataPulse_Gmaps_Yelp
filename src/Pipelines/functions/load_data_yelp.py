@@ -13,17 +13,29 @@ def cargar_en_tabla_final(project_id: str, dataset: str, temp_table: str, final_
     Returns:
         None
     """
-    client = bigquery.Client(project=project_id)
-    query = f"""
-    CREATE OR REPLACE TABLE `{project_id}.{dataset}.{final_table}` AS
-    SELECT * FROM `{project_id}.{dataset}.{temp_table}`
-    """
-    client.query(query).result()
-    print(f"Datos cargados en la tabla final `{final_table}`.")
+    try:
+        client = bigquery.Client(project=project_id)
+        
+        # Verificar que la tabla temporal existe antes de realizar la carga
+        temp_table_id = f"{project_id}.{dataset}.{temp_table}"
+        table_ref = client.get_table(temp_table_id)  # Lanza una excepción si la tabla no existe
 
+        # Consulta SQL para crear la tabla final a partir de la temporal.
+        # CREATE OR REPLACE TABLE asegura que la tabla final se sobrescribirá cada vez que se ejecute.
+        query = f"""
+        CREATE OR REPLACE TABLE `{project_id}.{dataset}.{final_table}` AS
+        SELECT * FROM `{temp_table_id}`
+        """
+        
+        # Ejecuta la consulta para cargar los datos en la tabla final
+        client.query(query).result()
+        print(f"Datos cargados en la tabla final `{final_table}`.")
+
+    except Exception as e:
+        # Si ocurre un error, imprime un mensaje detallado para depuración
+        print(f"Error al cargar datos en la tabla final `{final_table}`: {e}")
 
 #######################################################################################
-
 
 def eliminar_tabla_temporal(project_id: str, dataset: str, temp_table: str) -> None:
     """
@@ -37,7 +49,15 @@ def eliminar_tabla_temporal(project_id: str, dataset: str, temp_table: str) -> N
     Returns:
         None
     """
-    client = bigquery.Client(project=project_id)
-    table_id = f"{project_id}.{dataset}.{temp_table}"
-    client.delete_table(table_id, not_found_ok=True)
-    print(f"Tabla temporal `{temp_table}` eliminada.")
+    try:
+        client = bigquery.Client(project=project_id)
+        table_id = f"{project_id}.{dataset}.{temp_table}"
+        
+        # Elimina la tabla temporal
+        # not_found_ok=True previene errores si la tabla ya fue eliminada
+        client.delete_table(table_id, not_found_ok=True)
+        print(f"Tabla temporal `{temp_table}` eliminada.")
+
+    except Exception as e:
+        # Si ocurre un error, imprime un mensaje detallado para depuración
+        print(f"Error al eliminar la tabla temporal `{temp_table}`: {e}")
