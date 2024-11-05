@@ -19,21 +19,20 @@ default_args = {
     'retry_delay': timedelta(minutes=1),
 }
 
-# Función para obtener el primer archivo en la subcarpeta
-def obtener_primer_archivo(bucket_name, prefix):
+def obtener_primer_archivo(bucket_name: str, prefix: str) -> str:
     """Obtiene el primer archivo disponible en una subcarpeta específica del bucket."""
     storage_client = storage.Client()
     bucket = storage_client.bucket(bucket_name)
     blobs = bucket.list_blobs(prefix=prefix)
     for blob in blobs:
-        # Excluye directorios (si existieran) y retorna el primer archivo que encuentre
+        # Excluye directorios y retorna el primer archivo que encuentre
         if not blob.name.endswith('/'):
             return blob.name
     print("No se encontraron archivos en la subcarpeta.")
     return None
 
-# Función para procesar solo el primer archivo encontrado
-def procesar_primer_archivo(bucket_source, bucket_destino, subcarpeta):
+def procesar_primer_archivo(bucket_source: str, bucket_destino: str, subcarpeta: str) -> None:
+    """Procesa el primer archivo encontrado en la subcarpeta."""
     archivo = obtener_primer_archivo(bucket_source, subcarpeta)
     if archivo:
         print(f"Procesando archivo: {archivo}")
@@ -49,7 +48,6 @@ with DAG(
     catchup=False,
 ) as dag:
 
-    # Tarea para obtener y procesar solo el primer archivo en la subcarpeta
     procesar_primer_archivo_task = PythonOperator(
         task_id='procesar_primer_archivo',
         python_callable=procesar_primer_archivo,
@@ -60,7 +58,6 @@ with DAG(
         },
     )
 
-    # Tarea Dummy para indicar el final del flujo
     fin_task = PythonOperator(
         task_id='fin_proceso',
         python_callable=lambda: print("Proceso de desanidado y movimiento de primer archivo completo."),
