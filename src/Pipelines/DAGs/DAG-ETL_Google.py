@@ -1,18 +1,13 @@
 from airflow import DAG
-from airflow.providers.google.cloud.transfers.gcs import GCSCopyObjectOperator
-from airflow.providers.google.cloud.operators.gcs import GCSListObjectsOperator
 from airflow.operators.python import PythonOperator
 from datetime import timedelta
 from airflow.utils.dates import days_ago
+from google.cloud import storage
 
-#######################################################################################
-# PARÁMETROS
-#######################################################################################
-
-nameDAG_base = 'Transferencia_Todos_Los_Archivos_GCS1'
-bucket_source = 'datos-crudos' 
-bucket_destino = 'temporal-procesados'  
-prefix = 'g_sitios/'  # Prefijo para los archivos en el bucket
+# Parámetros
+nameDAG_base = 'Transferencia_Todos_Los_Archivos_GCS'
+bucket_source = 'datos-crudos'
+bucket_destino = 'temporal-procesados'
 
 default_args = {
     'owner': 'Mauricio Arce',
@@ -21,46 +16,35 @@ default_args = {
     'retry_delay': timedelta(minutes=1),
 }
 
-#######################################################################################
-# DEFINICIÓN DEL DAG
-#######################################################################################
+# Función para copiar archivos
+def copiar_archivos():
+    """Copia todos los archivos de un bucket a otro."""
+    client = storage.Client()
+    bucket_src = client.bucket(bucket_source)
+    bucket_dest = client.bucket(bucket_destino)
 
+    # Listar todos los blobs en el bucket fuente
+    blobs = bucket_src.list_blobs()
+
+    for blob in blobs:
+        # Crear un nuevo blob en el bucket destino con el mismo nombre
+        new_blob = bucket_dest.blob(blob.name)
+        new_blob.rewrite(blob)  # Copiar el archivo al nuevo blob
+        print(f"Archivo {blob.name} copiado a {bucket_destino}.")
+
+# Definición del DAG
 with DAG(
     dag_id=nameDAG_base,
     default_args=default_args,
     schedule_interval=None,
-    catchup=False
+    catchup=False,
 ) as dag:
 
-    # Tarea 1: Listar archivos en el bucket de origen con el prefijo especificado
-    listar_archivos_task = GCSListObjectsOperator(
-        task_id='listar_archivos',
-        bucket=bucket_source,
-        prefix=prefix,
-        delimiter='/',
-        do_xcom_push=True  # Permitir que la tarea devuelva la lista de archivos
-    )
-
-    # Tarea 2: Copiar archivos a bucket de destino
-    def copiar_archivos(**kwargs):
-        # Obtener la lista de archivos del XCom
-        archivos = kwargs['ti'].xcom_pull(task_ids='listar_archivos')
-        for archivo in archivos:
-            transferir_archivo = GCSCopyObjectOperator(
-                task_id=f'transferir_{archivo.replace("/", "_")}',  # Crear un ID único para cada tarea
-                source_bucket=bucket_source,
-                source_object=archivo,
-                destination_bucket=bucket_destino,
-                destination_object=archivo,
-                move_object=False  # Cambiar a True si deseas mover los archivos
-            )
-            transferir_archivo.execute(context=kwargs)
-
+    # Tarea para copiar archivos
     transferir_archivos_task = PythonOperator(
         task_id='transferir_archivos',
         python_callable=copiar_archivos,
-        provide_context=True 
     )
 
     # Estructura del flujo de tareas
-    listar_archivos_task >> transferir_archivos_task
+    transferir_archivos_task
