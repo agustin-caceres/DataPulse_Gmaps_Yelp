@@ -15,7 +15,7 @@ from functions.load_data_yelp import cargar_en_tabla_final, eliminar_tabla_tempo
 # PARÁMETROS PARA DATOS DE YELP
 ######################################################################################
 
-nameDAG_base       = 'ETL_Yelp_Checkin_to_BQ'
+nameDAG_base       = 'ETL_Y_Checkin_to_BQ'
 project_id         = 'neon-gist-439401-k8'
 dataset            = '1'
 owner              = 'Agustín'
