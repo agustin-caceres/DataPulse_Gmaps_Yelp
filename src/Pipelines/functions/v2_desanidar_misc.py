@@ -19,10 +19,16 @@ def dict_to_list(diccionario: dict) -> list:
     
 ################################################################################################
 
-def desanidar_misc(bucket_name: str, archivo: str, bucket_procesado: str) -> None:
+def desanidar_misc(bucket_name: str, archivo: str, bucket_procesado: str, prefix: str) -> None:
     """
     Toma un archivo JSON de Google Cloud Storage, extrae y desanida la columna 'MISC' 
     y guarda el resultado en un bucket de Google Cloud Storage en formato NDJSON.
+    
+    Args:
+        bucket_name (str): El nombre del bucket de origen.
+        archivo (str): El nombre del archivo en el bucket de origen.
+        bucket_procesado (str): El nombre del bucket donde se guardará el archivo procesado.
+        prefix (str): El prefijo del archivo dentro del bucket de origen.
     """
     # Inicializa el cliente de Cloud Storage
     storage_client = storage.Client()
@@ -31,8 +37,11 @@ def desanidar_misc(bucket_name: str, archivo: str, bucket_procesado: str) -> Non
     bucket_entrada = storage_client.bucket(bucket_name)
     bucket_salida = storage_client.bucket(bucket_procesado)
     
+    # Construye la ruta completa del archivo en el bucket de entrada
+    archivo_completo = f"{prefix}{archivo}" if prefix else archivo
+    
     # Lee el archivo JSON desde el bucket de entrada
-    blob = bucket_entrada.blob(archivo)
+    blob = bucket_entrada.blob(archivo_completo)
     contenido = blob.download_as_text()
 
     # Lista para almacenar los registros desanidados
@@ -51,7 +60,7 @@ def desanidar_misc(bucket_name: str, archivo: str, bucket_procesado: str) -> Non
         misc = contenido_json.get('MISC')
 
         if gmap_id is None or misc is None:
-            print(f"Registro sin 'gmap_id' o sin 'MISC' en archivo {archivo}. Se omite.")
+            print(f"Registro sin 'gmap_id' o sin 'MISC' en archivo {archivo_completo}. Se omite.")
             continue
 
         if not isinstance(misc, dict):
@@ -76,6 +85,7 @@ def desanidar_misc(bucket_name: str, archivo: str, bucket_procesado: str) -> Non
     
     print(f"Archivo desanidado guardado en {bucket_procesado} como {nombre_archivo_procesado}.")
 
+
 #########################################################################################
 
 def procesar_archivos(bucket_entrada: str, bucket_procesado: str, archivos: list, prefix:str) -> None:
@@ -86,7 +96,7 @@ def procesar_archivos(bucket_entrada: str, bucket_procesado: str, archivos: list
     print(f"Archivos a procesar: {archivos}")
 
     for archivo in archivos:
-        archivo_completo = f"{bucket_entrada}/{prefix}/{archivo}"
+        archivo_completo = f"{bucket_entrada}/{prefix}{archivo}"
         print(f"Procesando archivo: {archivo_completo}")
         desanidar_misc(bucket_name=bucket_entrada, archivo=archivo_completo, bucket_procesado=bucket_procesado)
 
