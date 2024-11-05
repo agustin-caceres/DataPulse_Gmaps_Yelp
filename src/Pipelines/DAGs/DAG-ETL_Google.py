@@ -14,7 +14,7 @@ from functions.v2_desanidar_misc import procesar_archivos
 # PARÁMETROS 
 ###################################################################################### 
 
-nameDAG_base         = 'ETL_Storage_to_BQ1'             # Nombre del DAG en Airflow.
+nameDAG_base         = 'ETL_Storage_to_BQ2'             # Nombre del DAG en Airflow.
 project_id           = 'neon-gist-439401-k8'           # ID del proyecto en Cloud.
 dataset              = '1'                             # ID dataset en BigQuery.
 owner                = 'Mauricio Arce'                 # Responsable del DAG.

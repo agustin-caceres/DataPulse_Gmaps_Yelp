@@ -98,7 +98,7 @@ def desanidar_misc(bucket_name: str, archivo: str, bucket_procesado: str, prefix
     print(f"Archivo desanidado guardado en {bucket_procesado} como {nombre_archivo_procesado}.")
 
 
-def procesar_archivos(bucket_entrada: str, bucket_procesado: str, archivos: list, prefix:str) -> None:
+def procesar_archivos(bucket_entrada: str, bucket_procesado: str, archivos: list, prefix: str) -> None:
     """
     Procesa los archivos desde un bucket de entrada y los guarda en un bucket de salida.
     
@@ -108,6 +108,9 @@ def procesar_archivos(bucket_entrada: str, bucket_procesado: str, archivos: list
         archivos (list): Lista de nombres de archivos a procesar.
         prefix (str): Prefijo que indica la carpeta dentro del bucket.
     """
+    # Imprimir los archivos antes de la validación
+    print(f"Archivos recibidos para procesar: {archivos}")
+
     if archivos is None or not isinstance(archivos, list) or not archivos:
         print("No se encontraron archivos o la lista no es válida.")
         return
@@ -115,8 +118,9 @@ def procesar_archivos(bucket_entrada: str, bucket_procesado: str, archivos: list
     print(f"Archivos a procesar: {archivos}")
 
     for archivo in archivos:
-        # No necesitas concatenar bucket_entrada y prefix aquí
+        # Aquí no necesitas concatenar bucket_entrada y prefix
         print(f"Procesando archivo: {archivo}")
         desanidar_misc(bucket_name=bucket_entrada, archivo=archivo, bucket_procesado=bucket_procesado, prefix=prefix)
+
 
 
