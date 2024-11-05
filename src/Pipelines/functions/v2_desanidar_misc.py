@@ -30,6 +30,9 @@ def desanidar_misc(bucket_name: str, archivo: str, bucket_procesado: str, prefix
         bucket_procesado (str): El nombre del bucket donde se guardará el archivo procesado.
         prefix (str): El prefijo del archivo dentro del bucket de origen.
     """
+    from google.cloud import storage
+    import json
+
     # Inicializa el cliente de Cloud Storage
     storage_client = storage.Client()
 
@@ -42,7 +45,12 @@ def desanidar_misc(bucket_name: str, archivo: str, bucket_procesado: str, prefix
     
     # Lee el archivo JSON desde el bucket de entrada
     blob = bucket_entrada.blob(archivo_completo)
-    contenido = blob.download_as_text()
+    
+    try:
+        contenido = blob.download_as_text()
+    except Exception as e:
+        print(f"Error al descargar el archivo {archivo_completo}: {e}")
+        return
 
     # Lista para almacenar los registros desanidados
     registros_desanidados = []
@@ -79,16 +87,27 @@ def desanidar_misc(bucket_name: str, archivo: str, bucket_procesado: str, prefix
     blob_salida = bucket_salida.blob(nombre_archivo_procesado)
 
     # Guarda los registros desanidados en formato NDJSON en el bucket de procesados
-    with blob_salida.open("w") as f:
-        for registro in registros_desanidados:
-            f.write(json.dumps(registro) + "\n")
+    try:
+        with blob_salida.open("w") as f:
+            for registro in registros_desanidados:
+                f.write(json.dumps(registro) + "\n")
+    except Exception as e:
+        print(f"Error al guardar el archivo procesado en el bucket: {e}")
+        return
     
     print(f"Archivo desanidado guardado en {bucket_procesado} como {nombre_archivo_procesado}.")
 
 
-#########################################################################################
-
 def procesar_archivos(bucket_entrada: str, bucket_procesado: str, archivos: list, prefix:str) -> None:
+    """
+    Procesa los archivos desde un bucket de entrada y los guarda en un bucket de salida.
+    
+    Args:
+        bucket_entrada (str): El nombre del bucket de origen.
+        bucket_procesado (str): El nombre del bucket donde se guardará el archivo procesado.
+        archivos (list): Lista de nombres de archivos a procesar.
+        prefix (str): Prefijo que indica la carpeta dentro del bucket.
+    """
     if archivos is None or not isinstance(archivos, list) or not archivos:
         print("No se encontraron archivos o la lista no es válida.")
         return
@@ -96,7 +115,8 @@ def procesar_archivos(bucket_entrada: str, bucket_procesado: str, archivos: list
     print(f"Archivos a procesar: {archivos}")
 
     for archivo in archivos:
-        archivo_completo = f"{bucket_entrada}/{prefix}{archivo}"
-        print(f"Procesando archivo: {archivo_completo}")
-        desanidar_misc(bucket_name=bucket_entrada, archivo=archivo_completo, bucket_procesado=bucket_procesado)
+        # No necesitas concatenar bucket_entrada y prefix aquí
+        print(f"Procesando archivo: {archivo}")
+        desanidar_misc(bucket_name=bucket_entrada, archivo=archivo, bucket_procesado=bucket_procesado, prefix=prefix)
+
 

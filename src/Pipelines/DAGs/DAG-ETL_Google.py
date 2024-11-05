@@ -46,9 +46,10 @@ with DAG(
     
     # Tarea 1: Listar los archivos en el bucket de entrada
     listar_archivos = GCSListObjectsOperator(
-        task_id='listar_archivos',
-        bucket=bucket_no_procesados,
-        prefix=prefix, 
+    task_id='listar_archivos',
+    bucket=bucket_no_procesados,
+    prefix=prefix, 
+    xcom_push=True, 
     )
     
     # Tarea 2: Procesar todos los archivos
@@ -77,3 +78,4 @@ with DAG(
     # Flujo de tareas.
     inicio >> listar_archivos >> procesar_archivos_task >> subir_a_bq_task >> fin
 
+datos-crudos/g_sitios
