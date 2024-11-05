@@ -7,12 +7,9 @@ def registrar_archivos_procesados(bucket_name: str, prefix: str, project_id: str
     storage_client = storage.Client() 
     table_id = f"{project_id}.{dataset}.archivos_procesados"
 
-    # Listar archivos en el bucket GCS con el prefijo especificado
-    blobs = storage_client.list_blobs(bucket_name, prefix=prefix)
-    archivos = [blob.name for blob in blobs] 
-    
-    # Filtrar solo archivos que terminan en .json
-    archivos = [blob.name for blob in blobs if blob.name.endswith('.json')] 
+    # Listar archivos en el bucket GCS con el prefijo especificado y filtrar
+    blobs = list(storage_client.list_blobs(bucket_name, prefix=prefix))  # Convierte a lista
+    archivos = [blob.name for blob in blobs if blob.name.endswith('.json')]  # Filtrar directamente
 
     rows_to_insert = []
     for nombre_archivo in archivos:
@@ -22,9 +19,9 @@ def registrar_archivos_procesados(bucket_name: str, prefix: str, project_id: str
         })
 
     # Insertar los archivos en la tabla de BigQuery
-    errors = client.insert_rows_json(table_id, rows_to_insert)
-    if errors:
-        print(f"Error al insertar los archivos procesados: {errors}")
-    else:
-        print("Archivos registrados exitosamente.")
-        print("Archivos registrados exitosamente.")  
+    if rows_to_insert:
+        errors = client.insert_rows_json(table_id, rows_to_insert)
+        if errors:
+            print(f"Error al insertar los archivos procesados: {errors}")
+        else:
+            print("Archivos registrados exitosamente.")
