@@ -97,21 +97,21 @@ def actualizar_misc_con_atributos(project_id: str, dataset: str) -> None:
     query = f"""
     WITH updated_misc AS (
         SELECT 
-            id_negocio,
-            SPLIT(misc, ':')[SAFE_OFFSET(0)] AS category,  -- Extrae la categoría
-            TRIM(SPLIT(misc, ':')[SAFE_OFFSET(1)]) AS atributo  -- Extrae el contenido después de ':'
+            gmap_id,
+            SPLIT(MISC, ':')[SAFE_OFFSET(0)] AS category,  -- Extrae la categoría
+            TRIM(SPLIT(MISC, ':')[SAFE_OFFSET(1)]) AS atributo  -- Extrae el contenido después de ':'
         FROM `{table_id}`
         WHERE misc IS NOT NULL
     ),
     exploded AS (
         SELECT 
-            id_negocio,
+            gmap_id,
             category,
             REGEXP_EXTRACT(atributo, r"'(.*?)'") AS atributo  -- Extrae los textos dentro de comillas
         FROM updated_misc
         WHERE atributo IS NOT NULL
     )
-    SELECT id_negocio, category, atributo
+    SELECT gmap_id, category, atributo
     FROM exploded
     """
 
@@ -121,8 +121,8 @@ def actualizar_misc_con_atributos(project_id: str, dataset: str) -> None:
 
     # Inserta los datos en la tabla original, desanidando las filas
     insert_query = f"""
-    INSERT INTO `{table_id}` (id_negocio, category, atributo)
-    VALUES ({','.join([f"('{row.id_negocio}', '{row.category}', '{row.atributo}')" for row in results])})
+    INSERT INTO `{table_id}` (gmap_id, category, atributo)
+    VALUES ({','.join([f"('{row.gmap_id}', '{row.category}', '{row.atributo}')" for row in results])})
     """
 
     # Ejecuta la consulta de inserción
