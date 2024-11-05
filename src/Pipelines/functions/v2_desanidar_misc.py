@@ -32,16 +32,20 @@ def procesar_archivos(bucket_entrada: str, bucket_procesado: str, archivos: list
     # Imprimir los archivos antes de la validación
     print(f"Archivos recibidos para procesar: {archivos}")
 
-    if archivos is None or not isinstance(archivos, list) or not archivos:
+    # Filtrar archivos para incluir solo los archivos JSON
+    archivos_json = [archivo for archivo in archivos if archivo.endswith('.json')]
+
+    if archivos_json is None or not isinstance(archivos_json, list) or not archivos_json:
         print("No se encontraron archivos o la lista no es válida.")
         return
 
-    print(f"Archivos a procesar: {archivos}")
+    print(f"Archivos a procesar: {archivos_json}")
 
-    for archivo in archivos:
+    for archivo in archivos_json:
         # Procesa cada archivo individualmente
         print(f"Procesando archivo: {archivo}")
         desanidar_misc(bucket_name=bucket_entrada, archivo=archivo, bucket_procesado=bucket_procesado, prefix=prefix)
+
             
 ################################################################################################
 
