@@ -7,7 +7,7 @@ from functions.registrar_archivo import registrar_archivos_procesados
 from functions.desanidar_misc import desanidar_misc
 
 ######################################################################################
-# PARÁMETROS #1
+# PARÁMETROS
 ######################################################################################
 
 nameDAG_base      = 'Procesamiento_ETL_Google'
