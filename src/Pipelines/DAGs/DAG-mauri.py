@@ -138,6 +138,6 @@ with DAG(
     fin = DummyOperator(task_id='fin')
     
     # Estructura del flujo de tareas  
-    inicio >> eliminar_tablas_temporales >> fin
+    inicio >> eliminar_tablas_temporales_task >> fin
 
 
