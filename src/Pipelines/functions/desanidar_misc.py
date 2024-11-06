@@ -2,7 +2,41 @@ from google.cloud import bigquery
 from google.cloud import storage
 import json
 
+################################################################
+
+def crear_tabla_miscelaneos(project_id: str, dataset: str) -> None:
+    """
+    Crea la tabla 'miscelaneos' en el dataset de BigQuery si no existe.
+    
+    Args:
+    -------
+    project_id : str
+        ID del proyecto en Google Cloud Platform.
+    dataset : str
+        Nombre del dataset en BigQuery.
+    """
+    client = bigquery.Client()
+    
+    # Definir el ID de la tabla
+    miscelaneos_table_id = f"{project_id}.{dataset}.miscelaneos"
+    
+    # Definir la consulta SQL para crear la tabla 'miscelaneos'
+    create_table_query = f"""
+    CREATE TABLE IF NOT EXISTS `{miscelaneos_table_id}` (
+        gmap_id STRING,         
+        MISC STRING,
+    )
+    """
+    
+    # Ejecutar la consulta para crear la tabla
+    try:
+        client.query(create_table_query).result()
+        print(f"Tabla '{miscelaneos_table_id}' creada con éxito.")
+    except Exception as e:
+        print(f"Error al crear la tabla '{miscelaneos_table_id}': {e}")
+
 ################################################################ 
+
 def dict_to_list(diccionario: dict) -> list:
     """
     Convierte el diccionario de la columna `MISC` en una lista de strings
@@ -282,9 +316,41 @@ def mover_a_tabla_oficial(project_id: str, dataset: str) -> None:
     insert_query_job.result()  # Espera a que se complete la inserción
     
     print("Datos movidos a la tabla oficial con éxito.")
+    
+#############################################################################################
 
-
-
+def eliminar_tablas_temporales(project_id: str, dataset: str) -> None:
+    """
+    Elimina las tablas temporales 'temp_miscelaneos' y 'miscelaneos' en BigQuery.
+    
+    Args:
+    -------
+    project_id : str
+        ID del proyecto en Google Cloud Platform.
+    dataset : str
+        Nombre del dataset en BigQuery.
+    """
+    client = bigquery.Client()
+    
+    # Definir las tablas a eliminar
+    temp_table_id = f"{project_id}.{dataset}.temp_miscelaneos"
+    miscelaneos_table_id = f"{project_id}.{dataset}.miscelaneos"
+    
+    # Eliminar la tabla temporal 'temp_miscelaneos'
+    try:
+        drop_temp_query = f"DROP TABLE IF EXISTS `{temp_table_id}`"
+        client.query(drop_temp_query).result()
+        print(f"Tabla temporal {temp_table_id} eliminada con éxito.")
+    except Exception as e:
+        print(f"Error al eliminar la tabla temporal {temp_table_id}: {e}")
+    
+    # Eliminar la tabla 'miscelaneos' (temporal)
+    try:
+        drop_miscelaneos_query = f"DROP TABLE IF EXISTS `{miscelaneos_table_id}`"
+        client.query(drop_miscelaneos_query).result()
+        print(f"Tabla {miscelaneos_table_id} eliminada con éxito.")
+    except Exception as e:
+        print(f"Error al eliminar la tabla {miscelaneos_table_id}: {e}")
 
 
 

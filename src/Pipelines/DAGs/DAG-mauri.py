@@ -7,8 +7,8 @@ from airflow.utils.dates import days_ago
 
 #Funciones
 from functions.registrar_archivo import registrar_archivos_procesados
-from functions.desanidar_misc import desanidar_misc, actualizar_misc_con_atributos, eliminar_categorias_especificas
-from functions.desanidar_misc import generalizar_atributos, marcar_nuevas_accesibilidades, mover_a_tabla_oficial
+from functions.desanidar_misc import crear_tabla_miscelaneos ,desanidar_misc, actualizar_misc_con_atributos, eliminar_categorias_especificas
+from functions.desanidar_misc import generalizar_atributos, marcar_nuevas_accesibilidades, mover_a_tabla_oficial, eliminar_tablas_temporales
 
 ######################################################################################
 # PARÁMETROS 
@@ -52,8 +52,18 @@ with DAG(
        #     'dataset': dataset
         #}
     #)
+    
+#    # Tarea 2: Crear la tabla temporal miscelaneos si no existe
+#    crear_tabla_miscelaneos_task = PythonOperator(
+#        task_id="crear_tabla_miscelaneos",
+#        python_callable=crear_tabla_miscelaneos,
+#        op_kwargs={
+#            'project_id': project_id,
+#            'dataset': dataset
+#        },
+#    )
 
-#    # Tarea 2: Desanidar el archivo de datos 'MISC' usando el nombre del archivo del XCom
+#    # Tarea 3: Desanidar el archivo de datos 'MISC' usando el nombre del archivo del XCom
 #    desanidar_misc_task = PythonOperator(
  #       task_id='desanidar_misc',
   #      python_callable=desanidar_misc,
@@ -65,7 +75,7 @@ with DAG(
        # }
     #)
     
-    # Tarea 3: Actualizar la tabla con nuevas columnas 'category', 'misc_content' y 'atributo'
+    # Tarea 4: Actualizar la tabla con nuevas columnas 'category', 'misc_content' y 'atributo'
 #    actualizar_misc_task = PythonOperator(
 #        task_id='actualizar_misc_con_atributos',
 #        python_callable=actualizar_misc_con_atributos,
@@ -75,7 +85,7 @@ with DAG(
 #        }
 #    ) 
     
-    # Tarea 4: Elimina las categorias que no se van a utilizar.
+    # Tarea 5: Elimina las categorias que no se van a utilizar.
 #    eliminar_categorias = PythonOperator(
 #        task_id="eliminar_categorias_especificas",
 #        python_callable=eliminar_categorias_especificas,
@@ -85,7 +95,7 @@ with DAG(
 #            }
 #    )
 
-    # Tarea 5: Generalizar los atributos
+    # Tarea 6: Generalizar los atributos
 #    generalizar_atributos_task = PythonOperator(
 #        task_id="generalizar_atributos",
 #        python_callable=generalizar_atributos,
@@ -95,7 +105,7 @@ with DAG(
 #        },
 #    )
  
-    # Tarea 6 marcar atributos sensibles como accesibilidades
+    # Tarea 7: marcar atributos sensibles como accesibilidades
 #    anadir_accesibilidades = PythonOperator(
 #        task_id="anadir_accesibilidades",
 #        python_callable=marcar_nuevas_accesibilidades,
@@ -105,19 +115,30 @@ with DAG(
 #        },
 #    )
   
-    # Tarea 7: Mover los datos de la tabla temporal a la tabla oficial
-    mover_a_tabla_oficial_task = PythonOperator(
-        task_id="mover_a_tabla_oficial",
-        python_callable=mover_a_tabla_oficial,
+#    # Tarea 8: Mover los datos de la tabla temporal a la tabla oficial
+#    mover_a_tabla_oficial_task = PythonOperator(
+#        task_id="mover_a_tabla_oficial",
+#        python_callable=mover_a_tabla_oficial,
+#        op_kwargs={
+#            'project_id': project_id,
+#            'dataset': dataset
+#        },
+#    )
+
+    # Tarea 9: Eliminar las tablas temporales
+    eliminar_tablas_temporales_task = PythonOperator(
+        task_id="eliminar_tablas_temporales",
+        python_callable=eliminar_tablas_temporales,
         op_kwargs={
             'project_id': project_id,
             'dataset': dataset
         },
     )
 
+
     fin = DummyOperator(task_id='fin')
     
     # Estructura del flujo de tareas  
-    inicio >> mover_a_tabla_oficial_task >> fin
+    inicio >> eliminar_tablas_temporales >> fin
 
 
