@@ -1,14 +1,15 @@
-# Librerías
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 from airflow.operators.dummy import DummyOperator
 from datetime import timedelta
 from airflow.utils.dates import days_ago
 from google.cloud import bigquery
-from functions.bigquery_utils import crear_tabla_temporal, cargar_archivo_gcs_a_bigquery
+from functions.load_data_yelp import crear_tabla_temporal
+from functions.extract_data_yelp import cargar_archivo_gcs_a_dataframe
+from functions.load_data_yelp import cargar_dataframe_a_bigquery
 
 ######################################################################################
-# PARÁMETROS PARA DATOS DE YELP
+# PARÁMETROS PARA DATOS DE YELP 1
 ######################################################################################
 
 nameDAG_base       = 'ETL_Yelp_Checkin_to_BQ'
@@ -60,14 +61,10 @@ with DAG(
     # Tarea 2: Cargar el archivo checkin.json en la tabla temporal
     cargar_archivo_temp_task = PythonOperator(
         task_id='cargar_archivo_en_tabla_temporal',
-        python_callable=cargar_archivo_gcs_a_bigquery,
-        op_kwargs={
-            'bucket_name': bucket_name,
-            'file_path': 'Yelp/checkin.json',
-            'project_id': project_id,
-            'dataset': dataset,
-            'table_name': temp_table_general
-        },
+        python_callable=lambda **kwargs: cargar_dataframe_a_bigquery(
+            cargar_archivo_gcs_a_dataframe(bucket_name, 'Yelp/checkin.json'), 
+            project_id, dataset, temp_table_general
+        )
     )
 
     # Tarea de fin

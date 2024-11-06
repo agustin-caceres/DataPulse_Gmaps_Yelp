@@ -4,10 +4,10 @@ from airflow.operators.dummy import DummyOperator
 from datetime import timedelta
 from airflow.utils.dates import days_ago
 from functions.registrar_archivo import registrar_archivos_procesados
-from functions.desanidar_misc import desanidar_misc
+from functions.desanidar_misc import desanidar_misc, actualizar_misc_con_atributos
 
 ######################################################################################
-# PARÁMETROS
+# PARÁMETROS 1
 ######################################################################################
 
 nameDAG_base      = 'Procesamiento_ETL_Google'
@@ -38,30 +38,41 @@ with DAG(
     inicio = DummyOperator(task_id='inicio')
 
     # Tarea 1: Registrar archivos procesados y devolver el nombre del primer archivo nuevo
-    registrar_archivos = PythonOperator(
-        task_id='registrar_archivos_procesados',
-        python_callable=registrar_archivos_procesados,
+#    registrar_archivos = PythonOperator(
+ #       task_id='registrar_archivos_procesados',
+  #      python_callable=registrar_archivos_procesados,
+   #     op_kwargs={
+    #        'bucket_name': bucket_name,
+     #       'prefix': 'g_sitios/',
+      #      'project_id': project_id,
+       #     'dataset': dataset
+        #}
+    #)
+
+#    # Tarea 2: Desanidar el archivo de datos 'MISC' usando el nombre del archivo del XCom
+#    desanidar_misc_task = PythonOperator(
+ #       task_id='desanidar_misc',
+  #      python_callable=desanidar_misc,
+   #     op_kwargs={
+    #        'bucket_name': bucket_name,
+     #       'archivo': "{{ ti.xcom_pull(task_ids='registrar_archivos_procesados') }}",
+        #    'project_id': project_id,
+      #      'dataset': dataset
+       # }
+    #)
+    
+    # Tarea 3: Actualizar la tabla con nuevas columnas 'category', 'misc_content' y 'atributo'
+    actualizar_misc_task = PythonOperator(
+        task_id='actualizar_misc_con_atributos',
+        python_callable=actualizar_misc_con_atributos,
         op_kwargs={
-            'bucket_name': bucket_name,
-            'prefix': 'g_sitios/',
             'project_id': project_id,
             'dataset': dataset
         }
-    )
+    )  
+  
+    fin = DummyOperator(task_id='fin')  
+  
+    # Estructura del flujo de tareas  
+    inicio >> actualizar_misc_task >> fin
 
-    # Tarea 2: Desanidar el archivo de datos 'MISC' usando el nombre del archivo del XCom
-    desanidar_misc_task = PythonOperator(
-        task_id='desanidar_misc',
-        python_callable=desanidar_misc,
-        op_kwargs={
-            'bucket_name': bucket_name,
-            'archivo': "{{ ti.xcom_pull(task_ids='registrar_archivos_procesados') }}",
-            'project_id': project_id,
-            'dataset': dataset
-        }
-    )
-
-    fin = DummyOperator(task_id='fin')
-
-    # Estructura del flujo de tareas
-    inicio >> registrar_archivos >> desanidar_misc_task >> fin

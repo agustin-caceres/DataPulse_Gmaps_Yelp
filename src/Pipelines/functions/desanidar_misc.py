@@ -2,6 +2,7 @@ from google.cloud import bigquery
 from google.cloud import storage
 import json
 
+################################################################ 
 def dict_to_list(diccionario: dict) -> list:
     """
     Convierte el diccionario de la columna `MISC` en una lista de strings
@@ -14,6 +15,8 @@ def dict_to_list(diccionario: dict) -> list:
         list: lista con los pares clave:valor no nulos.
     """
     return [f"{key}: {value}" for key, value in diccionario.items() if value is not None]
+
+################################################################ 
 
 def desanidar_misc(bucket_name: str, archivo: str, project_id: str, dataset: str) -> None:
     """
@@ -72,3 +75,68 @@ def desanidar_misc(bucket_name: str, archivo: str, project_id: str, dataset: str
                 print(f"Datos del archivo {archivo} cargados exitosamente en BigQuery.")
         else:
             print(f"Sin datos para insertar del archivo {archivo}.")
+
+################################################################ 
+
+from google.cloud import bigquery
+
+def actualizar_misc_con_atributos(project_id: str, dataset: str) -> None:
+    """
+    Actualiza la tabla 'miscelaneos' en BigQuery, creando una nueva tabla temporal que agrega
+    las columnas 'category' y 'atributo' a partir de la columna 'MISC'.
+
+    Args:
+    -------
+    project_id : str
+        ID del proyecto en Google Cloud Platform.
+    dataset : str
+        Nombre del dataset en BigQuery donde se encuentra la tabla 'miscelaneos'.
+    """
+    client = bigquery.Client()
+    table_id = f"{project_id}.{dataset}.miscelaneos"
+    temp_table_id = f"{project_id}.{dataset}.temp_miscelaneos"
+
+    # Consulta SQL para crear la tabla temporal con los datos procesados
+    query = f"""
+    CREATE OR REPLACE TABLE `{temp_table_id}` AS
+    WITH updated_misc AS (
+        SELECT 
+            gmap_id,
+            -- Extraer la categoría antes del primer ':'
+            REGEXP_EXTRACT(MISC, r"^(.*?):") AS category,  
+            -- Extraer la lista después del ':', eliminando los corchetes y comillas
+            REGEXP_EXTRACT(MISC, r":\s*(\[[^\]]*\])") AS atributo  -- Extrae la lista
+        FROM `{table_id}`
+        WHERE MISC IS NOT NULL
+    ),
+    exploded AS (
+        SELECT 
+            gmap_id,
+            category,
+            -- Desanidar la lista de atributo separando por comas
+            TRIM(REGEXP_EXTRACT(atributo, r"'(.*?)'")) AS atributo_raw
+        FROM updated_misc
+        WHERE atributo IS NOT NULL
+    ),
+    -- Ahora, separamos la lista de elementos por coma y lo expandimos en filas
+    final_exploded AS (
+        SELECT 
+            gmap_id,
+            category,
+            -- Separamos por coma para obtener los elementos individuales
+            TRIM(element) AS atributo
+        FROM exploded,
+        UNNEST(SPLIT(atributo_raw, ',')) AS element
+    )
+    SELECT gmap_id, category, atributo
+    FROM final_exploded
+    """
+
+    # Ejecuta la consulta para crear la tabla temporal
+    extract_query_job = client.query(query)
+    extract_query_job.result()  # Espera a que termine la consulta
+
+    print(f"Tabla temporal '{temp_table_id}' creada con éxito.")
+
+
+
