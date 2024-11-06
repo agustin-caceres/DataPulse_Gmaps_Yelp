@@ -7,9 +7,13 @@ from google.cloud import bigquery
 from functions.load_data_yelp import crear_tabla_temporal
 from functions.extract_data_yelp import cargar_archivo_gcs_a_dataframe
 from functions.load_data_yelp import cargar_dataframe_a_bigquery
+from functions.transform_data_yelp import transformar_checkin
+from functions.load_data_yelp import eliminar_tabla
+
+
 
 ######################################################################################
-# PARÁMETROS PARA DATOS DE YELP 1
+# PARÁMETROS PARA DATOS DE YELP 2
 ######################################################################################
 
 nameDAG_base       = 'ETL_Yelp_Checkin_to_BQ'
@@ -67,8 +71,31 @@ with DAG(
         )
     )
 
+    # Tarea 3: Transformar los datos y cargarlos en la tabla final
+    transformar_datos = PythonOperator(
+        task_id='transformar_datos_y_cargar_tabla_final',
+        python_callable=transformar_checkin,
+        op_kwargs={
+            'project_id': project_id,
+            'dataset': dataset,
+            'temp_table': temp_table_general,
+            'final_table': 'checkin_yelp'
+        },
+    )
+
+    # Tarea 4: Eliminar la tabla temporal después de la carga en la tabla final
+    eliminar_tabla_temp = PythonOperator(
+        task_id='eliminar_tabla_temporal',
+        python_callable=eliminar_tabla,
+        op_kwargs={
+            'project_id': project_id,
+            'dataset': dataset,
+            'table_name': temp_table_general
+        },
+    )
+
     # Tarea de fin
     fin = DummyOperator(task_id='fin')
 
     # Estructura del flujo de tareas
-    inicio >> crear_tabla_temp >> cargar_archivo_temp_task >> fin
+    inicio >> crear_tabla_temp >> cargar_archivo_temp_task >> transformar_datos >> eliminar_tabla_temp >> fin
