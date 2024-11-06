@@ -78,6 +78,8 @@ def desanidar_misc(bucket_name: str, archivo: str, project_id: str, dataset: str
 
 ################################################################ 
 
+from google.cloud import bigquery
+
 def actualizar_misc_con_atributos(project_id: str, dataset: str) -> None:
     """
     Actualiza la tabla 'miscelaneos' en BigQuery, creando una nueva tabla temporal que agrega
@@ -100,8 +102,10 @@ def actualizar_misc_con_atributos(project_id: str, dataset: str) -> None:
     WITH updated_misc AS (
         SELECT 
             gmap_id,
-            SPLIT(MISC, ':')[SAFE_OFFSET(0)] AS category,  -- Extrae la categoría
-            TRIM(SPLIT(MISC, ':')[SAFE_OFFSET(1)]) AS atributo  -- Extrae el contenido después de ':'
+            -- Extraer la categoría antes del primer ':'
+            REGEXP_EXTRACT(MISC, r"^(.*?):") AS category,  
+            -- Extraer la lista después del ':', eliminando los corchetes y comillas
+            REGEXP_EXTRACT(MISC, r":\s*(\[[^\]]*\])") AS atributo  -- Extrae la lista
         FROM `{table_id}`
         WHERE MISC IS NOT NULL
     ),
@@ -109,12 +113,23 @@ def actualizar_misc_con_atributos(project_id: str, dataset: str) -> None:
         SELECT 
             gmap_id,
             category,
-            REGEXP_EXTRACT(atributo, r"'(.*?)'") AS atributo  -- Extrae los textos dentro de comillas
+            -- Desanidar la lista de atributo separando por comas
+            TRIM(REGEXP_EXTRACT(atributo, r"'(.*?)'")) AS atributo_raw
         FROM updated_misc
         WHERE atributo IS NOT NULL
+    ),
+    -- Ahora, separamos la lista de elementos por coma y lo expandimos en filas
+    final_exploded AS (
+        SELECT 
+            gmap_id,
+            category,
+            -- Separamos por coma para obtener los elementos individuales
+            TRIM(element) AS atributo
+        FROM exploded,
+        UNNEST(SPLIT(atributo_raw, ',')) AS element
     )
     SELECT gmap_id, category, atributo
-    FROM exploded
+    FROM final_exploded
     """
 
     # Ejecuta la consulta para crear la tabla temporal
@@ -122,4 +137,6 @@ def actualizar_misc_con_atributos(project_id: str, dataset: str) -> None:
     extract_query_job.result()  # Espera a que termine la consulta
 
     print(f"Tabla temporal '{temp_table_id}' creada con éxito.")
+
+
 
