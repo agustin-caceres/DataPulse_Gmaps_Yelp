@@ -252,6 +252,38 @@ def marcar_nuevas_accesibilidades(project_id: str, dataset: str) -> None:
     
     print("Categorías de accesibilidad actualizadas con éxito.")
 
+#########################################################################################
+
+def mover_a_tabla_oficial(project_id: str, dataset: str) -> None:
+    """
+    Mueve los datos desde la tabla temporal 'temp_miscelaneos' a la tabla oficial 'g_misc' en BigQuery,
+    añadiendo los registros sin eliminar los anteriores.
+    
+    Args:
+    -------
+    project_id : str
+        ID del proyecto en Google Cloud Platform.
+    dataset : str
+        Nombre del dataset en BigQuery donde se encuentran las tablas.
+    """
+    client = bigquery.Client()
+    temp_table_id = f"{project_id}.{dataset}.temp_miscelaneos"
+    official_table_id = f"{project_id}.{dataset}.g_misc"
+    
+    # Consulta SQL para insertar los registros desde la tabla temporal a la tabla oficial
+    insert_query = f"""
+    INSERT INTO `{official_table_id}` (id_negocio, categoria_atributo, atributo)
+    SELECT gmap_id, category, atributo
+    FROM `{temp_table_id}`
+    """
+    
+    # Ejecutar la consulta
+    insert_query_job = client.query(insert_query)
+    insert_query_job.result()  # Espera a que se complete la inserción
+    
+    print("Datos movidos a la tabla oficial con éxito.")
+
+
 
 
 

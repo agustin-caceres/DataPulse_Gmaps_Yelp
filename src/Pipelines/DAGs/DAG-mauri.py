@@ -7,10 +7,11 @@ from airflow.utils.dates import days_ago
 
 #Funciones
 from functions.registrar_archivo import registrar_archivos_procesados
-from functions.desanidar_misc import desanidar_misc, actualizar_misc_con_atributos, eliminar_categorias_especificas, generalizar_atributos, marcar_nuevas_accesibilidades
+from functions.desanidar_misc import desanidar_misc, actualizar_misc_con_atributos, eliminar_categorias_especificas
+from functions.desanidar_misc import generalizar_atributos, marcar_nuevas_accesibilidades, mover_a_tabla_oficial
 
 ######################################################################################
-# PARÁMETROS 1
+# PARÁMETROS 
 ######################################################################################
 
 nameDAG_base      = 'Procesamiento_ETL_Google'
@@ -95,17 +96,28 @@ with DAG(
 #    )
  
     # Tarea 6 marcar atributos sensibles como accesibilidades
-    anadir_accesibilidades = PythonOperator(
-        task_id="anadir_accesibilidades",
-        python_callable=marcar_nuevas_accesibilidades,
+#    anadir_accesibilidades = PythonOperator(
+#        task_id="anadir_accesibilidades",
+#        python_callable=marcar_nuevas_accesibilidades,
+#        op_kwargs={
+#            'project_id': project_id,
+#            'dataset': dataset
+#        },
+#    )
+  
+    # Tarea 7: Mover los datos de la tabla temporal a la tabla oficial
+    mover_a_tabla_oficial_task = PythonOperator(
+        task_id="mover_a_tabla_oficial",
+        python_callable=mover_a_tabla_oficial,
         op_kwargs={
             'project_id': project_id,
             'dataset': dataset
         },
     )
-  
-    fin = DummyOperator(task_id='fin')  
-  
+
+    fin = DummyOperator(task_id='fin')
+    
     # Estructura del flujo de tareas  
-    inicio >> anadir_accesibilidades  >> fin
+    inicio >> mover_a_tabla_oficial_task >> fin
+
 
