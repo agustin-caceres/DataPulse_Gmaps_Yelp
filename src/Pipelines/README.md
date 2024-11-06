@@ -1,7 +1,7 @@
 # Pipeline ETL de Yelp y Google en Airflow 🚀
 
 ## Descripción General 📝
-Este proyecto implementa un pipeline ETL (Extracción, Transformación, Carga) utilizando Google Cloud Platform (GCP) y Apache Airflow. El objetivo es procesar y cargar los datos de Yelp y Google en BigQuery de manera automatizada, asegurando que los datos estén limpios y listos para el análisis. Actualmente, el pipeline está configurado para procesar los datos de check-in de Yelp y almacenarlos en una tabla temporal en BigQuery antes de realizar transformaciones adicionales.
+Este proyecto implementa un pipeline ETL (Extracción, Transformación, Carga) utilizando Google Cloud Platform (GCP) y Apache Airflow. El objetivo es procesar y cargar datos de Yelp y Google en BigQuery de manera automatizada, asegurando que los datos estén limpios y listos para el análisis. Actualmente, el pipeline procesa los datos de check-in de Yelp, almacenándolos en una tabla temporal en BigQuery antes de realizar transformaciones adicionales.
 
 ## Tecnologías Utilizadas 💻
 - **Google Cloud Platform (GCP)**:
@@ -13,38 +13,44 @@ Este proyecto implementa un pipeline ETL (Extracción, Transformación, Carga) u
 
 ## Estructura del Proyecto 📂
 - **DAG**:
-    - `DAG_yelp_etl.py:` Este archivo contiene el DAG principal que coordina las tareas de creación de tablas, extracción de datos y carga en BigQuery.
+  - `DAG_yelp_etl.py`: Este archivo contiene el DAG principal que coordina las tareas de creación de tablas, extracción de datos y carga en BigQuery.
 - **Módulos Auxiliares**:
-  - `bigquery_utils.py`: Incluye funciones auxiliares para interactuar con BigQuery, como la creación de tablas, carga de DataFrames, y la eliminación de tablas temporales.
-  - `extract_data_yelp.py`: Contiene funciones para la extracción y transformación específicas de los datasets.
-- **Transformaciones**:
-    - Transformaciones específicas para distintos archivos (por ejemplo, checkin.json) se gestionan mediante un diccionario en bigquery_utils.py, lo que permite agregar reglas de transformación específicas para otros archivos de manera sencilla.
+  - `extract_data_yelp.py`: Contiene funciones para la extracción de datos desde Google Cloud Storage.
+  - `transform_data_yelp.py`: Gestiona las transformaciones específicas para cada archivo de datos.
+  - `load_data_yelp.py`: Incluye funciones para cargar los datos en BigQuery y gestionar las tablas.
+- **Funciones de Utilidad**:
+  - `bigquery_utils.py`: Se utilizó inicialmente para funciones generales, ahora organizadas en módulos separados.
 
 ## Estructura del DAG 🗂️
 
 1. **Inicio**:
-    - `Inicio:` Un `DummyOperator` que marca el comienzo del DAG para facilitar la visualización en Airflow.
+    - `inicio`: Un `DummyOperator` que marca el comienzo del DAG para facilitar la visualización en Airflow.
 2. **Creación de Tabla Temporal**:
-    - `crear_tabla_temporal:` Tarea encargada de crear una tabla temporal en BigQuery para almacenar los datos de los archivos en Storage con el esquema adecuado. Esto permite realizar transformaciones adicionales en BigQuery antes de mover los datos a la tabla final.
-3. **Carga de Datos**:
-    - `cargar_archivo_en_tabla_temporal:` Esta tarea extrae el archivo desde Google Cloud Storage (GCS), aplica las transformaciones necesarias y carga los datos en la tabla temporal en BigQuery para luego realizar las transformaciones y mover los datos a la tabla final.
+    - `crear_tabla_temporal`: Tarea encargada de crear una tabla temporal en BigQuery para almacenar los datos de los archivos en Storage con el esquema adecuado.
+3. **Extracción y Transformación de Datos**:
+    - `cargar_archivo_en_tabla_temporal`: Esta tarea extrae el archivo desde Google Cloud Storage (GCS), aplica las transformaciones necesarias y carga los datos en la tabla temporal en BigQuery.
 4. **Fin**:
-    - `fin:` Un `DummyOperator` que marca el fin del DAG.
+    - `fin`: Un `DummyOperator` que marca el fin del DAG.
+
+## Estructura de Módulos y Funciones 🔧
+- **extract_data_yelp.py**:
+  - `cargar_archivo_gcs_a_dataframe`: Extrae un archivo de GCS y lo convierte en un DataFrame, aplicando transformaciones si es necesario.
+- **transform_data_yelp.py**:
+  - `pre_transformar_checkin`: Procesa el campo `date` en `checkin.json`, separando fechas en filas individuales y asegurando el formato TIMESTAMP.
+  - `aplicar_transformacion`: Aplica una transformación específica en función del nombre del archivo, usando un diccionario de transformaciones.
+- **load_data_yelp.py**:
+  - `crear_tabla_temporal`: Crea la tabla temporal en BigQuery con el esquema especificado.
+  - `cargar_dataframe_a_bigquery`: Carga un DataFrame en una tabla de BigQuery.
 
 ## Esquema de la Tabla Temporal 📋
-
 La tabla temporal `checkin_temp` contiene los siguientes campos:
 - **business_id**: Identificador del negocio (STRING).
-- **date**: Fecha y hora del check-in en formato `TIMESTAMP`.
+- **date**: Fecha y hora del check-in en formato TIMESTAMP.
 
 ## Funcionalidades y Detalles Técnicos ⚙️
-- **Diccionario de Transformaciones**:
-  - En `bigquery_utils.py` se encuentra un diccionario `transformaciones` que permite asociar cada archivo con su respectiva función de transformación. Esto facilita la extensión del pipeline a otros archivos, ya que solo se necesita crear una función de transformación y añadirla al diccionario.
-- **Función de Transformación `transformar_checkin`**:
-  - Esta función procesa el campo `date` en `checkin.json`, separando las fechas en filas individuales y convirtiendo cada valor en formato TIMESTAMP. La función asegura que las fechas estén en el formato `YYYY-MM-DD HH:MM:SS` antes de la carga en BigQuery.
-- **Validaciones y Control de Errores**:
-  - El pipeline incluye validaciones como verificar si el DataFrame está vacío antes de cargarlo en BigQuery.
-  - En caso de error durante la extracción o carga, se utilizan bloques `try-except` para manejar las excepciones y permitir que el pipeline continúe sin interrupciones graves.
+- **Diccionario de Transformaciones**: En `transform_data_yelp.py`, el diccionario `transformaciones` asocia cada archivo con su respectiva función de transformación. Esto facilita la extensión del pipeline a otros archivos: solo se necesita crear una función de transformación y añadirla al diccionario.
+- **Validaciones y Control de Errores**: El pipeline incluye validaciones, como verificar si el DataFrame está vacío antes de cargarlo en BigQuery. Los bloques `try-except` se eliminaron para mejorar la transparencia y permitir que los errores se manejen adecuadamente a través de los registros de Airflow.
+- **Modularización del Código**: Las funciones de extracción, transformación y carga se han reorganizado en módulos independientes (`extract_data_yelp.py`, `transform_data_yelp.py` y `load_data_yelp.py`) para mejorar la claridad y la reutilización del código.
 
 ## Próximos Pasos 🔜
 - **Implementación de Transformación en BigQuery**:
@@ -67,4 +73,3 @@ La tabla temporal `checkin_temp` contiene los siguientes campos:
 
 ## Notas Finales 📝
 Este markdown documenta el progreso actual del pipeline y proporciona una guía sobre la arquitectura, el flujo de trabajo y las consideraciones clave. A medida que avancemos en el proyecto, este documento se actualizará para reflejar nuevos desarrollos y decisiones de diseño.
-
