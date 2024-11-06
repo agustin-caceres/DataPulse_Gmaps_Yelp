@@ -144,7 +144,7 @@ from google.cloud import bigquery
 
 def eliminar_categorias_especificas(project_id: str, dataset: str) -> None:
     """
-    Elimina filas con categorías específicas ('Health & safety' y 'Health and safety')
+    Elimina filas con categorías específicas ('Health & safety')
     en la tabla temporal en BigQuery.
 
     Args:
@@ -166,8 +166,7 @@ def eliminar_categorias_especificas(project_id: str, dataset: str) -> None:
     # Ejecuta la consulta de eliminación
     delete_query_job = client.query(delete_query)
     delete_query_job.result()  # Espera a que se complete la eliminación
-    
-    print("Filas eliminadas con éxito.")
+
 
 
 
