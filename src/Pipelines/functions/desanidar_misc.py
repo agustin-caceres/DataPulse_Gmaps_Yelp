@@ -337,20 +337,14 @@ def eliminar_tablas_temporales(project_id: str, dataset: str) -> None:
     miscelaneos_table_id = f"{project_id}.{dataset}.miscelaneos"
     
     # Eliminar la tabla temporal 'temp_miscelaneos'
-    try:
-        drop_temp_query = f"DROP TABLE IF EXISTS `{temp_table_id}`"
-        client.query(drop_temp_query).result()
-        print(f"Tabla temporal {temp_table_id} eliminada con éxito.")
-    except Exception as e:
-        print(f"Error al eliminar la tabla temporal {temp_table_id}: {e}")
+    drop_temp_query = f"DROP TABLE IF EXISTS `{temp_table_id}`"
+    client.query(drop_temp_query).result()  # Ejecuta la consulta y espera el resultado
+    print(f"Tabla temporal {temp_table_id} eliminada con éxito.")
     
     # Eliminar la tabla 'miscelaneos' (temporal)
-    try:
-        drop_miscelaneos_query = f"DROP TABLE IF EXISTS `{miscelaneos_table_id}`"
-        client.query(drop_miscelaneos_query).result()
-        print(f"Tabla {miscelaneos_table_id} eliminada con éxito.")
-    except Exception as e:
-        print(f"Error al eliminar la tabla {miscelaneos_table_id}: {e}")
+    drop_miscelaneos_query = f"DROP TABLE IF EXISTS `{miscelaneos_table_id}`"
+    client.query(drop_miscelaneos_query).result()  # Ejecuta la consulta y espera el resultado
+    print(f"Tabla {miscelaneos_table_id} eliminada con éxito.")
 
 
 

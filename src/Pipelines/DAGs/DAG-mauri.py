@@ -11,7 +11,7 @@ from functions.desanidar_misc import crear_tabla_miscelaneos ,desanidar_misc, ac
 from functions.desanidar_misc import generalizar_atributos, marcar_nuevas_accesibilidades, mover_a_tabla_oficial, eliminar_tablas_temporales
 
 ######################################################################################
-# PARÁMETROS 
+# PARÁMETROS
 ######################################################################################
 
 nameDAG_base      = 'Procesamiento_ETL_Google'
@@ -134,7 +134,6 @@ with DAG(
             'dataset': dataset
         },
     )
-
 
     fin = DummyOperator(task_id='fin')
     
