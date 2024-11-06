@@ -50,3 +50,22 @@ def cargar_dataframe_a_bigquery(df: pd.DataFrame, project_id: str, dataset: str,
     job = client.load_table_from_dataframe(df, table_id)
     job.result()  # Espera a que la carga se complete
     logger.info(f"Datos cargados exitosamente en la tabla '{table_id}'.")
+
+
+def eliminar_tabla_temporal(project_id: str, dataset: str, table_name: str) -> None:
+    """
+    Elimina una tabla en BigQuery.
+
+    Args:
+        project_id (str): ID del proyecto de GCP.
+        dataset (str): Nombre del dataset en BigQuery.
+        table_name (str): Nombre de la tabla a eliminar.
+
+    Returns:
+        None
+    """
+    client = bigquery.Client(project=project_id)
+    table_id = f"{project_id}.{dataset}.{table_name}"
+    
+    client.delete_table(table_id, not_found_ok=True)
+    logger.info(f"Tabla temporal '{table_id}' eliminada.")

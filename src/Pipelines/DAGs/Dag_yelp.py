@@ -4,16 +4,14 @@ from airflow.operators.dummy import DummyOperator
 from datetime import timedelta
 from airflow.utils.dates import days_ago
 from google.cloud import bigquery
-from functions.load_data_yelp import crear_tabla_temporal
+from functions.load_data_yelp import crear_tabla_temporal, cargar_dataframe_a_bigquery, eliminar_tabla_temporal
 from functions.extract_data_yelp import cargar_archivo_gcs_a_dataframe
-from functions.load_data_yelp import cargar_dataframe_a_bigquery
 from functions.transform_data_yelp import transformar_checkin
-from functions.load_data_yelp import eliminar_tabla
 
 
 
 ######################################################################################
-# PARÁMETROS PARA DATOS DE YELP 2
+# PARÁMETROS PARA DATOS DE YELP 1
 ######################################################################################
 
 nameDAG_base       = 'ETL_Yelp_Checkin_to_BQ'
@@ -86,7 +84,7 @@ with DAG(
     # Tarea 4: Eliminar la tabla temporal después de la carga en la tabla final
     eliminar_tabla_temp = PythonOperator(
         task_id='eliminar_tabla_temporal',
-        python_callable=eliminar_tabla,
+        python_callable=eliminar_tabla_temporal,
         op_kwargs={
             'project_id': project_id,
             'dataset': dataset,
