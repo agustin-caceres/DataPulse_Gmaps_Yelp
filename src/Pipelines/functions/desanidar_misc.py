@@ -171,13 +171,10 @@ def eliminar_categorias_especificas(project_id: str, dataset: str) -> None:
     
 ##################################################################################
 
-from google.cloud import bigquery
-
 def generalizar_atributos(project_id: str, dataset: str) -> None:
     """
-    Generaliza los valores de la columna 'atributo' eliminando guiones y reemplazando atributos
-    con nombres diferentes pero significados similares.
-
+    Generaliza los valores de la columna 'atributo' en la tabla de BigQuery para agrupar términos similares.
+    
     Args:
     -------
     project_id : str
@@ -188,25 +185,38 @@ def generalizar_atributos(project_id: str, dataset: str) -> None:
     client = bigquery.Client()
     temp_table_id = f"{project_id}.{dataset}.temp_miscelaneos"
     
-    # Consulta SQL para generalizar los atributos
-    query = f"""
-    UPDATE `{temp_table_id}`
-    SET atributo = CASE
-        WHEN atributo = 'LGBTQ-friendly' THEN 'LGBTQ friendly'
-        WHEN atributo = 'Transgender safespace' THEN 'LGBTQ friendly'
-        WHEN atributo = 'Transgender safe space' THEN 'LGBTQ friendly'
-        WHEN atributo = 'Wheelchair accessible restroom' THEN 'Wheelchair accessible toilet'
-        WHEN atributo = 'Wheelchair accessible parking lot' THEN 'Wheelchair accessible car park'
-        WHEN atributo = 'Wheelchair accessible lift' THEN 'Wheelchair accessible elevator'
-        ELSE REPLACE(atributo, '-', ' ')  -- Reemplaza guiones con espacio
-    END
-    """
+    # Definir el mapeo para generalizar atributos
+    mapeo_lgbtq = {
+        'LGBTQ-friendly': 'LGBTQ friendly',
+        'Transgender safespace': 'LGBTQ friendly',
+        'Transgender safe space': 'LGBTQ friendly'
+    }
+
+    mapeo_accesibilidad = {
+        'Wheelchair accessible restroom': 'Wheelchair accessible toilet',
+        'Wheelchair accessible parking lot': 'Wheelchair accessible car park',
+        'Wheelchair accessible lift': 'Wheelchair accessible elevator'
+    }
     
-    # Ejecuta la consulta de actualización
-    query_job = client.query(query)
-    query_job.result()  # Espera a que se complete la actualización
-    
-    print("Atributos actualizados con éxito.")
+    # Para cada clave en los mapeos, se genera una consulta de UPDATE
+    for old_value, new_value in mapeo_lgbtq.items():
+        update_query = f"""
+        UPDATE `{temp_table_id}`
+        SET atributo = '{new_value}'
+        WHERE atributo = '{old_value}'
+        """
+        client.query(update_query).result()  # Ejecuta la consulta de actualización
+
+    for old_value, new_value in mapeo_accesibilidad.items():
+        update_query = f"""
+        UPDATE `{temp_table_id}`
+        SET atributo = '{new_value}'
+        WHERE atributo = '{old_value}'
+        """
+        client.query(update_query).result()  # Ejecuta la consulta de actualización
+
+    print("Atributos generalizados con éxito.")
+
 
 
 

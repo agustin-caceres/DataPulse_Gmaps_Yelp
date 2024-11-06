@@ -10,7 +10,7 @@ from functions.registrar_archivo import registrar_archivos_procesados
 from functions.desanidar_misc import desanidar_misc, actualizar_misc_con_atributos, eliminar_categorias_especificas, generalizar_atributos
 
 ######################################################################################
-# PARÁMETROS 
+# PARÁMETROS 1
 ######################################################################################
 
 nameDAG_base      = 'Procesamiento_ETL_Google'
