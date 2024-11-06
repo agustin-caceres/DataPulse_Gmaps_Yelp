@@ -58,7 +58,11 @@ def archivo_procesado(project_id: str, dataset: str, nombre_archivo: str) -> boo
     query_job = client.query(query)
     result = query_job.result()
     
-    archivo_ya_procesado = result.total_rows > 0
+    # Extraer el valor de 'procesado' de la consulta
+    archivo_ya_procesado = False
+    for row in result:
+        archivo_ya_procesado = row.procesado > 0
+    
     if archivo_ya_procesado:
         logger.info(f"Archivo '{nombre_archivo}' ya ha sido procesado previamente.")
     else:
