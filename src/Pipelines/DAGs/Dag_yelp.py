@@ -14,7 +14,7 @@ from functions.transform_data_yelp import transformar_checkin
 # PARÁMETROS PARA DATOS DE YELP
 ######################################################################################
 
-nameDAG_base       = 'ETL_Yelp_Checkin_to_BQ'
+nameDAG_base       = 'ETL_Yelp'
 project_id         = 'neon-gist-439401-k8'
 dataset            = '1'
 owner              = 'Agustín'
@@ -55,6 +55,7 @@ with DAG(
         else:
             return 'crear_tabla_temporal'  # Si no fue procesado, continuar el flujo
 
+ 
     # Tarea 1: Verificar si el archivo ya fue procesado
     verificar_archivo_procesado = BranchPythonOperator(
         task_id='verificar_archivo_procesado',
@@ -104,7 +105,7 @@ with DAG(
             'table_name': temp_table_general
         },
     )
-
+    
     # Tarea 6: Registrar el archivo como procesado en la tabla de control
     registrar_archivo = PythonOperator(
         task_id='registrar_archivo_procesado',
