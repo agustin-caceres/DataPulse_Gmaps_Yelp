@@ -14,7 +14,7 @@ from functions.transform_data_yelp import transformar_checkin
 # PARÁMETROS PARA DATOS DE YELP
 ######################################################################################
 
-nameDAG_base       = 'ETL_Yelp_Checkin_to_BQ'
+nameDAG_base       = 'ETL_Yelp'
 project_id         = 'neon-gist-439401-k8'
 dataset            = '1'
 owner              = 'Agustín'
