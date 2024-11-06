@@ -138,5 +138,44 @@ def actualizar_misc_con_atributos(project_id: str, dataset: str) -> None:
 
     print(f"Tabla temporal '{temp_table_id}' creada con éxito.")
 
+##################################################################################3
+
+def contar_y_eliminar_categorias(project_id: str, dataset: str) -> None:
+    """
+    Cuenta y elimina filas con categorías específicas en la tabla temporal en BigQuery.
+    
+    Args:
+    -------
+    project_id : str
+        ID del proyecto en Google Cloud Platform.
+    dataset : str
+        Nombre del dataset en BigQuery donde se encuentra la tabla temporal.
+    """
+    client = bigquery.Client()
+    temp_table_id = f"{project_id}.{dataset}.temp_miscelaneos"
+    
+    # Consulta para contar filas con las categorías específicas
+    count_query = f"""
+    SELECT COUNT(*) AS count
+    FROM `{temp_table_id}`
+    WHERE category IN ('Health & safety', 'Health and safety')
+    """
+    count_query_job = client.query(count_query)
+    count_result = count_query_job.result()
+    count = [row["count"] for row in count_result][0]
+
+    if count > 0:
+        # Si hay filas con las categorías específicas, las eliminamos
+        delete_query = f"""
+        DELETE FROM `{temp_table_id}`
+        WHERE category IN ('Health & safety', 'Health and safety')
+        """
+        delete_query_job = client.query(delete_query)
+        delete_query_job.result()  # Espera a que se complete la eliminación
+        print("Filas eliminadas con éxito.")
+    else:
+        print("No se encontraron filas con esas categorías.")
+
+
 
 
