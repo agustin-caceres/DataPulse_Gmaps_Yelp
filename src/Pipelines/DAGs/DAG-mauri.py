@@ -95,8 +95,8 @@ with DAG(
 #    )
  
     # Tarea 6 marcar atributos sensibles como accesibilidades
-    añadir_accesibilidades = PythonOperator(
-        task_id="añadir_accesibilidades",
+    anadir_accesibilidades = PythonOperator(
+        task_id="anadir_accesibilidades",
         python_callable=marcar_nuevas_accesibilidades,
         op_kwargs={
             'project_id': project_id,
@@ -107,5 +107,5 @@ with DAG(
     fin = DummyOperator(task_id='fin')  
   
     # Estructura del flujo de tareas  
-    inicio >> añadir_accesibilidades  >> fin
+    inicio >> anadir_accesibilidades  >> fin
 
