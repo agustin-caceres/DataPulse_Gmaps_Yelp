@@ -171,6 +171,43 @@ def eliminar_categorias_especificas(project_id: str, dataset: str) -> None:
     
 ##################################################################################
 
+from google.cloud import bigquery
+
+def generalizar_atributos(project_id: str, dataset: str) -> None:
+    """
+    Generaliza los valores de la columna 'atributo' eliminando guiones y reemplazando atributos
+    con nombres diferentes pero significados similares.
+
+    Args:
+    -------
+    project_id : str
+        ID del proyecto en Google Cloud Platform.
+    dataset : str
+        Nombre del dataset en BigQuery donde se encuentra la tabla temporal.
+    """
+    client = bigquery.Client()
+    temp_table_id = f"{project_id}.{dataset}.temp_miscelaneos"
+    
+    # Consulta SQL para generalizar los atributos
+    query = f"""
+    UPDATE `{temp_table_id}`
+    SET atributo = CASE
+        WHEN atributo = 'LGBTQ-friendly' THEN 'LGBTQ friendly'
+        WHEN atributo = 'Transgender safespace' THEN 'LGBTQ friendly'
+        WHEN atributo = 'Transgender safe space' THEN 'LGBTQ friendly'
+        WHEN atributo = 'Wheelchair accessible restroom' THEN 'Wheelchair accessible toilet'
+        WHEN atributo = 'Wheelchair accessible parking lot' THEN 'Wheelchair accessible car park'
+        WHEN atributo = 'Wheelchair accessible lift' THEN 'Wheelchair accessible elevator'
+        ELSE REPLACE(atributo, '-', ' ')  -- Reemplaza guiones con espacio
+    END
+    """
+    
+    # Ejecuta la consulta de actualización
+    query_job = client.query(query)
+    query_job.result()  # Espera a que se complete la actualización
+    
+    print("Atributos actualizados con éxito.")
+
 
 
 

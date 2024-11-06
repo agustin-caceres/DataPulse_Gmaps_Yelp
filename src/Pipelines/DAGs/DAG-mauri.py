@@ -1,10 +1,13 @@
+# Librerias
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 from airflow.operators.dummy import DummyOperator
 from datetime import timedelta
 from airflow.utils.dates import days_ago
+
+#Funciones
 from functions.registrar_archivo import registrar_archivos_procesados
-from functions.desanidar_misc import desanidar_misc, actualizar_misc_con_atributos, eliminar_categorias_especificas
+from functions.desanidar_misc import desanidar_misc, actualizar_misc_con_atributos, eliminar_categorias_especificas, generalizar_atributos
 
 ######################################################################################
 # PARÁMETROS 
@@ -62,27 +65,37 @@ with DAG(
     #)
     
     # Tarea 3: Actualizar la tabla con nuevas columnas 'category', 'misc_content' y 'atributo'
-    actualizar_misc_task = PythonOperator(
-        task_id='actualizar_misc_con_atributos',
-        python_callable=actualizar_misc_con_atributos,
-        op_kwargs={
-            'project_id': project_id,
-            'dataset': dataset
-        }
-    ) 
+#    actualizar_misc_task = PythonOperator(
+#        task_id='actualizar_misc_con_atributos',
+#        python_callable=actualizar_misc_con_atributos,
+#        op_kwargs={
+#            'project_id': project_id,
+#            'dataset': dataset
+#        }
+#    ) 
     
     # Tarea 4: Elimina las categorias que no se van a utilizar.
-    eliminar_categorias = PythonOperator(
-        task_id="eliminar_categorias_especificas",
-        python_callable=eliminar_categorias_especificas,
+#    eliminar_categorias = PythonOperator(
+#        task_id="eliminar_categorias_especificas",
+#        python_callable=eliminar_categorias_especificas,
+#        op_kwargs={
+#            'project_id': project_id,
+#            'dataset': dataset
+#            }
+#    )
+
+    # Tarea 5: Generalizar los atributos
+    generalizar_atributos_task = PythonOperator(
+        task_id="generalizar_atributos",
+        python_callable=generalizar_atributos,
         op_kwargs={
             'project_id': project_id,
             'dataset': dataset
-            }
+        },
     )
   
     fin = DummyOperator(task_id='fin')  
   
     # Estructura del flujo de tareas  
-    inicio >> actualizar_misc_task >> eliminar_categorias >> fin
+    inicio >> generalizar_atributos_task  >> fin
 
