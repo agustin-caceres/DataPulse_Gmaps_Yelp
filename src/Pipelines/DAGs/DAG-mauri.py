@@ -84,5 +84,5 @@ with DAG(
     fin = DummyOperator(task_id='fin')  
   
     # Estructura del flujo de tareas  
-    inicio >> eliminar_categorias >> fin
+    inicio >> actualizar_misc_task >> eliminar_categorias >> fin
 
