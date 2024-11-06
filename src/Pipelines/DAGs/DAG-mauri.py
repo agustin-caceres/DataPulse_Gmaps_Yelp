@@ -62,27 +62,27 @@ with DAG(
     #)
     
     # Tarea 3: Actualizar la tabla con nuevas columnas 'category', 'misc_content' y 'atributo'
-    actualizar_misc_task = PythonOperator(
-        task_id='actualizar_misc_con_atributos',
-        python_callable=actualizar_misc_con_atributos,
+    #actualizar_misc_task = PythonOperator(
+     #   task_id='actualizar_misc_con_atributos',
+      #  python_callable=actualizar_misc_con_atributos,
+       # op_kwargs={
+        #    'project_id': project_id,
+         #   'dataset': dataset
+        #}
+    #) 
+    
+    # Tarea 4: Elimina las categorias que no se van a utilizar.
+    eliminar_categorias = PythonOperator(
+        task_id="contar_y_eliminar_categorias",
+        python_callable=eliminar_categorias_especificas,
         op_kwargs={
             'project_id': project_id,
             'dataset': dataset
-        }
-    ) 
-    
-    # Tarea 4: Elimina las categorias que no se van a utilizar.
-#    eliminar_categorias = PythonOperator(
-#        task_id="contar_y_eliminar_categorias",
-#        python_callable=eliminar_categorias_especificas,
-#        op_kwargs={
-#            'project_id': project_id,
-#            'dataset': dataset
-#            }
-#    )
+            }
+    )
   
     fin = DummyOperator(task_id='fin')  
   
     # Estructura del flujo de tareas  
-    inicio >> actualizar_misc_task >> fin
+    inicio >> eliminar_categorias >> fin
 
