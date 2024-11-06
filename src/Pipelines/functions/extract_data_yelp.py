@@ -1,33 +1,47 @@
 import pandas as pd
 from google.cloud import storage
 import io
+import logging
+from functions.transform_data_yelp import aplicar_transformacion
 
-def extract_checkin_json(bucket_name: str, file_path: str) -> pd.DataFrame:
+# Configuración del logger
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+def cargar_archivo_gcs_a_dataframe(bucket_name: str, file_path: str) -> pd.DataFrame:
     """
-    Extrae y transforma el archivo `checkin.json` desde Google Cloud Storage.
+    Extrae un archivo desde Google Cloud Storage y lo convierte en un DataFrame.
 
     Args:
         bucket_name (str): Nombre del bucket en GCS.
-        file_path (str): Ruta del archivo JSON en el bucket.
+        file_path (str): Ruta del archivo en el bucket.
 
     Returns:
-        pd.DataFrame: DataFrame con los datos transformados de `checkin.json`, con cada fecha en una fila separada.
+        pd.DataFrame: DataFrame con los datos extraídos del archivo.
     """
-    try:
-        # Conexión a GCS y descarga del archivo JSON
-        client = storage.Client()
-        bucket = client.get_bucket(bucket_name)
-        blob = bucket.blob(file_path)
-        data = blob.download_as_text()
+    client = storage.Client()
+    bucket = client.get_bucket(bucket_name)
+    blob = bucket.blob(file_path)
+    
+    logger.info(f"Iniciando descarga del archivo '{file_path}' desde el bucket '{bucket_name}'.")
+    
+    data = blob.download_as_text()
 
-        # Carga el JSON en un DataFrame
+    # Determina el formato del archivo y carga en DataFrame
+    if file_path.endswith('.json'):
         df = pd.read_json(io.StringIO(data), lines=True)
+        logger.info(f"Archivo '{file_path}' cargado exitosamente en un DataFrame.")
+    elif file_path.endswith('.parquet'):
+        df = pd.read_parquet(io.BytesIO(blob.download_as_bytes()))
+        logger.info(f"Archivo Parquet '{file_path}' cargado exitosamente en un DataFrame.")
+    elif file_path.endswith('.pkl'):
+        df = pd.read_pickle(io.BytesIO(blob.download_as_bytes()))
+        logger.info(f"Archivo Pickle '{file_path}' cargado exitosamente en un DataFrame.")
+    else:
+        logger.error(f"Formato de archivo no soportado: {file_path}")
+        raise ValueError(f"Formato de archivo no soportado: {file_path}")
 
-        # Normalización del campo 'date' (separación de fechas en múltiples filas)
-        df = df.assign(date=df['date'].str.split(', ')).explode('date').reset_index(drop=True)
-        print("Archivo extraído y transformado exitosamente.")
-        return df
-
-    except Exception as e:
-        print(f"Error en la extracción y transformación del archivo {file_path}: {e}")
-        return pd.DataFrame()  # Retorna un DataFrame vacío en caso de error
+    # Aplica transformación específica si existe en el diccionario
+    df = aplicar_transformacion(file_path, df)
+    logger.info(f"Transformación aplicada al archivo '{file_path}'.")
+    return df
