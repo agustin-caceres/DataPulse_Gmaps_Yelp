@@ -25,7 +25,7 @@ def registrar_archivo_procesado(project_id: str, dataset: str, nombre_archivo: s
     # Inserta la fecha y hora actual en formato compatible con BigQuery
     rows_to_insert = [{
         "nombre_archivo": nombre_archivo,
-        "fecha_procesamiento": datetime.now().isoformat()  # Formato compatible con BigQuery
+        "fecha_carga": datetime.now().isoformat()  # Formato compatible con BigQuery
     }]
     
     client.insert_rows_json(table_id, rows_to_insert)
