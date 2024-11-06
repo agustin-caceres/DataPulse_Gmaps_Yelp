@@ -160,7 +160,7 @@ def eliminar_categorias_especificas(project_id: str, dataset: str) -> None:
     # Consulta SQL para eliminar las filas con las categorías específicas
     delete_query = f"""
     DELETE FROM `{temp_table_id}`
-    WHERE category IN ('Health & safety', 'Health and safety')
+    WHERE category IN ('Health & safety')
     """
     
     # Ejecuta la consulta de eliminación
