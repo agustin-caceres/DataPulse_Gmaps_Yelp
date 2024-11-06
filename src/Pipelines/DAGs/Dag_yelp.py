@@ -9,7 +9,7 @@ from functions.extract_data_yelp import cargar_archivo_gcs_a_dataframe
 from functions.load_data_yelp import cargar_dataframe_a_bigquery
 
 ######################################################################################
-# PARÁMETROS PARA DATOS DE YELP
+# PARÁMETROS PARA DATOS DE YELP 1
 ######################################################################################
 
 nameDAG_base       = 'ETL_Yelp_Checkin_to_BQ'

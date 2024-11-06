@@ -1,5 +1,10 @@
 from google.cloud import bigquery
 import pandas as pd
+import logging
+
+# Configuración del logger
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 def crear_tabla_temporal(project_id: str, dataset: str, temp_table: str, schema: list) -> None:
     """
@@ -14,14 +19,12 @@ def crear_tabla_temporal(project_id: str, dataset: str, temp_table: str, schema:
     Returns:
         None
     """
-    try:
-        client = bigquery.Client(project=project_id)
-        table_id = f"{project_id}.{dataset}.{temp_table}"
-        table = bigquery.Table(table_id, schema=schema)
-        client.create_table(table, exists_ok=True)
-        print(f"Tabla temporal '{table_id}' creada o ya existente.")
-    except Exception as e:
-        print(f"Error al crear la tabla temporal {temp_table}: {e}")
+    client = bigquery.Client(project=project_id)
+    table_id = f"{project_id}.{dataset}.{temp_table}"
+    table = bigquery.Table(table_id, schema=schema)
+    
+    client.create_table(table, exists_ok=True)
+    logger.info(f"Tabla temporal '{table_id}' creada o ya existente.")
 
 def cargar_dataframe_a_bigquery(df: pd.DataFrame, project_id: str, dataset: str, table_name: str) -> None:
     """
@@ -36,15 +39,14 @@ def cargar_dataframe_a_bigquery(df: pd.DataFrame, project_id: str, dataset: str,
     Returns:
         None
     """
-    try:
-        if df.empty:
-            print("El DataFrame está vacío. No se cargarán datos en BigQuery.")
-            return
+    if df.empty:
+        logger.warning("El DataFrame está vacío. No se cargarán datos en BigQuery.")
+        return
 
-        client = bigquery.Client(project=project_id)
-        table_id = f"{project_id}.{dataset}.{table_name}"
-        job = client.load_table_from_dataframe(df, table_id)
-        job.result()  # Espera a que la carga se complete
-        print(f"Datos cargados en la tabla {table_id}")
-    except Exception as e:
-        print(f"Error al cargar los datos en la tabla {table_name}: {e}")
+    client = bigquery.Client(project=project_id)
+    table_id = f"{project_id}.{dataset}.{table_name}"
+    
+    logger.info(f"Iniciando carga de datos en la tabla '{table_id}'.")
+    job = client.load_table_from_dataframe(df, table_id)
+    job.result()  # Espera a que la carga se complete
+    logger.info(f"Datos cargados exitosamente en la tabla '{table_id}'.")
