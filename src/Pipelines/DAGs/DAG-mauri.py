@@ -7,7 +7,7 @@ from airflow.utils.dates import days_ago
 
 #Funciones
 from functions.registrar_archivo import registrar_archivos_procesados
-from functions.desanidar_misc import desanidar_misc, actualizar_misc_con_atributos, eliminar_categorias_especificas, generalizar_atributos
+from functions.desanidar_misc import desanidar_misc, actualizar_misc_con_atributos, eliminar_categorias_especificas, generalizar_atributos, marcar_nuevas_accesibilidades
 
 ######################################################################################
 # PARÁMETROS 1
@@ -85,9 +85,19 @@ with DAG(
 #    )
 
     # Tarea 5: Generalizar los atributos
-    generalizar_atributos_task = PythonOperator(
-        task_id="generalizar_atributos",
-        python_callable=generalizar_atributos,
+#    generalizar_atributos_task = PythonOperator(
+#        task_id="generalizar_atributos",
+#        python_callable=generalizar_atributos,
+#        op_kwargs={
+#            'project_id': project_id,
+#            'dataset': dataset
+#        },
+#    )
+ 
+    # Tarea 6 marcar atributos sensibles como accesibilidades
+    añadir_accesibilidades = PythonOperator(
+        task_id="añadir_accesibilidades",
+        python_callable=marcar_nuevas_accesibilidades,
         op_kwargs={
             'project_id': project_id,
             'dataset': dataset
@@ -97,5 +107,5 @@ with DAG(
     fin = DummyOperator(task_id='fin')  
   
     # Estructura del flujo de tareas  
-    inicio >> generalizar_atributos_task  >> fin
+    inicio >> añadir_accesibilidades  >> fin
 

@@ -218,6 +218,40 @@ def generalizar_atributos(project_id: str, dataset: str) -> None:
     print("Atributos generalizados con éxito.")
 
 
+###################################################################################
+
+def marcar_nuevas_accesibilidades(project_id: str, dataset: str) -> None:
+    """
+    Actualiza la columna 'category' en la tabla de BigQuery para marcar ciertos 
+    valores de 'atributo' con la categoría 'Accessibility'.
+    
+    Args:
+    -------
+    project_id : str
+        ID del proyecto en Google Cloud Platform.
+    dataset : str
+        Nombre del dataset en BigQuery donde se encuentra la tabla temporal.
+    """
+    client = bigquery.Client()
+    temp_table_id = f"{project_id}.{dataset}.temp_miscelaneos"
+    
+    # Consulta para actualizar la categoría a 'Accessibility' basado en las condiciones
+    update_categoria_query = f"""
+    UPDATE `{temp_table_id}`
+    SET category = CASE
+        WHEN category = 'Offerings' AND atributo = 'Braille menu' THEN 'Accessibility'
+        WHEN category = 'Amenities' AND atributo = 'High chairs' THEN 'Accessibility'
+        ELSE category
+    END
+    WHERE (category = 'Offerings' AND atributo = 'Braille menu')
+       OR (category = 'Amenities' AND atributo = 'High chairs')
+    """
+    
+    # Ejecutar la consulta de actualización
+    client.query(update_categoria_query).result()
+    
+    print("Categorías de accesibilidad actualizadas con éxito.")
+
 
 
 
