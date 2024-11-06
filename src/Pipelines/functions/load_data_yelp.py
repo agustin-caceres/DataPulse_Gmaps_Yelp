@@ -8,7 +8,6 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-# Función para Registrar un Archivo en la Tabla de Control
 def registrar_archivo_procesado(project_id: str, dataset: str, nombre_archivo: str) -> None:
     """
     Registra un archivo como procesado en la tabla de control en BigQuery.
@@ -22,10 +21,11 @@ def registrar_archivo_procesado(project_id: str, dataset: str, nombre_archivo: s
     table_id = f"{project_id}.{dataset}.archivos_procesados"
     
     logger.info(f"Registrando el archivo '{nombre_archivo}' en la tabla de control '{table_id}'.")
-    
+
+    # Inserta la fecha y hora actual en formato compatible con BigQuery
     rows_to_insert = [{
         "nombre_archivo": nombre_archivo,
-        "fecha_procesamiento": bigquery.Timestamp(datetime.now())
+        "fecha_procesamiento": datetime.now().isoformat()  # Formato compatible con BigQuery
     }]
     
     client.insert_rows_json(table_id, rows_to_insert)
