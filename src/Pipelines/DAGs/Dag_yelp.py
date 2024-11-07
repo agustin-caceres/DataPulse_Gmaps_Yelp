@@ -59,19 +59,23 @@ with DAG(
 
     def decidir_flujo(archivo_nombre, **kwargs):
         if archivo_procesado(project_id, dataset, archivo_nombre):
-            return f'fin_{archivo_nombre}'  # Si el archivo ya fue procesado, ir a fin específico
+            # Retorna el nombre exacto del DummyOperator de fin correspondiente
+            return f'fin_{archivo_nombre.split(".")[0]}'  # Simplifica para que coincida con los nombres de los DummyOperators
         else:
-            return f'crear_tabla_temporal_{archivo_nombre}'  # Continuar el flujo si no fue procesado
+            # Retorna el nombre exacto de la tarea de creación de tabla temporal
+            return f'crear_tabla_temporal_{archivo_nombre.split(".")[0]}'
 
     # Verificación y flujo condicional para cada archivo
     verificar_checkin = BranchPythonOperator(
         task_id='verificar_archivo_procesado_checkin',
-        python_callable=lambda **kwargs: decidir_flujo('checkin.json', **kwargs),
+        python_callable=decidir_flujo,
+        op_kwargs={'archivo_nombre': 'checkin.json'},
     )
 
     verificar_tip = BranchPythonOperator(
         task_id='verificar_archivo_procesado_tip',
-        python_callable=lambda **kwargs: decidir_flujo('tip.json', **kwargs),
+        python_callable=decidir_flujo,
+        op_kwargs={'archivo_nombre': 'tip.json'},
     )
 
     # Procesamiento de checkin.json
