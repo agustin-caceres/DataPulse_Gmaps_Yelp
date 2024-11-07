@@ -56,13 +56,13 @@ with DAG(
     inicio = DummyOperator(task_id='inicio')
 
     # Tarea 1: Extraer datos de la API de Google Places y guardarlos en GCS
-    def extraer_y_guardar():
-        extraer_reviews_google_places(API_KEY, businesses, bucket_name, output_file)
+    #def extraer_y_guardar():
+     #   extraer_reviews_google_places(API_KEY, businesses, bucket_name, output_file)
 
-    extraer_tarea = PythonOperator(
-        task_id='extraer_reviews_y_guardar_en_gcs',
-        python_callable=extraer_y_guardar,
-    )
+    #extraer_tarea = PythonOperator(
+     #   task_id='extraer_reviews_y_guardar_en_gcs',
+      #  python_callable=extraer_y_guardar,
+    #)
 
     # Tarea 2: Cargar el archivo JSON desde GCS a BigQuery
     cargar_a_bigquery_task = PythonOperator(
