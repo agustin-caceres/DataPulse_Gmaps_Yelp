@@ -7,8 +7,8 @@ from airflow.utils.dates import days_ago
 
 #Funciones
 from functions.registrar_archivo import detectar_archivos_nuevos, registrar_archivo_exitoso
-from Pipelines.functions.desanidar_google import crear_tablas_bigquery ,desanidar_misc, actualizar_misc_con_atributos, eliminar_categorias_especificas
-from Pipelines.functions.desanidar_google import generalizar_atributos, marcar_nuevas_accesibilidades, mover_a_tabla_oficial, eliminar_tablas_temporales
+from functions.desanidar_google import crear_tablas_bigquery ,desanidar_misc, actualizar_misc_con_atributos, eliminar_categorias_especificas
+from functions.desanidar_google import generalizar_atributos, marcar_nuevas_accesibilidades, mover_a_tabla_oficial, eliminar_tablas_temporales
 
 ######################################################################################
 # PARÁMETROS
