@@ -1,75 +1,80 @@
 # Pipeline ETL de Yelp y Google en Airflow 🚀
 
-## Descripción General 📝
-Este proyecto implementa un pipeline ETL (Extracción, Transformación, Carga) utilizando Google Cloud Platform (GCP) y Apache Airflow. El objetivo es procesar y cargar datos de Yelp y Google en BigQuery de manera automatizada, asegurando que los datos estén limpios y listos para el análisis. Actualmente, el pipeline procesa los datos de check-in de Yelp, almacenándolos en una tabla temporal en BigQuery antes de realizar transformaciones adicionales.
+## Introducción 📝
 
-## Tecnologías Utilizadas 💻
-- **Google Cloud Platform (GCP)**:
-  - BigQuery para el almacenamiento y procesamiento de datos.
-  - Google Cloud Storage (GCS) para almacenar los archivos fuente.
-  - Google Composer para administrar la arquitectura de Airflow.
-- **Apache Airflow**: Orquestación del pipeline ETL.
-- **Python**: Desarrollo de funciones auxiliares y transformación de datos.
+Este proyecto implementa un pipeline **ETL (Extracción, Transformación, Carga)** automatizado utilizando **Google Cloud Platform (GCP)** y **Apache Airflow**. El objetivo es procesar y cargar datos de Yelp y Google en BigQuery sin intervención manual, asegurando que los datos estén limpios y listos para el análisis.
 
-## Estructura del Proyecto 📂
-- **DAG**:
-  - `DAG_yelp_etl.py`: Este archivo contiene el DAG principal que coordina las tareas de creación de tablas, extracción de datos y carga en BigQuery.
-- **Módulos Auxiliares**:
-  - `extract_data_yelp.py`: Contiene funciones para la extracción de datos desde Google Cloud Storage.
-  - `transform_data_yelp.py`: Gestiona las transformaciones específicas para cada archivo de datos.
-  - `load_data_yelp.py`: Incluye funciones para cargar los datos en BigQuery y gestionar las tablas.
-- **Funciones de Utilidad**:
-  - `bigquery_utils.py`: Se utilizó inicialmente para funciones generales, ahora organizadas en módulos separados.
+Actualmente, el pipeline procesa los datos desde un Bucket en Cloud Storage, almacenándolos en tablas temporales en BigQuery antes de realizar transformaciones adicionales y cargar los datos en tablas finales semanal o diariamente.
 
-## Estructura del DAG 🗂️
+## Arquitectura y Tecnologías utilizada.  💻
+![Arquitectura del pipeline](../../assets/Images/arquitectura_pipeline.png)
 
-1. **Inicio**:
-    - `inicio`: Un `DummyOperator` que marca el comienzo del DAG para facilitar la visualización en Airflow.
-2. **Creación de Tabla Temporal**:
-    - `crear_tabla_temporal`: Tarea encargada de crear una tabla temporal en BigQuery para almacenar los datos de los archivos en Storage con el esquema adecuado.
-3. **Extracción y Transformación de Datos**:
-    - `cargar_archivo_en_tabla_temporal`: Esta tarea extrae el archivo desde Google Cloud Storage (GCS), aplica las transformaciones necesarias y carga los datos en la tabla temporal en BigQuery.
-4. **Fin**:
-    - `fin`: Un `DummyOperator` que marca el fin del DAG.
+- **`Google Cloud Platform (GCP)`**:
+  - **BigQuery** para el almacenamiento y procesamiento de datos estructurado.
+  - **Google Cloud Storage** para almacenar los archivos fuente sin estructurar.
+  - **Google Cloud Build** para sincronizar y automatizar los DAGs y las functions desde el repositorio hacia Composer.
+  - **Google Composer** para administrar la arquitectura de Airflow.
+  - **Google API Places** para carga incremental de nuevos datos.
+- **`Apache Airflow`**: Orquestación del pipeline ETL.
+- **`Python`**: Desarrollo de funciones auxiliares y transformación de datos.
 
-## Estructura de Módulos y Funciones 🔧
-- **extract_data_yelp.py**:
-  - `cargar_archivo_gcs_a_dataframe`: Extrae un archivo de GCS y lo convierte en un DataFrame, aplicando transformaciones si es necesario.
-- **transform_data_yelp.py**:
-  - `pre_transformar_checkin`: Procesa el campo `date` en `checkin.json`, separando fechas en filas individuales y asegurando el formato TIMESTAMP.
-  - `aplicar_transformacion`: Aplica una transformación específica en función del nombre del archivo, usando un diccionario de transformaciones.
-- **load_data_yelp.py**:
-  - `crear_tabla_temporal`: Crea la tabla temporal en BigQuery con el esquema especificado.
-  - `cargar_dataframe_a_bigquery`: Carga un DataFrame en una tabla de BigQuery.
 
-## Esquema de la Tabla Temporal 📋
-La tabla temporal `checkin_temp` contiene los siguientes campos:
-- **business_id**: Identificador del negocio (STRING).
-- **date**: Fecha y hora del check-in en formato TIMESTAMP.
+## Estructura del Pipeline 📂
+- **DAGs**:
+  - `DAG_api.py`: Contiene la orquestación ETL de la carga incremental de nuevos datos desde API Places.
+  - `DAG_yelp.py`: Contiene la orquestación de los datos de Yelp.
+  - `DAG-Googl.py`: Contiene la orquestación de los datos de Google.
+- **Functions**:
+  - `extract_data_yelp.py`: Funciones para la extracción de datos desde Google Cloud Storage para los archivos de Yelp.
+  - `transform_data_yelp.py`: Gestiona las transformaciones específicas para cada archivo de datos, con funciones adaptadas para `checkin.json`y `tip.json`.
+  - `load_data_yelp.py`: Incluye funciones para cargar los datos en BigQuery y gestionar las tablas de Yelp.
+  - `google_bigquery.py`: Incluye funciones para la creación, eliminación y gestión de las tablas en Bigquery de los datos de Google.
+  - `desanidar_columnas.py`: Incluye funciones para el desanidado de las columnas que serán nuevas tablas, en los datos de Google.
+  - `etl_api.py`: Incluye funciones para la extracción, transformación y carga incremental de nuevos datos desde la API Places de Google hacia nuevas tablas en BigQuery.
+  
+
+## Diagrama del DAGs 📊
+
+### **``Flujo Yelp DAG:``**
+Este diagrama muestra cómo el flujo del DAG se adapta para diferentes archivos (checkin y tip) y cómo se asegura la modularidad y flexibilidad en el procesamiento con una carga incremental de archivos semanales.
+
+![Diagrama Yelp DAG](../../assets/Images/dag_yelp.png)
+
+### **``Flujo Google DAG:``**
+Este diagrama muestra cómo se desanidan los datos en distintas tablas estructuradas y se aplican normalizaciones en tablas temporales para trasladarlo limpio a la tabla original cada semana.
+
+![Diagrama Google DAG]()
+
+### **``Flujo API Incremental DAG:``**
+vender un poco de humo y especificar que es automatico cada tanto tiempo (ejemplo cada mes). Insertar imagen tambien
+
+![Diagrama API DAG]()
 
 ## Funcionalidades y Detalles Técnicos ⚙️
-- **Diccionario de Transformaciones**: En `transform_data_yelp.py`, el diccionario `transformaciones` asocia cada archivo con su respectiva función de transformación. Esto facilita la extensión del pipeline a otros archivos: solo se necesita crear una función de transformación y añadirla al diccionario.
-- **Validaciones y Control de Errores**: El pipeline incluye validaciones, como verificar si el DataFrame está vacío antes de cargarlo en BigQuery. Los bloques `try-except` se eliminaron para mejorar la transparencia y permitir que los errores se manejen adecuadamente a través de los registros de Airflow.
-- **Modularización del Código**: Las funciones de extracción, transformación y carga se han reorganizado en módulos independientes (`extract_data_yelp.py`, `transform_data_yelp.py` y `load_data_yelp.py`) para mejorar la claridad y la reutilización del código.
+
+- **Control de Archivos ya procesados**: El pipeline verifica si cada archivo ha sido procesado anteriormente consultando una tabla de control en BigQuery. Esto evita procesamientos duplicados de archivos hacia las tablas.
+- **Modularización del Código**: Las funciones de extracción, transformación y carga están organizadas en módulos independientes para mejorar la claridad y la reutilización del código.
+- **Diccionario de Transformaciones**: En `transform_data_yelp.py`, el diccionario `transformaciones` asocia cada archivo con su respectiva función de transformación, facilitando la extensión del pipeline a otros archivos. Solo se necesita crear una función de transformación y añadirla al diccionario.
+- **Documentación de funciones y tareas**: Cada función y tarea dentro del DAG está documentada utilizando docstrings conforme a las buenas prácticas de PEP 8, facilitando su comprensión y mantenimiento.
+- **Carga incremental automatica**: Realiza la carga de datos de forma automatizada, ejecutándose semanal y mensualmente sin intervención manual.
 
 ## Próximos Pasos 🔜
-- **Implementación de Transformación en BigQuery**:
-  - Realizar transformaciones adicionales en BigQuery sobre la tabla temporal (`checkin_temp`) antes de mover los datos a la tabla final.
-  - Eliminar la tabla temporal una vez que los datos hayan sido transformados y cargados en la tabla final, para optimizar el uso de recursos.
+
+- **Optimización del Procesamiento de Nuevas Versiones de Archivos**:
+  - Implementar una estrategia para detectar cambios en archivos existentes en el bucket de GCS, permitiendo la actualización de versiones de los datasets.
 - **Automatización para Otros Datasets**:
   - Extender el pipeline para procesar otros archivos de Yelp y Google, agregando sus transformaciones específicas al diccionario `transformaciones`.
-- **Automatización del Pipeline**:
-  - Configurar sensores o triggers en Airflow para que el pipeline se active automáticamente al detectar nuevos archivos en GCS.
 - **Monitoreo y Alertas**:
   - Implementar alertas y notificaciones en caso de fallos en alguna de las tareas del DAG, utilizando los servicios de Airflow y GCP.
 
 ## Posibles Mejoras y Consideraciones Futuras 🌟
+
 - **Optimización de Transformaciones en BigQuery**:
   - A medida que se agreguen más datos, puede ser necesario optimizar las consultas de transformación en BigQuery para reducir costos y tiempo de procesamiento.
-- **Documentación y Comentarios en el Código**:
-  - Es importante mantener la documentación del código y actualizar el markdown conforme avancemos en el proyecto. Esto facilitará la colaboración en equipo y la comprensión de los cambios realizados.
-- **Manejo de Versiones**:
-  - Considerar la posibilidad de versionar el código y los datasets para mantener un historial de cambios y facilitar la reversión en caso de problemas.
+- **Versionado de Código y Datos**:
+  - Considerar el uso de herramientas de control de versiones para el código y el manejo de versiones de datasets en GCS para mantener un historial claro y facilitar el rollback.
 
 ## Notas Finales 📝
-Este markdown documenta el progreso actual del pipeline y proporciona una guía sobre la arquitectura, el flujo de trabajo y las consideraciones clave. A medida que avancemos en el proyecto, este documento se actualizará para reflejar nuevos desarrollos y decisiones de diseño.
+
+Este markdown documenta el progreso actual del pipeline y proporciona una guía sobre la arquitectura, el flujo de trabajo y las consideraciones clave. Se actualizará para reflejar nuevos desarrollos y decisiones de diseño a medida que avancemos en el proyecto.
+

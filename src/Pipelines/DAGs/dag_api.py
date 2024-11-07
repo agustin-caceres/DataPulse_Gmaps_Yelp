@@ -1,7 +1,7 @@
 #Librerías
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
-from airflow.providers.google.cloud.transfers.gcs_to_bigquery import GCSToBigQueryOperator
+#from airflow.providers.google.cloud.transfers.gcs_to_bigquery import GCSToBigQueryOperator
 from airflow.operators.dummy import DummyOperator
 from datetime import datetime, timedelta
 from airflow.utils.dates import days_ago
@@ -9,7 +9,7 @@ from google.cloud import bigquery
 import os
 
 # Función
-from functions.extract_transform_load_api import extraer_reviews_google_places
+from Pipelines.functions.etl_api import extraer_reviews_google_places, cargar_a_bigquery
 
 ######################################################################################
 # PARÁMETROS
@@ -65,18 +65,35 @@ with DAG(
     )
 
     # Tarea 2: Cargar el archivo JSON desde GCS a BigQuery
-    cargar_a_bigquery = GCSToBigQueryOperator(
-        task_id='cargar_reviews_a_bigquery',
-        bucket=bucket_name,
-        source_objects=[output_file],
-        destination_project_dataset_table=f'{project_id}.{dataset_name}.{table_name}',
-        source_format='NEWLINE_DELIMITED_JSON',
-        write_disposition='WRITE_TRUNCATE',
-        create_disposition='CREATE_IF_NEEDED',
+    cargar_a_bigquery_task = PythonOperator(
+        task_id='cargar_a_bigquery',
+        python_callable=cargar_a_bigquery,
+        op_kwargs={
+            'bucket_name': bucket_name,
+            'output_file': output_file,
+            'dataset_name': dataset_name,
+            'table_name': table_name,
+        },
     )
+
 
     # Tarea de fin
     fin = DummyOperator(task_id='fin')
 
     # Definir el flujo de tareas
-    inicio >> extraer_tarea >> cargar_a_bigquery >> fin
+    inicio >> extraer_tarea >> cargar_a_bigquery_task >> fin
+
+
+
+
+
+
+    #    cargar_a_bigquery = GCSToBigQueryOperator(
+     #   task_id='cargar_reviews_a_bigquery',
+      #  bucket=bucket_name,
+       # source_objects=[output_file],
+       # destination_project_dataset_table=f'{project_id}.{dataset_name}.{table_name}',
+       # source_format='NEWLINE_DELIMITED_JSON',
+       # write_disposition='WRITE_TRUNCATE',
+       # create_disposition='CREATE_IF_NEEDED',
+    #)
