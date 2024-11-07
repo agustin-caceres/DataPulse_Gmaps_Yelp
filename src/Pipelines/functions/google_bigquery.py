@@ -32,8 +32,13 @@ def crear_tablas_bigquery(project_id: str, dataset: str) -> None:
                 gmap_id STRING,
                 relative_results STRING
             )
+        """,
+        "g_categorias": f"""
+            CREATE TABLE IF NOT EXISTS `{project_id}.{dataset}.g_categorias` (
+                gmap_id STRING,
+                categoria STRING
+            )
         """
-        # Agrega más tablas aquí si es necesario
     }
     
     # Ejecuta la consulta de creación para cada tabla
