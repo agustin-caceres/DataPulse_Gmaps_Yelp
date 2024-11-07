@@ -1,13 +1,14 @@
 from google.cloud import bigquery
 from google.cloud import storage
 import pandas as pd
+import logging
 import json
 
 ################################################################
 
-def crear_tabla_miscelaneos(project_id: str, dataset: str) -> None:
+def crear_tablas_bigquery(project_id: str, dataset: str) -> None:
     """
-    Crea la tabla 'miscelaneos' en el dataset de BigQuery si no existe.
+    Crea múltiples tablas en el dataset de BigQuery si no existen.
     
     Args:
     -------
@@ -17,24 +18,28 @@ def crear_tabla_miscelaneos(project_id: str, dataset: str) -> None:
         Nombre del dataset en BigQuery.
     """
     client = bigquery.Client()
+
+    # Diccionario con las definiciones de tablas: nombre de la tabla y consulta SQL de creación
+    tablas = {
+        "miscelaneos": f"""
+            CREATE TABLE IF NOT EXISTS `{project_id}.{dataset}.miscelaneos` (
+                gmap_id STRING,
+                misc STRING
+            )
+        """,
+        "relative_results": f"""
+            CREATE TABLE IF NOT EXISTS `{project_id}.{dataset}.relative_results` (
+                gmap_id STRING,
+                relative_results STRING
+            )
+        """
+        # Agrega más tablas aquí si es necesario
+    }
     
-    # Definir el ID de la tabla
-    miscelaneos_table_id = f"{project_id}.{dataset}.miscelaneos"
-    
-    # Definir la consulta SQL para crear la tabla 'miscelaneos'
-    create_table_query = f"""
-    CREATE TABLE IF NOT EXISTS `{miscelaneos_table_id}` (
-        gmap_id STRING,         
-        MISC STRING,
-    )
-    """
-    
-    # Ejecutar la consulta para crear la tabla
-    try:
-        client.query(create_table_query).result()
-        print(f"Tabla '{miscelaneos_table_id}' creada con éxito.")
-    except Exception as e:
-        print(f"Error al crear la tabla '{miscelaneos_table_id}': {e}")
+    # Ejecuta la consulta de creación para cada tabla
+    for nombre_tabla, create_query in tablas.items():
+        client.query(create_query).result()
+        logging.info(f"Tabla '{nombre_tabla}' creada o ya existente.")
 
 ################################################################ 
 

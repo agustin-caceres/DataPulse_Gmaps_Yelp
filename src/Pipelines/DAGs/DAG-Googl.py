@@ -7,8 +7,8 @@ from airflow.utils.dates import days_ago
 
 #Funciones
 from functions.registrar_archivo import detectar_archivos_nuevos, registrar_archivo_exitoso
-from functions.desanidar_misc import crear_tabla_miscelaneos ,desanidar_misc, actualizar_misc_con_atributos, eliminar_categorias_especificas
-from functions.desanidar_misc import generalizar_atributos, marcar_nuevas_accesibilidades, mover_a_tabla_oficial, eliminar_tablas_temporales
+from Pipelines.functions.desanidar_google import crear_tablas_bigquery ,desanidar_misc, actualizar_misc_con_atributos, eliminar_categorias_especificas
+from Pipelines.functions.desanidar_google import generalizar_atributos, marcar_nuevas_accesibilidades, mover_a_tabla_oficial, eliminar_tablas_temporales
 
 ######################################################################################
 # PARÁMETROS
@@ -34,6 +34,7 @@ default_args = {
 with DAG(
     dag_id=nameDAG_base,
     default_args=default_args,
+    description='Desanida y crea las tablas utilizadas en google.',
     schedule_interval=None,
     catchup=False
 ) as dag:
@@ -52,16 +53,16 @@ with DAG(
         }
     )
     
-    # Tarea 2: Crear la tabla temporal miscelaneos si no existe
-    crear_tabla_miscelaneos_task = PythonOperator(
-        task_id="crear_tabla_miscelaneos",
-        python_callable=crear_tabla_miscelaneos,
+    # Tarea 2: Crear tablas temporales en BigQuery
+    crear_tablas_temporales_task = PythonOperator(
+        task_id="crear_tablas_temporales",
+        python_callable=crear_tablas_bigquery,
         op_kwargs={
             'project_id': project_id,
             'dataset': dataset
         },
     )
-
+    '''
     # Tarea 3: Desanidar el archivo de datos 'MISC' usando el nombre del archivo del XCom
     desanidar_misc_task = PythonOperator(
         task_id='desanidar_misc',
@@ -143,8 +144,9 @@ with DAG(
             'dataset': dataset
         }
     )
-    
+    '''
     fin = DummyOperator(task_id='fin')
     
     # Estructura del flujo de tareas  
-    inicio >> detectar_archivos_task >> crear_tabla_miscelaneos_task >> desanidar_misc_task >> actualizar_misc_task >> eliminar_categorias_task >> generalizar_atributos_task >> anadir_accesibilidades_task >>  mover_a_tabla_oficial_task >> eliminar_tablas_temporales_task >> registrar_archivo_procesado_task >> fin
+    #inicio >> detectar_archivos_task >> crear_tablas_temporales_task >> desanidar_misc_task >> actualizar_misc_task >> eliminar_categorias_task >> generalizar_atributos_task >> anadir_accesibilidades_task >>  mover_a_tabla_oficial_task >> eliminar_tablas_temporales_task >> registrar_archivo_procesado_task >> fin
+    inicio >> detectar_archivos_task >> crear_tablas_temporales_task >> fin
