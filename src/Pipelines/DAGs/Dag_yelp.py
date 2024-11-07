@@ -69,7 +69,7 @@ with DAG(
     verificar_checkin = BranchPythonOperator(
         task_id='verificar_archivo_procesado_checkin',
         python_callable=decidir_flujo,
-        op_kwargs={'archivo_nombre': 'checkin.json'},
+        op_kwargs={'archivo_nombre': 'checkin1.json'},
     )
 
     verificar_tip = BranchPythonOperator(
@@ -93,7 +93,7 @@ with DAG(
     cargar_checkin = PythonOperator(
         task_id='cargar_archivo_checkin',
         python_callable=lambda **kwargs: cargar_dataframe_a_bigquery(
-            cargar_archivo_gcs_a_dataframe(bucket_name, 'Yelp/checkin.json'), 
+            cargar_archivo_gcs_a_dataframe(bucket_name, 'Yelp/checkin1.json'), 
             project_id, dataset, temp_table_checkin
         )
     )

@@ -67,16 +67,21 @@ def extraer_reviews_google_places(api_key, businesses, bucket_name, output_file)
             logger.info(f"No se encontró el negocio '{business['name']}'")
     
     # Guardar los datos en un archivo JSON
-    json_data = json.dumps(all_reviews, indent=4)
+    #json_data = json.dumps(all_reviews, indent=4)
     
     # Subir el archivo JSON a Google Cloud Storage
     client = storage.Client()
     bucket = client.get_bucket(bucket_name)
     blob = bucket.blob(output_file)
-    blob.upload_from_string(json_data, content_type='application/json')
+    #blob.upload_from_string(json_data, content_type='application/json')
+    
+    # Abrir el archivo en modo escritura línea por línea
+    with blob.open("w") as f:
+        for review in all_reviews:
+            f.write(json.dumps(review) + "\n")  # Cada objeto en una línea separada
     
     logger.info(f"Archivo '{output_file}' guardado exitosamente en el bucket '{bucket_name}'.")
-
+    
 # Función para cargar el archivo JSON de GCS a BigQuery
 def cargar_a_bigquery(bucket_name, output_file, dataset_name, table_name):
     """
