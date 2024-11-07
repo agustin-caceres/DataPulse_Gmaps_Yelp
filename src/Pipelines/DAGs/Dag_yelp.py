@@ -61,6 +61,10 @@ with DAG(
         # Obtén la fecha de actualización del archivo desde el bucket en GCS
         fecha_actualizacion = obtener_fecha_actualizacion(bucket_name, archivo_nombre)
         
+        # Si el archivo no existe, dirigir el flujo a la tarea de fin
+        if fecha_actualizacion is None:
+            return f'fin_{archivo_nombre.split(".")[0]}'
+
         # Pasa `fecha_actualizacion` al verificar si el archivo ya fue procesado
         if archivo_procesado(project_id, dataset, archivo_nombre, fecha_actualizacion):
             # Retorna el nombre exacto del DummyOperator de fin correspondiente

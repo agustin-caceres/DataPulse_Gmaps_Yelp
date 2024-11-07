@@ -83,7 +83,7 @@ def obtener_fecha_actualizacion(bucket_name: str, archivo_nombre: str) -> dateti
         archivo_nombre (str): Nombre del archivo.
 
     Returns:
-        datetime: Fecha de actualización del archivo.
+        datetime: Fecha de actualización del archivo, o None si el archivo no existe.
     """
     client = storage.Client()
     bucket = client.get_bucket(bucket_name)
@@ -92,7 +92,8 @@ def obtener_fecha_actualizacion(bucket_name: str, archivo_nombre: str) -> dateti
     if blob:
         return blob.updated  # Devuelve la fecha de última modificación
     else:
-        raise ValueError(f"El archivo '{archivo_nombre}' no existe en el bucket '{bucket_name}'")
+        logger.warning(f"El archivo '{archivo_nombre}' no existe en el bucket '{bucket_name}'")
+        return None
 
 
 def crear_tabla_temporal(project_id: str, dataset: str, temp_table: str, schema: list) -> None:
