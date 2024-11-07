@@ -21,9 +21,24 @@ De esta forma buscamos garantizar resultados relevantes y de alta calidad, optim
 ## ESTRUCTURA DEL PROYECTO
 
 - `assets/`: Archivos estaticos, imagenes y reportes
+    - `Diagrama_ER`: ''
+    - `Flujos_Gant_x_Sprint`: ''
+    - `Images`: ''
+    - `Reportes Entregables`: ''
+
 - `Notebooks/`: Jupyter notebooks con los análisis en local.
+    - `ETL`: ''
+    - `EDA`: ''
+
 - `src/`: Codigo fuente, modulos de aplicaciones y scripts.
-- `README.md`: Documentación
+    - `FastApi`: ''
+        - `README.md`: Documentación de la API
+    - `Pipelines`: ''
+        - `DAGs`: ''
+        - `functions`: ''
+        - `README.md`: Documentación del pipeline
+    - `Streamlit`: ''
+- `README.md`: Documentación General.
 - `requirements.txt`: Requerimientos del proyecto.
 - `cloudbuild.yaml`: Conexion del repositorio con Composer.
 
