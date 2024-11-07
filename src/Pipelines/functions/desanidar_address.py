@@ -6,12 +6,6 @@ import logging
 
 ####################################
 
-import logging
-from google.cloud import bigquery, storage
-import pandas as pd
-from io import StringIO
-from google.cloud.exceptions import NotFound
-
 # Configuración básica del logging
 logging.basicConfig(level=logging.INFO)
 
@@ -25,7 +19,7 @@ def desanidar_address(bucket_name: str, archivo: str, project_id: str, dataset: 
     storage_client = storage.Client()
 
     # Define el ID de la tabla de destino
-    table_id = f"{project_id}.{dataset}.address"
+    table_id = f"{project_id}.{dataset}.g_address"
 
     # Lee el archivo JSON desde Cloud Storage
     blob = storage_client.bucket(bucket_name).blob(archivo)
@@ -50,6 +44,9 @@ def desanidar_address(bucket_name: str, archivo: str, project_id: str, dataset: 
 
     # Agregar las columnas separadas al DataFrame
     df = df[['gmap_id']].join(address_split)
+    
+    # Agregar una columna nueva llamada estados.
+    df['estado'] = None
 
     # Listas de los 51 códigos postales y nombres de estados
     codigos_postales = [

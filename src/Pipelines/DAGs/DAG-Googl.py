@@ -8,12 +8,12 @@ from airflow.utils.dates import days_ago
 #Funciones
 from functions.google_bigquery import crear_tablas_bigquery,eliminar_tablas_temporales, detectar_archivos_nuevos, registrar_archivo_exitoso 
 from functions.desanidar_misc import desanidar_misc,actualizar_misc_con_atributos,generalizar_atributos, eliminar_categorias_especificas, marcar_nuevas_accesibilidades, mover_a_tabla_oficial 
-from functions.desanidar_columnas import desanidar_columna
+from functions.desanidar_columnas import desanidar_columna, seleccionar_columnas
 from functions.desanidar_horarios import desanidar_horarios
 from functions.desanidar_address import desanidar_address
 
 ######################################################################################
-# PARÁMETROS 1
+# PARÁMETROS
 ######################################################################################
 
 nameDAG_base      = 'Procesamiento_ETL_Google'
@@ -118,10 +118,22 @@ with DAG(
         }
     )
     
-    # Tarea 7: Desanidar el archivo de datos horarios usando el nombre del archivo del XCom
+    # Tarea 7: Desanidar la columna 'address' usando el nombre del archivo del XCom
     desanidar_address_task = PythonOperator(
         task_id='desanidar_address',
         python_callable=desanidar_address,
+        op_kwargs={
+            'bucket_name': bucket_name,
+            'archivo': "{{ ti.xcom_pull(task_ids='detectar_archivos') }}",
+            'project_id': project_id,
+            'dataset': dataset
+        }
+    )
+    
+    # Tarea 8: crear la tabla principal
+    tabla_g_sitios_task = PythonOperator(
+        task_id='desanidar_g_sitios',
+        python_callable=seleccionar_columnas,
         op_kwargs={
             'bucket_name': bucket_name,
             'archivo': "{{ ti.xcom_pull(task_ids='detectar_archivos') }}",
@@ -205,5 +217,5 @@ with DAG(
     # Estructura del flujo de tareas  
     #inicio >> detectar_archivos_task >> crear_tablas_temporales_task >> desanidar_misc_task >> actualizar_misc_task >> eliminar_categorias_task >> generalizar_atributos_task >> anadir_accesibilidades_task >>  mover_a_tabla_oficial_task >> eliminar_tablas_temporales_task >> registrar_archivo_procesado_task >> fin
     inicio >> detectar_archivos_task >> crear_tablas_temporales_task
-    crear_tablas_temporales_task >> [desanidar_misc_task, desanidar_rr_task, desanidar_categorias_task, desanidar_horarios_task,desanidar_address_task]
-    [desanidar_misc_task, desanidar_rr_task, desanidar_categorias_task, desanidar_horarios_task,desanidar_address_task] >> fin
+    crear_tablas_temporales_task >> [tabla_g_sitios_task,desanidar_misc_task, desanidar_rr_task, desanidar_categorias_task, desanidar_horarios_task,desanidar_address_task]
+    [tabla_g_sitios_task,desanidar_misc_task, desanidar_rr_task, desanidar_categorias_task, desanidar_horarios_task,desanidar_address_task] >> fin

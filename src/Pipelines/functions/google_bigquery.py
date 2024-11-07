@@ -63,6 +63,16 @@ def crear_tablas_bigquery(project_id: str, dataset: str) -> None:
                 estado STRING,
                 id_estado INT64
             )
+        """,
+        "g_sitios": f"""
+            CREATE TABLE IF NOT EXISTS `{project_id}.{dataset}.g_sitios` (
+                gmap_id STRING,
+                name STRING,
+                description STRING,
+                url STRING,
+                avg_rating FLOAT64,
+                num_of_reviews INt64
+            )
         """
     }
     
