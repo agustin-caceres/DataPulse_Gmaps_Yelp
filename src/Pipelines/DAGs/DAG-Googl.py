@@ -13,7 +13,7 @@ from functions.desanidar_horarios import desanidar_horarios
 from functions.desanidar_address import desanidar_address
 
 ######################################################################################
-# PARÁMETROS 1
+# PARÁMETROS
 ######################################################################################
 
 nameDAG_base      = 'Procesamiento_ETL_Google'
