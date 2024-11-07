@@ -217,6 +217,6 @@ La utilización de iteraciones en forma de Sprints permite priorizar en todo mom
 - Aliskair Rodríguez: 
 - Débora Kellenberger: 
 - Julieta Trimarchi:
-- Mauricio Arce:
+- Mauricio Arce: [LinkedIn](https://www.linkedin.com/in/mauricioarcez/) / [mauricioarcez23@gmail.com](mailto:mauricioarcez23@gmail.com)
 - Agustín Cáceres: 
 
