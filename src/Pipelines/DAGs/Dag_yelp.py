@@ -55,8 +55,7 @@ with DAG(
         else:
             return 'crear_tabla_temporal'  # Si no fue procesado, continuar el flujo
 
-
-    """ 
+ 
     # Tarea 1: Verificar si el archivo ya fue procesado
     verificar_archivo_procesado = BranchPythonOperator(
         task_id='verificar_archivo_procesado',
@@ -106,7 +105,7 @@ with DAG(
             'table_name': temp_table_general
         },
     )
-    """
+    
     # Tarea 6: Registrar el archivo como procesado en la tabla de control
     registrar_archivo = PythonOperator(
         task_id='registrar_archivo_procesado',
@@ -122,8 +121,6 @@ with DAG(
     fin = DummyOperator(task_id='fin')
 
     # Estructura del flujo de tareas
-    # inicio >> verificar_archivo_procesado
-    # verificar_archivo_procesado >> crear_tabla_temp >> cargar_archivo_temp_task >> transformar_datos >> eliminar_tabla_temp >> registrar_archivo >> fin
-    # verificar_archivo_procesado >> fin  # Salta al final si el archivo ya fue procesado
-
-    inicio >> registrar_archivo >> fin
+    inicio >> verificar_archivo_procesado
+    verificar_archivo_procesado >> crear_tabla_temp >> cargar_archivo_temp_task >> transformar_datos >> eliminar_tabla_temp >> registrar_archivo >> fin
+    verificar_archivo_procesado >> fin  # Salta al final si el archivo ya fue procesado
