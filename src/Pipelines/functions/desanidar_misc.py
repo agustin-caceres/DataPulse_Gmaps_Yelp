@@ -2,46 +2,8 @@ from google.cloud import bigquery
 from google.cloud import storage
 import pandas as pd
 import logging
-import json
 
 ################################################################
-
-def crear_tablas_bigquery(project_id: str, dataset: str) -> None:
-    """
-    Crea múltiples tablas en el dataset de BigQuery si no existen.
-    
-    Args:
-    -------
-    project_id : str
-        ID del proyecto en Google Cloud Platform.
-    dataset : str
-        Nombre del dataset en BigQuery.
-    """
-    client = bigquery.Client()
-
-    # Diccionario con las definiciones de tablas: nombre de la tabla y consulta SQL de creación
-    tablas = {
-        "miscelaneos": f"""
-            CREATE TABLE IF NOT EXISTS `{project_id}.{dataset}.miscelaneos` (
-                gmap_id STRING,
-                misc STRING
-            )
-        """,
-        "relative_results": f"""
-            CREATE TABLE IF NOT EXISTS `{project_id}.{dataset}.relative_results` (
-                gmap_id STRING,
-                relative_results STRING
-            )
-        """
-        # Agrega más tablas aquí si es necesario
-    }
-    
-    # Ejecuta la consulta de creación para cada tabla
-    for nombre_tabla, create_query in tablas.items():
-        client.query(create_query).result()
-        logging.info(f"Tabla '{nombre_tabla}' creada o ya existente.")
-
-################################################################ 
 
 def dict_to_list(diccionario: dict) -> list:
     """
@@ -315,32 +277,6 @@ def mover_a_tabla_oficial(project_id: str, dataset: str) -> None:
     
 #############################################################################################
 
-def eliminar_tablas_temporales(project_id: str, dataset: str) -> None:
-    """
-    Elimina las tablas temporales 'temp_miscelaneos' y 'miscelaneos' en BigQuery.
-    
-    Args:
-    -------
-    project_id : str
-        ID del proyecto en Google Cloud Platform.
-    dataset : str
-        Nombre del dataset en BigQuery.
-    """
-    client = bigquery.Client()
-    
-    # Definir las tablas a eliminar
-    temp_table_id = f"{project_id}.{dataset}.temp_miscelaneos"
-    miscelaneos_table_id = f"{project_id}.{dataset}.miscelaneos"
-    
-    # Eliminar la tabla temporal 'temp_miscelaneos'
-    drop_temp_query = f"DROP TABLE IF EXISTS `{temp_table_id}`"
-    client.query(drop_temp_query).result()  # Ejecuta la consulta y espera el resultado
-    print(f"Tabla temporal {temp_table_id} eliminada con éxito.")
-    
-    # Eliminar la tabla 'miscelaneos' (temporal)
-    drop_miscelaneos_query = f"DROP TABLE IF EXISTS `{miscelaneos_table_id}`"
-    client.query(drop_miscelaneos_query).result()  # Ejecuta la consulta y espera el resultado
-    print(f"Tabla {miscelaneos_table_id} eliminada con éxito.")
 
 
 
