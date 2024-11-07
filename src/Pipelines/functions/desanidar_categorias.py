@@ -3,10 +3,11 @@ from google.cloud import storage
 import pandas as pd
 import logging
 
-#######################################################################################################
-def desanidar_relative_results(bucket_name: str, archivo: str, project_id: str, dataset: str) -> None:
+###################################################
+
+def desanidar_categorias(bucket_name: str, archivo: str, project_id: str, dataset: str) -> None:
     """
-    Toma un archivo JSON de Google Cloud Storage, extrae los valores de 'relative_results' 
+    Toma un archivo JSON de Google Cloud Storage, extrae los valores de 'category' 
     y los guarda desanidados en BigQuery.
 
     Args:
@@ -14,11 +15,11 @@ def desanidar_relative_results(bucket_name: str, archivo: str, project_id: str, 
     bucket_name : str
         Nombre del bucket en Google Cloud Storage.
     archivo : str
-        Nombre del archivo JSON que contiene la columna 'relative_results'.
+        Nombre del archivo JSON que contiene la columna 'category'.
     project_id : str
         ID del proyecto en Google Cloud Platform.
     dataset : str
-        Nombre del dataset en BigQuery donde se guardará la tabla 'relative_results'.
+        Nombre del dataset en BigQuery donde se guardará la tabla 'category'.
     """
     
     # Inicializa el cliente de BigQuery y el cliente de Cloud Storage
@@ -26,7 +27,7 @@ def desanidar_relative_results(bucket_name: str, archivo: str, project_id: str, 
     storage_client = storage.Client()
 
     # Define el ID de la tabla de destino
-    table_id = f"{project_id}.{dataset}.g_relative_results"
+    table_id = f"{project_id}.{dataset}.g_categorias"
 
     # Lee el archivo JSON desde Cloud Storage
     blob = storage_client.bucket(bucket_name).blob(archivo)
@@ -36,10 +37,10 @@ def desanidar_relative_results(bucket_name: str, archivo: str, project_id: str, 
     df = pd.read_json(contenido, lines=True)
 
     # Filtra registros sin información en 'relative_results' o 'gmap_id'
-    df = df[df['relative_results'].notna() & df['gmap_id'].notna()]
+    df = df[df['category'].notna() & df['gmap_id'].notna()]
 
     # Expande la columna 'relative_results' usando explode
-    df_expanded = df[['gmap_id', 'relative_results']].explode('relative_results').dropna()
+    df_expanded = df[['gmap_id', 'category']].explode('category').dropna()
 
     # Carga el DataFrame resultante a BigQuery y verifica si la tabla ya existe y tiene datos
     table = client.get_table(table_id)
@@ -49,5 +50,5 @@ def desanidar_relative_results(bucket_name: str, archivo: str, project_id: str, 
     else:
         job_config = bigquery.LoadJobConfig(write_disposition="WRITE_APPEND")
 
-    client.load_table_from_dataframe(df_expanded[['gmap_id', 'relative_results']], table_id, job_config=job_config).result()
-    logging.info(f"Datos del archivo {archivo} cargados exitosamente en la tabla 'relative_results' de BigQuery.")
+    client.load_table_from_dataframe(df_expanded[['gmap_id', 'category']], table_id, job_config=job_config).result()
+    logging.info(f"Datos del archivo {archivo} cargados exitosamente en la tabla 'category' de BigQuery.")

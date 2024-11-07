@@ -27,8 +27,8 @@ def crear_tablas_bigquery(project_id: str, dataset: str) -> None:
                 misc STRING
             )
         """,
-        "relative_results": f"""
-            CREATE TABLE IF NOT EXISTS `{project_id}.{dataset}.relative_results` (
+        "g_relative_results": f"""
+            CREATE TABLE IF NOT EXISTS `{project_id}.{dataset}.g_relative_results` (
                 gmap_id STRING,
                 relative_results STRING
             )
@@ -59,8 +59,7 @@ def eliminar_tablas_temporales(project_id: str, dataset: str) -> None:
     # Lista de tablas temporales a eliminar
     tablas_temporales = [
         f"{project_id}.{dataset}.temp_miscelaneos",
-        f"{project_id}.{dataset}.miscelaneos",
-        f"{project_id}.{dataset}.relative_results"
+        f"{project_id}.{dataset}.miscelaneos"
     ]
     
     # Bucle para eliminar cada tabla temporal
