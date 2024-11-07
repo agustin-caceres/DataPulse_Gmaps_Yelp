@@ -43,7 +43,7 @@ def desanidar_address(bucket_name: str, archivo: str, project_id: str, dataset: 
     address_split.columns = ['nombre', 'direccion', 'ciudad', 'cod_postal']
 
     # Agregar las columnas separadas al DataFrame
-    df = df[['gmap_id']].join(address_split)
+    df = df[['gmap_id', 'latitude', 'longitude']].join(address_split, how="inner")
     
     # Agregar una columna nueva llamada estados.
     df['estado'] = None

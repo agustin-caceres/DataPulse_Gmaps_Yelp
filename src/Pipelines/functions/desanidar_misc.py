@@ -264,7 +264,7 @@ def mover_a_tabla_oficial(project_id: str, dataset: str) -> None:
     
     # Consulta SQL para insertar los registros desde la tabla temporal a la tabla oficial
     insert_query = f"""
-    INSERT INTO `{official_table_id}` (id_negocio, categoria_atributo, atributo)
+    INSERT INTO `{official_table_id}` (gmap_id, categoria_atributo, atributo)
     SELECT gmap_id, category, atributo
     FROM `{temp_table_id}`
     """
