@@ -33,10 +33,27 @@ Actualmente, el pipeline procesa los datos desde un Bucket en Cloud Storage, alm
   - `etl_api.py`: Incluye funciones para la extracción, transformación y carga incremental de nuevos datos desde la API Places de Google hacia nuevas tablas en BigQuery.
   
 
-## Diagrama del DAGs 📊
+## Diagrama y flujo de los DAGs 📊
 
 ### **``Flujo Yelp DAG:``**
 Este diagrama muestra cómo el flujo del DAG se adapta para diferentes archivos (checkin y tip) y cómo se asegura la modularidad y flexibilidad en el procesamiento con una carga incremental de archivos semanales.
+
+- **Inicio**:
+  - `inicio`: Un `DummyOperator` que marca el comienzo del DAG para facilitar la visualización en Airflow.
+- **Verificación de Archivos Procesados**:
+  - `verificar_archivo_procesado`: Utiliza `BranchPythonOperator` para verificar si el archivo ya fue procesado consultando la tabla de control en BigQuery.
+- **Creación de Tablas Temporales**:
+  - `crear_tabla_temporal`: Crea tablas temporales en BigQuery para almacenar los datos con el esquema adecuado.
+- **Extracción y Transformación de Datos**:
+  - `cargar_archivo_en_tabla_temporal`: Extrae los archivos desde Google Cloud Storage (GCS), aplica transformaciones necesarias y carga los datos en las tablas temporales en BigQuery.
+- **Transformación en BigQuery y Carga en Tablas Finales**:
+  - `transformar_checkin` y `transformar_tip`: Transforman los datos en las tablas temporales y los cargan en las tablas finales `checkin_yelp` y `tip_yelp`.
+- **Eliminación de Tablas Temporales**:
+  - `eliminar_tabla_temporal`: Elimina las tablas temporales después de cargar los datos en las tablas finales para optimizar el uso de recursos.
+- **Registro en la Tabla de Control**:
+  - `registrar_archivo_procesado`: Registra el archivo como procesado en la tabla de control para evitar reprocesamiento.
+- **Fin**:
+  - `fin_checkin` y `fin_tip`: `DummyOperator` que marca el final de cada flujo para `checkin.json` y `tip.json`.
 
 ![Diagrama Yelp DAG](../../assets/Images/dag_yelp.png)
 
