@@ -8,18 +8,17 @@ from functions.load_data_yelp import (crear_tabla_temporal, cargar_dataframe_a_b
                                       eliminar_tabla_temporal, archivo_procesado, 
                                       registrar_archivo_procesado)
 from functions.extract_data_yelp import cargar_archivo_gcs_a_dataframe
-from functions.transform_data_yelp import transformar_checkin
+from functions.transform_data_yelp import transformar_checkin, transformar_tip
 
 ######################################################################################
 # PARÁMETROS PARA DATOS DE YELP
 ######################################################################################
 
-nameDAG_base       = 'ETL_Yelp'
-project_id         = 'neon-gist-439401-k8'
-dataset            = '1'
-owner              = 'Agustín'
-bucket_name        = 'datos-crudos'
-temp_table_general = 'checkin_temp'
+nameDAG_base = 'ETL_yelp'
+project_id = 'neon-gist-439401-k8'
+dataset = '1'
+owner = 'Agustín'
+bucket_name = 'datos-crudos'
 
 default_args = {
     'owner': owner,
@@ -28,10 +27,21 @@ default_args = {
     'retry_delay': timedelta(minutes=2),
 }
 
-# Esquema de la tabla temporal para checkin.json de Yelp
-temp_table_general_schema = [
+# Esquemas temporales para checkin.json y tip.json
+temp_table_checkin = 'checkin_temp'
+temp_table_tip = 'tip_temp'
+
+schema_checkin = [
     bigquery.SchemaField("business_id", "STRING", mode="REQUIRED"),
     bigquery.SchemaField("date", "TIMESTAMP", mode="REPEATED"),
+]
+
+schema_tip = [
+    bigquery.SchemaField("text", "STRING", mode="REQUIRED"),
+    bigquery.SchemaField("date", "DATE", mode="REQUIRED"),
+    bigquery.SchemaField("compliment_count", "INTEGER", mode="NULLABLE"),
+    bigquery.SchemaField("business_id", "STRING", mode="REQUIRED"),
+    bigquery.SchemaField("user_id", "STRING", mode="REQUIRED"),
 ]
 
 #######################################################################################
@@ -45,70 +55,72 @@ with DAG(
     catchup=False
 ) as dag:
 
-    # Tarea de inicio
     inicio = DummyOperator(task_id='inicio')
 
-    # Función para decidir el flujo en función de si el archivo fue procesado
-    def decidir_flujo(**kwargs):
-        if archivo_procesado(project_id, dataset, 'checkin.json'):
-            return 'fin'  # Si el archivo ya fue procesado, ir a 'fin'
+    def decidir_flujo(archivo_nombre, **kwargs):
+        if archivo_procesado(project_id, dataset, archivo_nombre):
+            # Retorna el nombre exacto del DummyOperator de fin correspondiente
+            return f'fin_{archivo_nombre.split(".")[0]}'  # Simplifica para que coincida con los nombres de los DummyOperators
         else:
-            return 'crear_tabla_temporal'  # Si no fue procesado, continuar el flujo
+            # Retorna el nombre exacto de la tarea de creación de tabla temporal
+            return f'crear_tabla_temporal_{archivo_nombre.split(".")[0]}'
 
- 
-    # Tarea 1: Verificar si el archivo ya fue procesado
-    verificar_archivo_procesado = BranchPythonOperator(
-        task_id='verificar_archivo_procesado',
+    # Verificación y flujo condicional para cada archivo
+    verificar_checkin = BranchPythonOperator(
+        task_id='verificar_archivo_procesado_checkin',
         python_callable=decidir_flujo,
+        op_kwargs={'archivo_nombre': 'checkin.json'},
     )
 
-    # Tarea 2: Crear la tabla temporal en BigQuery (ejecuta solo si el archivo no fue procesado)
-    crear_tabla_temp = PythonOperator(
-        task_id='crear_tabla_temporal',
+    verificar_tip = BranchPythonOperator(
+        task_id='verificar_archivo_procesado_tip',
+        python_callable=decidir_flujo,
+        op_kwargs={'archivo_nombre': 'tip.json'},
+    )
+
+    # Procesamiento de checkin.json
+    crear_tabla_checkin = PythonOperator(
+        task_id='crear_tabla_temporal_checkin',
         python_callable=crear_tabla_temporal,
         op_kwargs={
             'project_id': project_id,
             'dataset': dataset,
-            'temp_table': temp_table_general,
-            'schema': temp_table_general_schema
+            'temp_table': temp_table_checkin,
+            'schema': schema_checkin
         },
     )
 
-    # Tarea 3: Cargar el archivo checkin.json en la tabla temporal
-    cargar_archivo_temp_task = PythonOperator(
-        task_id='cargar_archivo_en_tabla_temporal',
+    cargar_checkin = PythonOperator(
+        task_id='cargar_archivo_checkin',
         python_callable=lambda **kwargs: cargar_dataframe_a_bigquery(
             cargar_archivo_gcs_a_dataframe(bucket_name, 'Yelp/checkin.json'), 
-            project_id, dataset, temp_table_general
+            project_id, dataset, temp_table_checkin
         )
     )
 
-    # Tarea 4: Transformar los datos y cargarlos en la tabla final
-    transformar_datos = PythonOperator(
-        task_id='transformar_datos_y_cargar_tabla_final',
+    transformar_checkin_task = PythonOperator(
+        task_id='transformar_checkin',
         python_callable=transformar_checkin,
         op_kwargs={
             'project_id': project_id,
             'dataset': dataset,
-            'temp_table': temp_table_general,
+            'temp_table': temp_table_checkin,
             'final_table': 'checkin_yelp'
         },
     )
 
-    # Tarea 5: Eliminar la tabla temporal después de la carga en la tabla final
-    eliminar_tabla_temp = PythonOperator(
-        task_id='eliminar_tabla_temporal',
+    eliminar_checkin = PythonOperator(
+        task_id='eliminar_tabla_temporal_checkin',
         python_callable=eliminar_tabla_temporal,
         op_kwargs={
             'project_id': project_id,
             'dataset': dataset,
-            'table_name': temp_table_general
+            'table_name': temp_table_checkin
         },
     )
-    
-    # Tarea 6: Registrar el archivo como procesado en la tabla de control
-    registrar_archivo = PythonOperator(
-        task_id='registrar_archivo_procesado',
+
+    registrar_checkin = PythonOperator(
+        task_id='registrar_archivo_checkin',
         python_callable=registrar_archivo_procesado,
         op_kwargs={
             'project_id': project_id,
@@ -117,10 +129,67 @@ with DAG(
         },
     )
 
-    # Tarea de fin
-    fin = DummyOperator(task_id='fin')
+    fin_checkin = DummyOperator(task_id='fin_checkin')
 
-    # Estructura del flujo de tareas
-    inicio >> verificar_archivo_procesado
-    verificar_archivo_procesado >> crear_tabla_temp >> cargar_archivo_temp_task >> transformar_datos >> eliminar_tabla_temp >> registrar_archivo >> fin
-    verificar_archivo_procesado >> fin  # Salta al final si el archivo ya fue procesado
+    # Procesamiento de tip.json
+    crear_tabla_tip = PythonOperator(
+        task_id='crear_tabla_temporal_tip',
+        python_callable=crear_tabla_temporal,
+        op_kwargs={
+            'project_id': project_id,
+            'dataset': dataset,
+            'temp_table': temp_table_tip,
+            'schema': schema_tip
+        },
+    )
+
+    cargar_tip = PythonOperator(
+        task_id='cargar_archivo_tip',
+        python_callable=lambda **kwargs: cargar_dataframe_a_bigquery(
+            cargar_archivo_gcs_a_dataframe(bucket_name, 'Yelp/tip.json'), 
+            project_id, dataset, temp_table_tip
+        )
+    )
+
+    transformar_tip_task = PythonOperator(
+        task_id='transformar_tip',
+        python_callable=transformar_tip,
+        op_kwargs={
+            'project_id': project_id,
+            'dataset': dataset,
+            'temp_table': temp_table_tip,
+            'final_table': 'tip_yelp'
+        },
+    )
+
+    eliminar_tip = PythonOperator(
+        task_id='eliminar_tabla_temporal_tip',
+        python_callable=eliminar_tabla_temporal,
+        op_kwargs={
+            'project_id': project_id,
+            'dataset': dataset,
+            'table_name': temp_table_tip
+        },
+    )
+
+    registrar_tip = PythonOperator(
+        task_id='registrar_archivo_tip',
+        python_callable=registrar_archivo_procesado,
+        op_kwargs={
+            'project_id': project_id,
+            'dataset': dataset,
+            'nombre_archivo': 'tip.json'
+        },
+    )
+
+    fin_tip = DummyOperator(task_id='fin_tip')
+
+    # Estructura de flujo para checkin.json
+    inicio >> verificar_checkin
+    verificar_checkin >> crear_tabla_checkin >> cargar_checkin >> transformar_checkin_task >> eliminar_checkin >> registrar_checkin >> fin_checkin
+    verificar_checkin >> fin_checkin
+
+    # Estructura de flujo para tip.json
+    inicio >> verificar_tip
+    verificar_tip >> crear_tabla_tip >> cargar_tip >> transformar_tip_task >> eliminar_tip >> registrar_tip >> fin_tip
+    verificar_tip >> fin_tip

@@ -2,6 +2,8 @@ from google.cloud import bigquery
 import pandas as pd
 import logging
 from datetime import datetime
+from google.cloud import storage
+
 
 # Configuración del logger
 logging.basicConfig(level=logging.INFO)
@@ -51,7 +53,7 @@ def archivo_procesado(project_id: str, dataset: str, nombre_archivo: str) -> boo
 
     query = f"""
     SELECT COUNT(1) AS procesado
-    FROM `{project_id}.{dataset}.archivos_procesados`
+    FROM {project_id}.{dataset}.archivos_procesados
     WHERE nombre_archivo = '{nombre_archivo}'
     """
     
