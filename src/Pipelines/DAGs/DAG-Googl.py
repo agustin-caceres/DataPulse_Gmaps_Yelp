@@ -7,10 +7,18 @@ from airflow.utils.dates import days_ago
 
 #Funciones
 from functions.google_bigquery import crear_tablas_bigquery,eliminar_tablas_temporales, detectar_archivos_nuevos, registrar_archivo_exitoso 
-from functions.desanidar_misc import desanidar_misc,actualizar_misc_con_atributos,generalizar_atributos, eliminar_categorias_especificas, marcar_nuevas_accesibilidades, mover_a_tabla_oficial 
-from functions.desanidar_columnas import desanidar_columna, seleccionar_columnas
-from functions.desanidar_horarios import desanidar_horarios
-from functions.desanidar_address import desanidar_address
+from functions.desanidar_columnas import (
+    desanidar_columna,
+    seleccionar_columnas,
+    desanidar_horarios,
+    desanidar_address,
+    desanidar_misc,
+    actualizar_misc_con_atributos,
+    generalizar_atributos,
+    eliminar_categorias_especificas,
+    marcar_nuevas_accesibilidades,
+    mover_a_tabla_oficial
+)
 
 ######################################################################################
 # PARÁMETROS

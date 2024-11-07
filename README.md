@@ -16,18 +16,16 @@ Este proyecto se centra en mejorar la efectividad y la practicidad de las estrat
 De esta forma buscamos garantizar resultados relevantes y de alta calidad, optimizando el impacto estratégico y dejando una puerta abierta a que el cliente vea, transite y reciba el feedback de los insights hallados para luego, de requerilo, continuar con otra etapa del análisis mas... *'à la carte'* 👨‍🍳 😉
 
 ## **MIEMBROS DEL EQUIPO**  👩🏻‍💻 👨🏻‍💻 👩🏼‍💻 👨🏻‍💻 👨🏼‍💻 
-
-- Data Engineer: Julieta Trimarchi, Mauricio Arce
-- Data Analyst: Débora Kellenberger, Mauricio Arce
-- Data Science: Agustín Cáceres, Aliskair Rodríguez
+![Encabezado](assets/Images/equipo_roles.png)
 
 ## ESTRUCTURA DEL PROYECTO
 
-- assets/: Archivos estaticos, imagenes y reportes
-- Notebooks/: Jupyter notebooks con los análisis.
-- src/: Codigo fuente, modulos de aplicaciones y scripts.
-- READM.md: Documentación
-- requirements.txt
+- `assets/`: Archivos estaticos, imagenes y reportes
+- `Notebooks/`: Jupyter notebooks con los análisis en local.
+- `src/`: Codigo fuente, modulos de aplicaciones y scripts.
+- `README.md`: Documentación
+- `requirements.txt`: Requerimientos del proyecto.
+- `cloudbuild.yaml`: Conexion del repositorio con Composer.
 
 ## **ENTENDIMIENTO DE LA SITUACION ACTUAL**
 
