@@ -9,7 +9,7 @@ from google.cloud import bigquery
 import os
 
 # Función
-from extract_transform_load_api import extraer_reviews_google_places
+from functions.extract_transform_load_api import extraer_reviews_google_places
 
 ######################################################################################
 # PARÁMETROS
