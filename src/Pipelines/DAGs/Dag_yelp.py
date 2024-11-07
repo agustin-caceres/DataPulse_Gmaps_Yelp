@@ -6,7 +6,7 @@ from airflow.utils.dates import days_ago
 from google.cloud import bigquery
 from functions.load_data_yelp import (crear_tabla_temporal, cargar_dataframe_a_bigquery, 
                                       eliminar_tabla_temporal, archivo_procesado, 
-                                      registrar_archivo_procesado, obtener_fecha_actualizacion)
+                                      registrar_archivo_procesado)
 from functions.extract_data_yelp import cargar_archivo_gcs_a_dataframe
 from functions.transform_data_yelp import transformar_checkin, transformar_tip
 
@@ -14,7 +14,7 @@ from functions.transform_data_yelp import transformar_checkin, transformar_tip
 # PARÁMETROS PARA DATOS DE YELP
 ######################################################################################
 
-nameDAG_base = 'ETL_Yelp'
+nameDAG_base = 'ETL_yelp'
 project_id = 'neon-gist-439401-k8'
 dataset = '1'
 owner = 'Agustín'
@@ -58,11 +58,7 @@ with DAG(
     inicio = DummyOperator(task_id='inicio')
 
     def decidir_flujo(archivo_nombre, **kwargs):
-        # Obtén la fecha de actualización del archivo desde el bucket en GCS
-        fecha_actualizacion = obtener_fecha_actualizacion(bucket_name, archivo_nombre)
-        
-        # Pasa `fecha_actualizacion` al verificar si el archivo ya fue procesado
-        if archivo_procesado(project_id, dataset, archivo_nombre, fecha_actualizacion):
+        if archivo_procesado(project_id, dataset, archivo_nombre):
             # Retorna el nombre exacto del DummyOperator de fin correspondiente
             return f'fin_{archivo_nombre.split(".")[0]}'  # Simplifica para que coincida con los nombres de los DummyOperators
         else:
