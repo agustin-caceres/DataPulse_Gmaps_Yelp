@@ -35,65 +35,42 @@ def registrar_archivo_procesado(project_id: str, dataset: str, nombre_archivo: s
 
 
 # Función para Verificar si un Archivo ya fue Procesado
-def archivo_procesado(project_id: str, dataset: str, nombre_archivo: str, fecha_actualizacion: datetime) -> bool:
+def archivo_procesado(project_id: str, dataset: str, nombre_archivo: str) -> bool:
     """
-    Verifica si un archivo ha sido procesado recientemente consultando la tabla de control en BigQuery.
+    Verifica si un archivo ya fue procesado consultando la tabla de control en BigQuery.
     
     Args:
         project_id (str): ID del proyecto de GCP.
         dataset (str): Nombre del dataset en BigQuery.
         nombre_archivo (str): Nombre del archivo a verificar.
-        fecha_actualizacion (datetime): Fecha de la última actualización del archivo en el bucket.
     
     Returns:
-        bool: True si el archivo ya fue procesado recientemente, False en caso contrario.
+        bool: True si el archivo ya fue procesado, False en caso contrario.
     """
     client = bigquery.Client(project=project_id)
     table_id = f"{project_id}.{dataset}.archivos_procesados"
     logger.info(f"Verificando si el archivo '{nombre_archivo}' ya fue procesado en '{table_id}'.")
 
-    # Consulta SQL para obtener la última fecha de carga del archivo
     query = f"""
-    SELECT MAX(fecha_carga) AS ultima_fecha_carga
-    FROM `{table_id}`
+    SELECT COUNT(1) AS procesado
+    FROM {project_id}.{dataset}.archivos_procesados
     WHERE nombre_archivo = '{nombre_archivo}'
     """
     
     query_job = client.query(query)
     result = query_job.result()
     
-    # Obtén la última fecha de carga registrada para el archivo
-    ultima_fecha_carga = next(result).ultima_fecha_carga
-
-    # Verifica si la última fecha de carga es mayor o igual a la fecha de actualización del archivo en el bucket
-    if ultima_fecha_carga and ultima_fecha_carga >= fecha_actualizacion:
-        logger.info(f"Archivo '{nombre_archivo}' ya ha sido procesado recientemente el {ultima_fecha_carga}.")
-        return True
-
-    logger.info(f"Archivo '{nombre_archivo}' no ha sido procesado recientemente o es una nueva actualización.")
-    return False
-
-
-def obtener_fecha_actualizacion(bucket_name: str, archivo_nombre: str) -> datetime:
-    """
-    Obtiene la fecha de actualización de un archivo en Google Cloud Storage.
-
-    Args:
-        bucket_name (str): Nombre del bucket en GCS.
-        archivo_nombre (str): Nombre del archivo.
-
-    Returns:
-        datetime: Fecha de actualización del archivo, o None si el archivo no existe.
-    """
-    client = storage.Client()
-    bucket = client.get_bucket(bucket_name)
-    blob = bucket.get_blob(archivo_nombre)
+    # Extraer el valor de 'procesado' de la consulta
+    archivo_ya_procesado = False
+    for row in result:
+        archivo_ya_procesado = row.procesado > 0
     
-    if blob:
-        return blob.updated  # Devuelve la fecha de última modificación
+    if archivo_ya_procesado:
+        logger.info(f"Archivo '{nombre_archivo}' ya ha sido procesado previamente.")
     else:
-        logger.warning(f"El archivo '{archivo_nombre}' no existe en el bucket '{bucket_name}'")
-        return None
+        logger.info(f"Archivo '{nombre_archivo}' no ha sido procesado aún.")
+    
+    return archivo_ya_procesado
 
 
 def crear_tabla_temporal(project_id: str, dataset: str, temp_table: str, schema: list) -> None:
