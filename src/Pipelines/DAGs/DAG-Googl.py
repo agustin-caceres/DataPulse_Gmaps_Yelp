@@ -141,8 +141,8 @@ with DAG(
             'dataset': dataset
         }
     )
-    '''
-    # Tarea 4: Actualizar la tabla con nuevas columnas 'category', 'misc_content' y 'atributo'
+    
+    # Tarea 9: Actualizar la tabla con nuevas columnas 'category', 'misc_content' y 'atributo'
     actualizar_misc_task = PythonOperator(
         task_id='actualizar_misc_con_atributos',
         python_callable=actualizar_misc_con_atributos,
@@ -152,7 +152,7 @@ with DAG(
         }
     ) 
     
-    # Tarea 5: Elimina las categorias que no se van a utilizar.
+    # Tarea 10: Elimina las categorias que no se van a utilizar.
     eliminar_categorias_task = PythonOperator(
         task_id="eliminar_categorias_especificas",
         python_callable=eliminar_categorias_especificas,
@@ -162,7 +162,7 @@ with DAG(
             }
     )
 
-    # Tarea 6: Generalizar los atributos
+    # Tarea 11: Generalizar los atributos
     generalizar_atributos_task = PythonOperator(
         task_id="generalizar_atributos",
         python_callable=generalizar_atributos,
@@ -172,7 +172,7 @@ with DAG(
         },
     )
  
-    # Tarea 7: marcar atributos sensibles como accesibilidades
+    # Tarea 12: marcar atributos sensibles como accesibilidades
     anadir_accesibilidades_task = PythonOperator(
         task_id="anadir_accesibilidades",
         python_callable=marcar_nuevas_accesibilidades,
@@ -182,7 +182,7 @@ with DAG(
         },
     )
   
-    # Tarea 8: Mover los datos de la tabla temporal a la tabla oficial
+    # Tarea 13: Mover los datos de la tabla temporal a la tabla oficial
     mover_a_tabla_oficial_task = PythonOperator(
         task_id="mover_a_tabla_oficial",
         python_callable=mover_a_tabla_oficial,
@@ -192,7 +192,7 @@ with DAG(
         },
     )
 
-    # Tarea 9: Eliminar las tablas temporales
+    # Tarea 14: Eliminar las tablas temporales
     eliminar_tablas_temporales_task = PythonOperator(
         task_id="eliminar_tablas_temporales",
         python_callable=eliminar_tablas_temporales,
@@ -202,6 +202,7 @@ with DAG(
         },
     )
     
+    # Tarea 15: Registrar el archivo procesado en Bigquery.
     registrar_archivo_procesado_task = PythonOperator(
         task_id="registrar_archivo_procesado",
         python_callable=registrar_archivo_exitoso,
@@ -211,11 +212,18 @@ with DAG(
             'dataset': dataset
         }
     )
-    '''
+    
     fin = DummyOperator(task_id='fin')
     
     # Estructura del flujo de tareas  
-    #inicio >> detectar_archivos_task >> crear_tablas_temporales_task >> desanidar_misc_task >> actualizar_misc_task >> eliminar_categorias_task >> generalizar_atributos_task >> anadir_accesibilidades_task >>  mover_a_tabla_oficial_task >> eliminar_tablas_temporales_task >> registrar_archivo_procesado_task >> fin
     inicio >> detectar_archivos_task >> crear_tablas_temporales_task
-    crear_tablas_temporales_task >> [tabla_g_sitios_task,desanidar_misc_task, desanidar_rr_task, desanidar_categorias_task, desanidar_horarios_task,desanidar_address_task]
-    [tabla_g_sitios_task,desanidar_misc_task, desanidar_rr_task, desanidar_categorias_task, desanidar_horarios_task,desanidar_address_task] >> fin
+
+    # Desanidado de columnas
+    crear_tablas_temporales_task >> [tabla_g_sitios_task, desanidar_misc_task, desanidar_rr_task, desanidar_categorias_task, desanidar_horarios_task, desanidar_address_task]
+
+    # Normalización y procesamiento adicional de MISC
+    desanidar_misc_task >> actualizar_misc_task >> eliminar_categorias_task >> generalizar_atributos_task >> anadir_accesibilidades_task >> mover_a_tabla_oficial_task >> eliminar_tablas_temporales_task
+
+    # Dependencias finales para registrar el archivo procesado solo si todo fue exitoso
+    [tabla_g_sitios_task, desanidar_rr_task, desanidar_categorias_task, desanidar_horarios_task, desanidar_address_task, eliminar_tablas_temporales_task] >> registrar_archivo_procesado_task >> fin
+

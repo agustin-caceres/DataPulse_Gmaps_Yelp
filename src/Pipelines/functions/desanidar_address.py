@@ -83,21 +83,12 @@ def desanidar_address(bucket_name: str, archivo: str, project_id: str, dataset: 
 
     # Agregamos un identificador único a cada estado
     df['id_estado'] = df['estado'].factorize()[0] + 1
-
+    print(df.columns)
     # Selecciona las columnas necesarias
     df_expanded = df[['gmap_id', 'address', 'latitude', 'longitude', 'direccion', 'ciudad', 'cod_postal', 'estado', 'id_estado']]
 
-    # Verifica si la tabla ya existe y tiene datos
-    try:
-        table = client.get_table(table_id)  # Esto provocará un error si la tabla no existe
-        table_exists = True
-        logging.info(f"La tabla {table_id} ya existe.")
-    except NotFound:
-        table_exists = False
-        logging.info(f"La tabla {table_id} no existe. Se creará una nueva.")
-
     # Cargar los datos a BigQuery
-    job_config = bigquery.LoadJobConfig(write_disposition="WRITE_APPEND" if table_exists else "WRITE_TRUNCATE")
+    job_config = bigquery.LoadJobConfig(write_disposition="WRITE_APPEND" if table_id else "WRITE_TRUNCATE")
     try:
         load_job = client.load_table_from_dataframe(df_expanded, table_id, job_config=job_config)
         load_job.result()  # Espera a que la carga termine
