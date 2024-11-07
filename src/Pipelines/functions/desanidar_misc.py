@@ -1,5 +1,6 @@
 from google.cloud import bigquery
 from google.cloud import storage
+import pandas as pd
 import json
 
 ################################################################
@@ -68,47 +69,37 @@ def desanidar_misc(bucket_name: str, archivo: str, project_id: str, dataset: str
     dataset : str
         Nombre del dataset en BigQuery donde se encuentra la tabla 'miscelaneos'.
     """
-
+    
     # Inicializa el cliente de BigQuery y el cliente de Cloud Storage
     client = bigquery.Client()
     storage_client = storage.Client()
-    
+
     # Define el ID de la tabla de destino
     table_id = f"{project_id}.{dataset}.miscelaneos"
-    
+
     # Lee el archivo JSON desde Cloud Storage
     blob = storage_client.bucket(bucket_name).blob(archivo)
     contenido = blob.download_as_text()
 
-    # Procesa cada línea del archivo como un objeto JSON
-    for linea in contenido.splitlines():
-        try:
-            contenido_json = json.loads(linea)
-        except json.JSONDecodeError as e:
-            print(f"Error de decodificación JSON en la línea: {e}")
-            continue
+    # Carga el archivo JSON en un DataFrame de Pandas
+    df = pd.read_json(contenido, lines=True)
 
-        # Filtra registros sin información en 'MISC'
-        gmap_id = contenido_json.get('gmap_id')
-        misc = contenido_json.get('MISC')
+    # Filtra registros sin información en 'MISC' o 'gmap_id'
+    df = df[df['MISC'].notna() & df['gmap_id'].notna()]
 
-        if gmap_id is None or misc is None:
-            print(f"Registro sin 'gmap_id' o sin 'MISC' en archivo {archivo}. Se omite.")
-            continue
+    # Expande la columna 'MISC' usando dict_to_list para cada registro y crea un nuevo DataFrame
+    df['misc'] = df['MISC'].apply(dict_to_list)
+    df_expanded = df[['gmap_id', 'misc']].explode('misc').dropna()
 
-        # Convierte el diccionario `MISC` en una lista usando `dict_to_list`
-        lista_misc = dict_to_list(misc)
-        rows_to_insert = [{"gmap_id": gmap_id, "misc": item} for item in lista_misc]
+    # Carga el DataFrame resultante a BigQuery y Verifica si la tabla ya existe y tiene datos
+    table = client.get_table(table_id)
+    if table.num_rows == 0:
+        job_config = bigquery.LoadJobConfig(write_disposition="WRITE_TRUNCATE")
+    else:
+        job_config = bigquery.LoadJobConfig(write_disposition="WRITE_APPEND")
 
-        # Inserta los datos desanidados en BigQuery
-        if rows_to_insert:
-            errors = client.insert_rows_json(table_id, rows_to_insert)
-            if errors:
-                print(f"Error al insertar datos en BigQuery: {errors}")
-            else:
-                print(f"Datos del archivo {archivo} cargados exitosamente en BigQuery.")
-        else:
-            print(f"Sin datos para insertar del archivo {archivo}.")
+    client.load_table_from_dataframe(df_expanded[['gmap_id', 'misc']], table_id, job_config=job_config).result()
+    print(f"Datos del archivo {archivo} cargados exitosamente en BigQuery.")
 
 ###########################################################################################
 
