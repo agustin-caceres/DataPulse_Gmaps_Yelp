@@ -18,7 +18,6 @@ nameDAG_base      = 'Procesamiento_ETL_Google'
 project_id        = 'neon-gist-439401-k8'
 dataset           = '1'
 owner             = 'Mauricio Arce'
-GBQ_CONNECTION_ID = 'bigquery_default'
 bucket_name       = 'datos-crudos'
 
 default_args = {
