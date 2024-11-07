@@ -91,7 +91,7 @@ with DAG(
     
     # Tarea 4: Desanidar el archivo de datos 'category' usando el nombre del archivo del XCom
     desanidar_categorias_task = PythonOperator(
-        task_id='desanidar_rr',
+        task_id='desanidar_categorias',
         python_callable=desanidar_categorias,
         op_kwargs={
             'bucket_name': bucket_name,
