@@ -57,7 +57,7 @@ with DAG(
 
     # Tarea 1: Extraer datos de la API de Google Places y guardarlos en GCS
     def extraer_y_guardar():
-        extraer_reviews_google_places(api_key, businesses, bucket_name, output_file)
+        extraer_reviews_google_places(API_KEY, businesses, bucket_name, output_file)
 
     extraer_tarea = PythonOperator(
         task_id='extraer_reviews_y_guardar_en_gcs',
