@@ -55,13 +55,13 @@ def crear_tablas_bigquery(project_id: str, dataset: str) -> None:
             CREATE TABLE IF NOT EXISTS `{project_id}.{dataset}.g_address` (
                 gmap_id STRING,
                 address STRING,
-                latitude FLOAT,
-                longitude FLOAT,
+                latitude FLOAT64,
+                longitude FLOAT64,
                 direccion STRING,
                 ciudad STRING,
                 cod_postal STRING,
                 estado STRING,
-                id_estado INT
+                id_estado INT64
             )
         """
     }
