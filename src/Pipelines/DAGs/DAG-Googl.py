@@ -6,11 +6,10 @@ from datetime import timedelta
 from airflow.utils.dates import days_ago
 
 #Funciones
-from functions.registrar_archivo import detectar_archivos_nuevos, registrar_archivo_exitoso
-from functions.google_bigquery import crear_tablas_bigquery,eliminar_tablas_temporales 
+from functions.google_bigquery import crear_tablas_bigquery,eliminar_tablas_temporales, detectar_archivos_nuevos, registrar_archivo_exitoso 
 from functions.desanidar_misc import desanidar_misc,actualizar_misc_con_atributos,generalizar_atributos, eliminar_categorias_especificas, marcar_nuevas_accesibilidades, mover_a_tabla_oficial 
-from functions.desanidar_rr import desanidar_relative_results
-from functions.desanidar_categorias import desanidar_categorias
+from functions.desanidar_columnas import desanidar_columna
+from functions.desanidar_horarios import desanidar_horarios
 
 ######################################################################################
 # PARÁMETROS
@@ -77,22 +76,39 @@ with DAG(
         }
     )
     
-    # Tarea 4: Desanidar el archivo de datos 'relative_results' usando el nombre del archivo del XCom
+    # Tarea 4: Desanidar la columna 'relative_results' y cargar en la tabla 'g_relative_results'
     desanidar_rr_task = PythonOperator(
-        task_id='desanidar_rr',
-        python_callable=desanidar_relative_results,
+        task_id='desanidar_relative_results',
+        python_callable=desanidar_columna,
         op_kwargs={
             'bucket_name': bucket_name,
             'archivo': "{{ ti.xcom_pull(task_ids='detectar_archivos') }}",
             'project_id': project_id,
-            'dataset': dataset
+            'dataset': dataset,
+            'columna': 'relative_results',
+            'tabla_destino': 'g_relative_results'
         }
     )
-    
-    # Tarea 4: Desanidar el archivo de datos 'category' usando el nombre del archivo del XCom
+
+    # Tarea 5: Desanidar la columna 'category' y cargar en la tabla 'g_categorias'
     desanidar_categorias_task = PythonOperator(
         task_id='desanidar_categorias',
-        python_callable=desanidar_categorias,
+        python_callable=desanidar_columna,
+        op_kwargs={
+            'bucket_name': bucket_name,
+            'archivo': "{{ ti.xcom_pull(task_ids='detectar_archivos') }}",
+            'project_id': project_id,
+            'dataset': dataset,
+            'columna': 'category',
+            'tabla_destino': 'g_categorias'
+        }
+    )
+
+    
+    # Tarea 6: Desanidar el archivo de datos horarios usando el nombre del archivo del XCom
+    desanidar_horarios_task = PythonOperator(
+        task_id='desanidar_horarios',
+        python_callable=desanidar_horarios,
         op_kwargs={
             'bucket_name': bucket_name,
             'archivo': "{{ ti.xcom_pull(task_ids='detectar_archivos') }}",
@@ -176,5 +192,5 @@ with DAG(
     # Estructura del flujo de tareas  
     #inicio >> detectar_archivos_task >> crear_tablas_temporales_task >> desanidar_misc_task >> actualizar_misc_task >> eliminar_categorias_task >> generalizar_atributos_task >> anadir_accesibilidades_task >>  mover_a_tabla_oficial_task >> eliminar_tablas_temporales_task >> registrar_archivo_procesado_task >> fin
     inicio >> detectar_archivos_task >> crear_tablas_temporales_task
-    crear_tablas_temporales_task >> [desanidar_misc_task, desanidar_rr_task, desanidar_categorias_task]
-    [desanidar_misc_task, desanidar_rr_task, desanidar_categorias_task] >> fin
+    crear_tablas_temporales_task >> [desanidar_misc_task, desanidar_rr_task, desanidar_categorias_task, desanidar_horarios_task]
+    [desanidar_misc_task, desanidar_rr_task, desanidar_categorias_task, desanidar_horarios_task] >> fin
