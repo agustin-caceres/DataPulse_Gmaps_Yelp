@@ -152,11 +152,14 @@ centrarse en sectores directamente relacionados con su núcleo de negocio para o
 - **BigQuery**: Para el almacenamiento y procesamiento de datos en la nube.
 - **Airflow**: Para la automatización de tareas y flujos de trabajo.
 - **Google Composer**: Para la orquestación de flujos de trabajo con Airflow.
+- **Google Cloud Storage**: Servicio de almacenamiento en la nube altamente escalable y seguro, para el almacenamiento y      acceso a los datos.
 - **Power BI**: Para la creación de dashboards interactivos.
-- **Scikit-learn/TensorFlow**: Para el desarrollo de modelos de machine learning.
+- **Scikit-learn/LightFM**: Para el desarrollo de modelos de machine learning.
 - **FastAPI**: Para el despliegue de APIs.
 - **Streamlit**: Para la visualización de datos en una interfaz web.
 - **Lucidchart**: plataforma en línea para la creación de diagramas de forma colaborativa.
+- **Genially/Canva**: plataforma en línea para la realización de gráficos y visualizaciones.
+
 (INSERTAR LOGOS)
 
 ## KPI´s 📈
@@ -230,7 +233,7 @@ La utilización de iteraciones en forma de Sprints permite priorizar en todo mom
 ## **CONTACTO**
 
 - Aliskair Rodríguez: 
-- Débora Kellenberger: 
+- Débora Kellenberger: [LinkedIn](www.linkedin.com/in/debora-kellenberger) / [debkellen1@gmail.com](mailto:debkellen1@gmail.com)
 - Julieta Trimarchi:
 - Mauricio Arce: [LinkedIn](https://www.linkedin.com/in/mauricioarcez/) / [mauricioarcez23@gmail.com](mailto:mauricioarcez23@gmail.com)
 - Agustín Cáceres: 
