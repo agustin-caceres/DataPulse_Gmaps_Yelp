@@ -60,7 +60,7 @@ Este diagrama muestra cómo el flujo del DAG se adapta para diferentes archivos 
 ### **``Flujo Google DAG:``**
 Este diagrama muestra cómo se desanidan los datos en distintas tablas estructuradas y se aplican normalizaciones en tablas temporales para trasladarlo limpio a la tabla original cada semana.
 
-![Diagrama Google DAG]()
+![Diagrama Google DAG](../../assets/Images/pipeline_google.png)
 
 ### **``Flujo API Incremental DAG:``**
 vender un poco de humo y especificar que es automatico cada tanto tiempo (ejemplo cada mes). Insertar imagen tambien
