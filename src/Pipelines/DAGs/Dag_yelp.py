@@ -51,7 +51,7 @@ schema_tip = [
 with DAG(
     dag_id=nameDAG_base,
     default_args=default_args,
-    schedule_interval=None,
+    schedule_interval='@weekly',
     catchup=False
 ) as dag:
 
