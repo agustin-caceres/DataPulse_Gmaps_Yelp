@@ -63,9 +63,19 @@ Este diagrama muestra cómo se desanidan los datos en distintas tablas estructur
 ![Diagrama Google DAG](../../assets/Images/pipeline_google.png)
 
 ### **``Flujo API Incremental DAG:``**
-vender un poco de humo y especificar que es automatico cada tanto tiempo (ejemplo cada mes). Insertar imagen tambien
+Este DAG realiza un proceso ETL (Extracción, Transformación y Carga) automático sobre los datos obtenidos de la API de Google Places. La ejecución está programada para ejecutarse una vez al mes en la misma fecha que su primera ejecución.
 
-![Diagrama API DAG]()
+- **Inicio**:
+  - `inicio`: Esta es una tarea de inicio simbólica, que actúa como punto de entrada para el flujo.
+- **Extracción y guardado de datos**:
+  - `extraer_reviews_y_guardar_en_gcs`: En esta etapa, se extraen los datos de la API de Google Places, se transforman y se almacenan en Google Cloud  
+  Storage (GCS) en un formato adecuado para su análisis posterior.
+- **Carga a BigQuery**:
+  - `cargar_a_bigquery`: Los datos almacenados en GCS se cargan en BigQuery, donde estarán disponibles para análisis y visualización.
+- **Fin**:
+  - `fin`: Esta tarea marca la finalización del flujo de trabajo, confirmando que todas las tareas previas se han ejecutado con éxito.
+
+![Diagrama API DAG](../../assets/Images/pipeline_google_api.jpg)
 
 ## Funcionalidades y Detalles Técnicos ⚙️
 
