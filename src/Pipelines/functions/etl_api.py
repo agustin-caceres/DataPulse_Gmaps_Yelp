@@ -49,6 +49,9 @@ def extraer_reviews_google_places(api_key, businesses, bucket_name, output_file)
                 most_recent_review = reviews[0]
                 
                 cleaned_review_text = clean_text(most_recent_review['text'])
+                if not cleaned_review_text:
+                    cleaned_review_text = "Comentario solo con emojis"
+
                 review_timestamp = most_recent_review['time']
                 review_date = datetime.utcfromtimestamp(review_timestamp).strftime('%Y-%m-%d')
 
