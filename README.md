@@ -21,6 +21,7 @@ De esta forma buscamos garantizar resultados relevantes y de alta calidad, optim
 ## ESTRUCTURA DEL PROYECTO
 
 - `assets/`: Archivos estaticos, imagenes y reportes
+    - `Dashboard`: ''
     - `Diagrama_ER`: ''
     - `Flujos_Gant_x_Sprint`: ''
     - `Images`: ''
@@ -39,6 +40,7 @@ De esta forma buscamos garantizar resultados relevantes y de alta calidad, optim
         - `README.md`: Documentación del pipeline
     - `Streamlit`: ''
 - `README.md`: Documentación General.
+- `Diccionario_de_datos-PF`: ''
 - `requirements.txt`: Requerimientos del proyecto.
 - `cloudbuild.yaml`: Conexion del repositorio con Composer.
 
@@ -99,7 +101,7 @@ centrarse en sectores directamente relacionados con su núcleo de negocio para o
 
 #### *Datos que respaldan la elección de nuestro alcance*
 - - - 
-(gráficos del EDA que justifiquen la elección de los 5 estados)
+![EDA](assets\Images\EDA_categorias.png)
 
 ## DATOS Y FUENTES
 
@@ -160,7 +162,7 @@ centrarse en sectores directamente relacionados con su núcleo de negocio para o
 - **Lucidchart**: plataforma en línea para la creación de diagramas de forma colaborativa.
 - **Genially/Canva**: plataforma en línea para la realización de gráficos y visualizaciones.
 
-(INSERTAR LOGOS)
+![Tecnologias](assets\Images\Logos_tecnologias.png)
 
 ## KPI´s 📈
 
@@ -210,7 +212,8 @@ La utilización de iteraciones en forma de Sprints permite priorizar en todo mom
 
 ### **OTROS MÉTODOS DE ORGANIZACIÓN**  📊
 - - - 
-![Gantt](assets/Images/Gantt_README.png)
+
+![Gantt](assets\Images\Gantt_README(2).png)
 
 ## Diagrama de Gantt
 
@@ -232,9 +235,9 @@ La utilización de iteraciones en forma de Sprints permite priorizar en todo mom
 
 ## **CONTACTO**
 
-- Aliskair Rodríguez: 
+- Aliskair Rodríguez: [LinkedIn](https://www.linkedin.com/in/aliskair-rodriguez-782b3641/overlay/about-this-profile/?lipi=urn%3Ali%3Apage%3Ad_flagship3_profile_view_base%3ByTlTzyLcQBKlWP3ns6hYSg%3D%3D ) / [aliskairraul@gmail.com](mailto:aliskairraul@gmail.com)
 - Débora Kellenberger: [LinkedIn](www.linkedin.com/in/debora-kellenberger) / [debkellen1@gmail.com](mailto:debkellen1@gmail.com)
-- Julieta Trimarchi:
+- Julieta Trimarchi:  [julieta.trimarchi@hotmail.com](mailto:mauricioarcez23@gmail.com)
 - Mauricio Arce: [LinkedIn](https://www.linkedin.com/in/mauricioarcez/) / [mauricioarcez23@gmail.com](mailto:mauricioarcez23@gmail.com)
-- Agustín Cáceres: 
+- Agustín Cáceres: [LinkedIn](https://www.linkedin.com/in/agustincaceres9?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAAEcxIFwBd56X9dnK87IK7Z4IFWbFHOxu_FQ&lipi=urn%3Ali%3Apage%3Ad_flagship3_search_srp_all%3BPlS7oi4%2FRpWZpED9RZCZ%2Fg%3D%3D) / [agusca.saot@gmail.com](mailto:mauricioarcez23@gmail.com)
 
