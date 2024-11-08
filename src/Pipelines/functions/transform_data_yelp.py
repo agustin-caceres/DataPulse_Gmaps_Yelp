@@ -43,7 +43,7 @@ def pre_transformar_tip(df: pd.DataFrame) -> pd.DataFrame:
     df = df.dropna(subset=['text', 'date'])
     
     # Convertir 'date' al tipo DATE
-    df['date'] = pd.to_datetime(df['date'], errors='coerce').dt.date
+    df['date'] = df['date'].astype(str)
     
     # Eliminar filas donde 'date' no es válida (por si alguna conversión falla)
     df = df.dropna(subset=['date'])
