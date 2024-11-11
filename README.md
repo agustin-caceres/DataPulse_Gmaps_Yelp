@@ -20,27 +20,31 @@ De esta forma buscamos garantizar resultados relevantes y de alta calidad, optim
 
 ## ESTRUCTURA DEL PROYECTO
 
-- `assets/`: Archivos estaticos, imagenes y reportes
-    - `Dashboard`: ''
-    - `Diagrama_ER`: ''
-    - `Flujos_Gant_x_Sprint`: ''
-    - `Images`: ''
-    - `Reportes Entregables`: ''
+- `assets/`: Archivos estaticos, imagenes y reportes.
+    - `Dashboard/`: Dasboard MVP y final.
+    - `Diagrama_ER/`: Diagrama Entidad-Relacion.
+    - `Flujos_Gantt_Semanal`/: Diagramas de Gantt para cada sprint.
+    - `Images`/: Imagenes utilizadas en documentaciones.
+    - `Reportes Entregables`/: Reportes de cada Sprint.
 
 - `Notebooks/`: Jupyter notebooks con los análisis en local.
-    - `ETL`: ''
-    - `EDA`: ''
+    - `ETL`/:
+    - `EDA`/: 
 
 - `src/`: Codigo fuente, modulos de aplicaciones y scripts.
-    - `FastApi`: ''
+    - `FastApi`:
         - `README.md`: Documentación de la API
-    - `Pipelines`: ''
-        - `DAGs`: ''
-        - `functions`: ''
+
+    - `Pipelines`: ETL Automatizado.
+        - `DAGs`: Orquestacion de las tareas para cada fuente de datos.
+        - `functions`: Funciones utilizadas en los DAGs.
         - `README.md`: Documentación del pipeline
-    - `Streamlit`: ''
+
+    - `Streamlit`: 
+        - `README.md`: Documentación de Streamlit.
+
 - `README.md`: Documentación General.
-- `Diccionario_de_datos-PF`: ''
+- `Diccionario_de_datos-PF`: Diccionario de datos.
 - `requirements.txt`: Requerimientos del proyecto.
 - `cloudbuild.yaml`: Conexion del repositorio con Composer.
 
