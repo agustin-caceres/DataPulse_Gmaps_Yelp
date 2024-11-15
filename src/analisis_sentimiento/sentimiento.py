@@ -52,3 +52,6 @@ def analyze_sentiment(text: str, rating: int = None) -> str:
     sentiment = get_sentiment_label(processed_text, rating)
     return sentiment
 
+def prueba():
+    print("importacion correcta de la funcion")
+
