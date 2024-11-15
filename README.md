@@ -32,6 +32,7 @@ De esta forma buscamos garantizar resultados relevantes y de alta calidad, optim
     - `EDA`/: 
 
 - `src/`: Codigo fuente, modulos de aplicaciones y scripts.
+    - `analisis_sentimiento`: 
     - `FastApi`:
         - `README.md`: Documentación de la API
 
