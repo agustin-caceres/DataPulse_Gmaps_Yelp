@@ -1,5 +1,3 @@
-# Archivo: components/filters.py
-
 import streamlit as st
 
 def user_preferences_filter():
@@ -10,19 +8,23 @@ def user_preferences_filter():
         dict: Diccionario con las preferencias del usuario
     """
     preferences = {}
-    # Filtro de ubicación con los estados seleccionados
-    preferences['ubicacion'] = st.sidebar.selectbox(
-        "📍 Ubicación", https://drive.google.com/file/d/1-AytD795J2SM-urMJA0rsNKs4prVjdGU/view?usp=sharing
+    
+    # Estado (state)
+    preferences['state'] = st.sidebar.selectbox(
+        "📍 Ubicación",
         ["Nueva York", "Florida", "Texas", "Nuevo México", "Pensilvania"]
     )
-    preferences['tipo_de_comida'] = st.sidebar.selectbox("🍽️ Tipo de comida", ["Todos", "Italiana", "China", "Mexicana", "Japonesa"])
     
-    # Filtro de atributos específicos
-    preferences['atributos'] = st.sidebar.multiselect(
-        "🔍 Atributos específicos",
-        ["Estacionamiento", "Espacios al aire libre", "Para niños", "Para adultos", "Acceso para discapacitados"]
+    # Tipo de negocio (category)
+    preferences['category'] = st.sidebar.selectbox(
+        "🍽️ Tipo de comida",
+        ["Todos", "Italiana", "China", "Mexicana", "Japonesa"]
     )
     
-    preferences['calificacion_minima'] = st.sidebar.slider("⭐ Calificación", 1, 5)
+    # ID del usuario
+    preferences['user_id_str'] = st.sidebar.text_input("🔑 ID de Usuario", value="user123")
+    
+    # Número de recomendaciones (top_n)
+    preferences['top_n'] = st.sidebar.slider("🔢 Número de recomendaciones", 1, 5, value=3)
     
     return preferences

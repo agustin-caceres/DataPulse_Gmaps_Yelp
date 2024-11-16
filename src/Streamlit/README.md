@@ -30,15 +30,13 @@ La aplicación está desplegada en línea y puedes acceder a ella a través del 
 **Input de Preferencias del Usuario:**
 
   - El usuario selecciona sus preferencias en la barra lateral ``(filters.py)``. Estas preferencias son procesadas en el archivo ``components/filters.py`` y se devuelven en un diccionario.
-  - Estas preferencias se enviarán luego como parámetros al modelo de recomendación.
+  - Estas preferencias se procesan y se envían al backend en formato JSON.
 
-**Generación de Recomendaciones:**
-- Con las preferencias del usuario, ``display_recommendations`` llama a ``generate_dummy_recommendations`` en ``utils/helpers.py`` para filtrar los resultados en base a los criterios seleccionados.
-- En esta fase, los datos dummy se utilizarán para mostrar la funcionalidad general, pero posteriormente, se integrará con el modelo de Machine Learning real.
+**Procesamiento en el Backend:**
+- El backend utiliza un modelo de ML para calcular recomendaciones basadas en las preferencias enviadas.
 
 **Visualización de Resultados:**
-- Las recomendaciones filtradas se presentan en un formato visual (disposición horizontal o vertical según preferencia del producto final) para una experiencia de usuario optimizada.
-- Las recomendaciones se despliegan usando ``display_recommendations``, donde se podrá aplicar una disposición horizontal o vertical dependiendo de la preferencia final.
+- Las recomendaciones filtradas se presentan en un formato visual para una experiencia de usuario optimizada.
 
 **Aplicación del Tema (Opcional al Final):**
 - La paleta de colores predeterminada de Streamlit estará desactivada durante el desarrollo. Cuando la estructura final esté lista, se aplicará el tema definido en themes.py.
@@ -55,13 +53,12 @@ Esta paleta se aplica mediante el archivo `styles/themes.py`, que centraliza los
 
 ## 🛠️ Próximos Pasos
 
-Este README se actualizará a medida que se agreguen nuevas funcionalidades a la aplicación. Actualmente, la aplicación está en su etapa inicial y se seguirán implementando mejoras.
+1. Finalizar la integración con el backend:
+  - Enviar datos reales al endpoint /get_recomendations en FastAPI.
+  - Mostrar resultados dinámicos en la app.
+2. Optimización del Diseño:
+  - Aplicar la paleta de colores y ajustar el diseño para una mejor experiencia.
 
-**Las próximas implementaciones incluyen:**
-
-- Integración con el modelo de recomendación de Machine Learning para generar resultados basados en datos históricos.
-- Conexión con una API a través de FastAPI para que el modelo sea accesible de forma remota.
-
----
-
-**Nota**: Este README está destinado específicamente para la sección de la aplicación desarrollada en **Streamlit** y no reemplaza al README general del proyecto.
+<div align="center">
+<img src="https://streamlit.io/images/brand/streamlit-logo-primary-colormark-darktext.png" alt="Streamlit Logo" width="150">
+</div>

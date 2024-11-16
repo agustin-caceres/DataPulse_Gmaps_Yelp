@@ -1,21 +1,16 @@
-# Archivo: utils/helpers.py
-
 def generate_dummy_recommendations(user_preferences):
     """
     Genera recomendaciones ficticias para demostración.
-    
+
     Args:
         user_preferences (dict): Preferencias del usuario
     
     Returns:
         list: Lista de recomendaciones ficticias
     """
-    # Aquí se pueden agregar más lógica para filtrar en base a las preferencias
     dummy_data = [
-        {"nombre": "Pizza Place", "ubicacion": user_preferences['ubicacion'], "tipo_de_comida": "Italiana", "calificacion": 4.5},
-        {"nombre": "Sushi Place", "ubicacion": user_preferences['ubicacion'], "tipo_de_comida": "Japonesa", "calificacion": 4.2},
-        {"nombre": "Tacos y Más", "ubicacion": user_preferences['ubicacion'], "tipo_de_comida": "Mexicana", "calificacion": 4.0}
+        {"name": "Pizza Place", "address": "123 Pizza St", "latitude": 34.052235, "longitude": -118.243683},
+        {"name": "Sushi Place", "address": "456 Sushi Ave", "latitude": 34.052236, "longitude": -118.243684},
+        {"name": "Tacos y Más", "address": "789 Taco Blvd", "latitude": 34.052237, "longitude": -118.243685}
     ]
-    
-    filtered_recommendations = [rec for rec in dummy_data if rec['calificacion'] >= user_preferences['calificacion_minima']]
-    return filtered_recommendations 
+    return dummy_data
