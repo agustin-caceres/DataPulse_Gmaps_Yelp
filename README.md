@@ -169,7 +169,24 @@ centrarse en sectores directamente relacionados con su núcleo de negocio para o
 
 ![Tecnologias](assets\Images\Logos_tecnologias.png)
 
-## KPI´s 📈
+## DASHBOARD
+
+## Descripción 
+Dashboard interactivo de Power BI que analiza las reseñas de los usuarios para monitorear el mercado y mejorar los servicios, proporciona una visión detallada de las tendencias y el sentimiento de las reseñas de Google Maps para los estados escogidos para el análisis.
+
+## Características Principales
+- **Análisis de Sentimiento**: Visualizaciones que muestran la distribución de reseñas buenas, malas y neutras.
+- **Tendencias de Reseñas**: Gráficos de líneas que muestran el incremento de reseñas por subcategoría y trimestre.
+- **Comparación por Estado**: Visualizaciones que permiten comparar las reseñas por estado.
+
+## Visualizaciones Incluidas
+- **Gráfico de Barras**: Distribución de reseñas por subcategoría.
+- **Gráfico Circular**: Porcentaje de reseñas buenas, malas y neutras.
+- **Gráfico de Líneas**: Incremento de reseñas por trimestre.
+- **Tarjetas**: Indicadores clave de rendimiento (KPIs) para el análisis de reseñas.
+
+## Indicadores Clave de Rendimiento (KPIs) 📈
+Los KPIs en este dashboard proporcionan una visión clara y concisa del rendimiento y las tendencias clave. A continuación, se describen los KPIs incluidos:
 
 - **KPI: Identificación de Baches de Accesibilidad**
 
@@ -190,6 +207,22 @@ Métrica: Cantidad de reseñas vs. rating promedio de comercios en cada estado.
 Objetivo: Buscar subcategorías en las que en relación a la densidad de reseñas del trimestre anterior haya aumentado un x%, indicando una tendencia en alza y oportunidad de crecimiento en ese rubro.
 
 Métrica: Incremento porcentual en la densidad de reseñas por subcategoría respecto al trimestre anterior.
+
+
+## Datos Utilizados
+- **Fuente de Datos**: Las reseñas de los usuarios se han importado desde Google Cloud.
+- **Transformación de Datos**: Los datos se han limpiado y transformado en Power Query para asegurar su calidad y consistencia.
+
+## Instrucciones de Uso
+1. **Abrir el Dashboard**: Descarga el archivo `.pbix` y ábrelo en Power BI Desktop.
+2. **Interacción**: Utiliza los slicers y filtros para explorar los datos y obtener insights detallados.
+
+## Requisitos del Sistema
+- **Power BI Desktop**: Versión más reciente.
+
+## Algunas Imágenes
+
+![Gráfico Circular](assets\Images\Pics_Dash.png)
 
 ## **METODOLOGÍA DE TRABAJO** 
 
