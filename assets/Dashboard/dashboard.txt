@@ -6,3 +6,8 @@ ultima actualizacion:
 
 16/11 16:53
 - agregue pagina de accesibilidad
+
+18/11 06:41
+- Se agrega el avance de accesibilidad al prototipo final
+link: https://drive.google.com/file/d/14hTU971OJjd41Uu7_UV7ctCm_SH1NeDY/view?usp=drive_link
+
