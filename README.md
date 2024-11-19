@@ -2,6 +2,20 @@
 
 # **PROYECTO GRUPAL**
 - - -
+## Índice 
+
+- [BREVE DESCRIPCIÓN DEL PROYECTO](#breve-descripción-del-proyecto) 
+- [MIEMBROS DEL EQUIPO](#miembros-del-equipo) 
+- [ESTRUCTURA DEL PROYECTO](#estructura-del-proyecto) 
+- [ENTENDIMIENTO DE LA SITUACIÓN ACTUAL](#entendimiento-de-la-situación-actual) 
+- [OBJETIVOS DEL PROYECTO](#objetivos-del-proyecto) 
+- [ALCANCE INMEDIATO](#alcance-inmediato) 
+- [DATOS Y FUENTES](#datos-y-fuentes) 
+- [PROCESO DEL PROYECTO](#proceso-del-proyecto) 
+- [DASHBOARD](#dashboard) - [Indicadores Clave de Rendimiento (KPIs)](#indicadores-clave-de-rendimiento-kpis) 
+- [METODOLOGÍA DE TRABAJO](#metodología-de-trabajo) 
+- [OTROS MÉTODOS DE ORGANIZACIÓN](#otros-métodos-de-organización) 
+- [CONTACTO](#contacto)
 
 ## **BREVE DESCRIPCIÓN DEL PROYECTO**
 
@@ -20,34 +34,32 @@ De esta forma buscamos garantizar resultados relevantes y de alta calidad, optim
 
 ## ESTRUCTURA DEL PROYECTO
 
-- `assets/`: Archivos estaticos, imagenes y reportes.
-    - `Dashboard/`: Dasboard MVP y final.
-    - `Diagrama_ER/`: Diagrama Entidad-Relacion.
-    - `Flujos_Gantt_Semanal`/: Diagramas de Gantt para cada sprint.
-    - `Images`/: Imagenes utilizadas en documentaciones.
-    - `Reportes Entregables`/: Reportes de cada Sprint.
+- [`assets/`](assets/): Archivos estaticos, imagenes y reportes. 
+    - [`Dashboard/`](assets/Dashboard/): Dasboard MVP y final. 
+    - [`Diagrama_ER/`](assets/Diagrama_ER/): Diagrama Entidad-Relacion. 
+    - [`Flujos_Gantt_Semanal/`](assets/Flujos_Gantt_Semanal/): Diagramas de Gantt para cada sprint. 
+    - [`Images/`](assets/Images/): Imagenes utilizadas en documentaciones. 
+    - [`Reportes Entregables/`](assets/Reportes%20Entregables/): Reportes de cada Sprint.
 
-- `Notebooks/`: Jupyter notebooks con los análisis en local.
-    - `ETL`/:
-    - `EDA`/: 
+- [`Notebooks/`](Notebooks/): Jupyter notebooks con los análisis en local. 
+    - [`ETL/`](Notebooks/ETL/): Procesos de Extracción, Transformación y Carga de diferentes archivos.
+    - [`EDA/`](Notebooks/EDA/): Procesos de Análisis Exploratorio de Datos de diferentes archivos.
 
-- `src/`: Codigo fuente, modulos de aplicaciones y scripts.
-    - `analisis_sentimiento`: 
-    - `FastApi`:
-        - `README.md`: Documentación de la API
+- [`src/`](src/): Codigo fuente, modulos de aplicaciones y scripts. 
+    - [`analisis_sentimiento`](src/analisis_sentimiento/): 
+    - [`FastApi`](src/FastApi/): 
+        - [`README.md`](src/FastApi/README.md): Documentación de la API
 
-    - `Pipelines`: ETL Automatizado.
-        - `DAGs`: Orquestacion de las tareas para cada fuente de datos.
-        - `functions`: Funciones utilizadas en los DAGs.
-        - `README.md`: Documentación del pipeline
+    - [`Pipelines`](src/Pipelines/): ETL Automatizado. 
+        - [`DAGs`](src/Pipelines/DAGs/): Orquestacion de las tareas para cada fuente de datos. 
+        - [`functions`](src/Pipelines/functions/): Funciones utilizadas en los DAGs. 
+        - [`README.md`](src/Pipelines/README.md): Documentación del pipeline
+    - [`Streamlit`](src/Streamlit/): 
+        - [`README.md`](src/Streamlit/README.md): Documentación
 
-    - `Streamlit`: 
-        - `README.md`: Documentación de Streamlit.
-
-- `README.md`: Documentación General.
-- `Diccionario_de_datos-PF`: Diccionario de datos.
-- `requirements.txt`: Requerimientos del proyecto.
-- `cloudbuild.yaml`: Conexion del repositorio con Composer.
+- [`README.md`](README.md): Documentación General. 
+- [`Diccionario_de_datos-PF`](Diccionario_de_datos-PF): Diccionario de datos. - [`requirements.txt`](requirements.txt): Requerimientos del proyecto. 
+- [`cloudbuild.yaml`](cloudbuild.yaml): Conexion del repositorio con Composer.
 
 ## **ENTENDIMIENTO DE LA SITUACION ACTUAL**
 
