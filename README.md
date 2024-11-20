@@ -119,7 +119,7 @@ centrarse en sectores directamente relacionados con su núcleo de negocio para o
 
 #### *Datos que respaldan la elección de nuestro alcance*
 - - - 
-![EDA](assets\Images\EDA_categorias.png)
+![EDA](assets/Images/EDA_categorias.png)
 
 ## DATOS Y FUENTES
 
@@ -164,7 +164,7 @@ centrarse en sectores directamente relacionados con su núcleo de negocio para o
 
 ### 8. Despliegue del Modelo
 - **Framework**: FastAPI para la creación de APIs.
-- **Visualización**: Streamlit para crear una interfaz web interactiva que permita a los usuarios finales interactuar con el modelo de recomendación.
+- **Visualización**: Dash para crear una interfaz web interactiva que permita a los usuarios finales interactuar con el modelo de recomendación.
 
 ## Tecnologías Utilizadas
 - **Python**: Principal lenguaje de programación.
@@ -176,11 +176,11 @@ centrarse en sectores directamente relacionados con su núcleo de negocio para o
 - **Power BI**: Para la creación de dashboards interactivos.
 - **Scikit-learn/LightFM**: Para el desarrollo de modelos de machine learning.
 - **FastAPI**: Para el despliegue de APIs.
-- **Streamlit**: Para la visualización de datos en una interfaz web.
+- **Plotly Dash**: Para la visualización de datos en una interfaz web.
 - **Lucidchart**: plataforma en línea para la creación de diagramas de forma colaborativa.
 - **Genially/Canva**: plataforma en línea para la realización de gráficos y visualizaciones.
 
-![Tecnologias](assets\Images\Logos_tecnologias.png)
+![Tecnologias](assets/Images/Tecnologias.png)
 
 ## DASHBOARD
 
@@ -235,7 +235,7 @@ Métrica: Incremento porcentual en la densidad de reseñas por subcategoría res
 
 ## Algunas Imágenes
 
-![Gráfico Circular](assets\Images\Pics_Dash.png)
+![Gráfico Circular](assets/Images/Pics_Dash.png)
 
 ## **METODOLOGÍA DE TRABAJO** 
 
@@ -264,7 +264,7 @@ La utilización de iteraciones en forma de Sprints permite priorizar en todo mom
 ### **OTROS MÉTODOS DE ORGANIZACIÓN**  📊
 - - - 
 
-![Gantt](assets\Images\Gantt_README(2).png)
+![Gantt](assets/Images/Gantt_README(2).png)
 
 ## Diagrama de Gantt
 
