@@ -2,6 +2,20 @@
 
 # **PROYECTO GRUPAL**
 - - -
+## Índice 
+
+- [BREVE DESCRIPCIÓN DEL PROYECTO](#breve-descripción-del-proyecto) 
+- [MIEMBROS DEL EQUIPO](#miembros-del-equipo) 
+- [ESTRUCTURA DEL PROYECTO](#estructura-del-proyecto) 
+- [ENTENDIMIENTO DE LA SITUACIÓN ACTUAL](#entendimiento-de-la-situación-actual) 
+- [OBJETIVOS DEL PROYECTO](#objetivos-del-proyecto) 
+- [ALCANCE INMEDIATO](#alcance-inmediato) 
+- [DATOS Y FUENTES](#datos-y-fuentes) 
+- [PROCESO DEL PROYECTO](#proceso-del-proyecto) 
+- [DASHBOARD](#dashboard) - [Indicadores Clave de Rendimiento (KPIs)](#indicadores-clave-de-rendimiento-kpis) 
+- [METODOLOGÍA DE TRABAJO](#metodología-de-trabajo) 
+- [OTROS MÉTODOS DE ORGANIZACIÓN](#otros-métodos-de-organización) 
+- [CONTACTO](#contacto)
 
 ## **BREVE DESCRIPCIÓN DEL PROYECTO**
 
@@ -16,18 +30,37 @@ Este proyecto se centra en mejorar la efectividad y la practicidad de las estrat
 De esta forma buscamos garantizar resultados relevantes y de alta calidad, optimizando el impacto estratégico y dejando una puerta abierta a que el cliente vea, transite y reciba el feedback de los insights hallados para luego, de requerilo, continuar con otra etapa del análisis mas... *'à la carte'* 👨‍🍳 😉
 
 ## **MIEMBROS DEL EQUIPO**  👩🏻‍💻 👨🏻‍💻 👩🏼‍💻 👨🏻‍💻 👨🏼‍💻 
-
-- Data Engineer: Julieta Trimarchi, Mauricio Arce
-- Data Analyst: Débora Kellenberger, Mauricio Arce
-- Data Science: Agustín Cáceres, Aliskair Rodríguez
+![Encabezado](assets/Images/equipo_roles.png)
 
 ## ESTRUCTURA DEL PROYECTO
 
-- assets/: Archivos estaticos, imagenes y reportes
-- Notebooks/: Jupyter notebooks con los análisis.
-- src/: Codigo fuente, modulos de aplicaciones y scripts.
-- READM.md: Documentación
-- requirements.txt
+- [`assets`](assets/): Archivos estaticos, imagenes y reportes. 
+    - [`Dashboard`](assets/Dashboard/): Dasboard MVP y final. 
+    - [`Diagrama_ER`](assets/Diagrama_ER/): Diagrama Entidad-Relacion. 
+    - [`Flujos_Gantt_Semanal`](assets/Flujos_Gantt_Semanal/): Diagramas de Gantt para cada sprint. 
+    - [`Images`](assets/Images/): Imagenes utilizadas en documentaciones. 
+    - [`Reportes Entregables`](assets/Reportes%20Entregables/): Reportes de cada Sprint.
+
+- [`Notebooks`](Notebooks/): Jupyter notebooks con los análisis en local. 
+    - [`ETL`](Notebooks/ETL/): Procesos de Extracción, Transformación y Carga de diferentes archivos.
+    - [`EDA`](Notebooks/EDA/): Procesos de Análisis Exploratorio de Datos de diferentes archivos.
+
+- [`src/`](src/): Codigo fuente, modulos de aplicaciones y scripts. 
+    - [`analisis_sentimiento`](src/analisis_sentimiento/): 
+    - [`FastApi`](src/FastApi/): 
+        - [`README.md`](src/FastApi/README.md): Documentación de la API
+
+    - [`Pipelines`](src/Pipelines/): ETL Automatizado. 
+        - [`DAGs`](src/Pipelines/DAGs/): Orquestacion de las tareas para cada fuente de datos. 
+        - [`functions`](src/Pipelines/functions/): Funciones utilizadas en los DAGs. 
+        - [`README.md`](src/Pipelines/README.md): Documentación del pipeline
+    - [`Streamlit`](src/Streamlit/): 
+        - [`README.md`](src/Streamlit/README.md): Documentación
+
+- [`README.md`](README.md): Documentación General. 
+- [`Diccionario_de_datos-PF`](Diccionario_de_datos-PF): Diccionario de datos. 
+- [`requirements.txt`](requirements.txt): Requerimientos del proyecto. 
+- [`cloudbuild.yaml`](cloudbuild.yaml): Conexion del repositorio con Composer.
 
 ## **ENTENDIMIENTO DE LA SITUACION ACTUAL**
 
@@ -86,7 +119,7 @@ centrarse en sectores directamente relacionados con su núcleo de negocio para o
 
 #### *Datos que respaldan la elección de nuestro alcance*
 - - - 
-(gráficos del EDA que justifiquen la elección de los 5 estados)
+![EDA](assets/Images/EDA_categorias.png)
 
 ## DATOS Y FUENTES
 
@@ -139,14 +172,34 @@ centrarse en sectores directamente relacionados con su núcleo de negocio para o
 - **BigQuery**: Para el almacenamiento y procesamiento de datos en la nube.
 - **Airflow**: Para la automatización de tareas y flujos de trabajo.
 - **Google Composer**: Para la orquestación de flujos de trabajo con Airflow.
+- **Google Cloud Storage**: Servicio de almacenamiento en la nube altamente escalable y seguro, para el almacenamiento y      acceso a los datos.
 - **Power BI**: Para la creación de dashboards interactivos.
-- **Scikit-learn/TensorFlow**: Para el desarrollo de modelos de machine learning.
+- **Scikit-learn/LightFM**: Para el desarrollo de modelos de machine learning.
 - **FastAPI**: Para el despliegue de APIs.
 - **Streamlit**: Para la visualización de datos en una interfaz web.
 - **Lucidchart**: plataforma en línea para la creación de diagramas de forma colaborativa.
-(INSERTAR LOGOS)
+- **Genially/Canva**: plataforma en línea para la realización de gráficos y visualizaciones.
 
-## KPI´s 📈
+![Tecnologias](assets/Images/Logos_tecnologias.png)
+
+## DASHBOARD
+
+## Descripción 
+Dashboard interactivo de Power BI que analiza las reseñas de los usuarios para monitorear el mercado y mejorar los servicios, proporciona una visión detallada de las tendencias y el sentimiento de las reseñas de Google Maps para los estados escogidos para el análisis.
+
+## Características Principales
+- **Análisis de Sentimiento**: Visualizaciones que muestran la distribución de reseñas buenas, malas y neutras.
+- **Tendencias de Reseñas**: Gráficos de líneas que muestran el incremento de reseñas por subcategoría y trimestre.
+- **Comparación por Estado**: Visualizaciones que permiten comparar las reseñas por estado.
+
+## Visualizaciones Incluidas
+- **Gráfico de Barras**: Distribución de reseñas por subcategoría.
+- **Gráfico Circular**: Porcentaje de reseñas buenas, malas y neutras.
+- **Gráfico de Líneas**: Incremento de reseñas por trimestre.
+- **Tarjetas**: Indicadores clave de rendimiento (KPIs) para el análisis de reseñas.
+
+## Indicadores Clave de Rendimiento (KPIs) 📈
+Los KPIs en este dashboard proporcionan una visión clara y concisa del rendimiento y las tendencias clave. A continuación, se describen los KPIs incluidos:
 
 - **KPI: Identificación de Baches de Accesibilidad**
 
@@ -167,6 +220,22 @@ Métrica: Cantidad de reseñas vs. rating promedio de comercios en cada estado.
 Objetivo: Buscar subcategorías en las que en relación a la densidad de reseñas del trimestre anterior haya aumentado un x%, indicando una tendencia en alza y oportunidad de crecimiento en ese rubro.
 
 Métrica: Incremento porcentual en la densidad de reseñas por subcategoría respecto al trimestre anterior.
+
+
+## Datos Utilizados
+- **Fuente de Datos**: Las reseñas de los usuarios se han importado desde Google Cloud.
+- **Transformación de Datos**: Los datos se han limpiado y transformado en Power Query para asegurar su calidad y consistencia.
+
+## Instrucciones de Uso
+1. **Abrir el Dashboard**: Descarga el archivo `.pbix` y ábrelo en Power BI Desktop.
+2. **Interacción**: Utiliza los slicers y filtros para explorar los datos y obtener insights detallados.
+
+## Requisitos del Sistema
+- **Power BI Desktop**: Versión más reciente.
+
+## Algunas Imágenes
+
+![Gráfico Circular](assets/Images/Pics_Dash.png)
 
 ## **METODOLOGÍA DE TRABAJO** 
 
@@ -194,7 +263,8 @@ La utilización de iteraciones en forma de Sprints permite priorizar en todo mom
 
 ### **OTROS MÉTODOS DE ORGANIZACIÓN**  📊
 - - - 
-![Gantt](assets/Images/Gantt_README.png)
+
+![Gantt](assets/Images/Gantt_README(2).png)
 
 ## Diagrama de Gantt
 
@@ -216,9 +286,9 @@ La utilización de iteraciones en forma de Sprints permite priorizar en todo mom
 
 ## **CONTACTO**
 
-- Aliskair Rodríguez: 
-- Débora Kellenberger: 
-- Julieta Trimarchi:
-- Mauricio Arce:
-- Agustín Cáceres: 
+- Aliskair Rodríguez: [LinkedIn](https://www.linkedin.com/in/aliskair-rodriguez-782b3641/overlay/about-this-profile/?lipi=urn%3Ali%3Apage%3Ad_flagship3_profile_view_base%3ByTlTzyLcQBKlWP3ns6hYSg%3D%3D ) / [aliskairraul@gmail.com](mailto:aliskairraul@gmail.com)
+- Débora Kellenberger: [LinkedIn](https://www.linkedin.com/in/debora-kellenberger) / [debkellen1@gmail.com](mailto:debkellen1@gmail.com)
+- Julieta Trimarchi:  [julieta.trimarchi@hotmail.com](mailto:mauricioarcez23@gmail.com)
+- Mauricio Arce: [LinkedIn](https://www.linkedin.com/in/mauricioarcez?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAACZ6owoB1Vryi79Z5V_SxboNODLaYhSNWas&lipi=urn%3Ali%3Apage%3Ad_flagship3_search_srp_all%3B0n8V3i1mSWuJGF6Omb4zKA%3D%3D) / [mauricioarcez23@gmail.com](mailto:mauricioarcez23@gmail.com)
+- Agustín Cáceres: [LinkedIn](https://www.linkedin.com/in/agustincaceres9?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAAEcxIFwBd56X9dnK87IK7Z4IFWbFHOxu_FQ&lipi=urn%3Ali%3Apage%3Ad_flagship3_search_srp_all%3BPlS7oi4%2FRpWZpED9RZCZ%2Fg%3D%3D) / [agusca.saot@gmail.com](mailto:mauricioarcez23@gmail.com)
 

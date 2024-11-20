@@ -1,0 +1,259 @@
+/* --- General Styles --- */
+/* Estilos básicos para toda la página */
+body {
+    background-color: #09090e; /* Fondo oscuro */
+    color: #e0e0e0; /* Texto claro */
+    font-family: 'Roboto', sans-serif; /* Fuente general */
+}
+
+/* --- Layout General --- */
+.layout-container {
+    display: flex;
+    flex-direction: row; /* Diseño horizontal */
+    height: 100vh; /* Altura completa de la ventana */
+}
+
+/* --- Barra Lateral (Sidebar) --- */
+.sidebar {
+    background: linear-gradient(45deg, #000000, #064950); /* Fondo con degradado */
+    padding: 18px;
+    width: 240px;
+    border-radius: 8px;
+    border: 3px solid #1B262C; /* Borde oscuro */
+    box-shadow: 0 0px 12px #08646e; /* Sombra */
+    overflow-y: auto;
+    position: sticky;
+    top: 0;
+    transition: transform 0.3s ease;
+}
+
+.sidebar-title {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: white;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+/* --- Contenido Principal --- */
+.main-content {
+    flex-grow: 1; /* Expandirse para ocupar el espacio restante */
+    padding: 15px;
+    background: linear-gradient(45deg, #000000, #064950); /* Fondo con degradado */
+    border-radius: 8px;
+    margin-left: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.results-title {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: white;
+    margin-bottom: 15px;
+}
+
+.results-container {
+    background-color: #060c20; /* Fondo oscuro */
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* --- Botones --- */
+/* Filtros y varios */
+.filter-btn, .modal-footer .btn-close {
+    background-color: #064950 !important; /* Fondo personalizado */
+    color: #e0e0e0 !important; /* Texto claro */
+    border: 1px solid #0a7782 !important; /* Borde personalizado */
+    border-radius: 5px;
+    padding: 10px 15px;
+    font-size: 0.85em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease; /* Transición suave */
+}
+
+.filter-btn:hover, .modal-footer .btn-close:hover {
+    background-color: #0f3a5e !important; /* Fondo más oscuro */
+    border-color: #17a8b8 !important; /* Borde destacado */
+}
+
+/* Botón de recomendación */
+.submit-btn {
+    background-color: transparent; /* Fondo transparente */
+    border: 1px solid #0a7782; /* Borde en color oscuro */
+    border-radius: 8px; /* Bordes redondeados */
+    transition: all 0.3s ease; /* Transición suave */
+    width: 100%; /* Ocupa todo el ancho disponible */
+    font-size: 0.85em; /* Tamaño de texto pequeño */
+    font-weight: bold; /* Negrita */
+    padding: 10px; /* Relleno interno */
+    color: white; /* Texto blanco */
+    cursor: pointer; /* Cambiar cursor a mano */
+    margin-top: 10px; /* Espaciado superior */
+}
+
+.submit-btn:hover {
+    background: linear-gradient(45deg, #0F4C75, #1c1d38); /* Fondo degradado en hover */
+    border-color: #17a8b8; /* Color de borde en hover */
+}
+
+/* --- Botón de Google Maps en las tarjetas --- */
+.card .btn-google-maps {
+    background: linear-gradient(45deg, #060c20, #071b24); /* Fondo degradado 060c20*/
+    color: #ffffff; /* Texto blanco */
+    border: none; /* Sin borde */
+    border-radius: 5px; /* Bordes redondeados */
+    padding: 10px 15px; /* Relleno */
+    font-size: 0.85em; /* Tamaño del texto */
+    font-weight: bold; /* Texto en negrita */
+    text-align: center; /* Centrar el texto */
+    display: block; /* Ocupa todo el ancho del contenedor */
+    margin-top: 1px; /* Espaciado superior */
+    transition: all 0.3s ease; /* Transición suave */
+    text-decoration: none; /* Eliminar subrayado */
+}
+
+.card .btn-google-maps:hover {
+    background: linear-gradient(45deg, #064950, #1db9ac); /* Invertir degradado al pasar el mouse 1db9ac*/
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Sombra al hacer hover */
+    transform: scale(1.02); /* Efecto de ampliación sutil */
+    text-decoration: none; /* Mantener sin subrayado */
+}
+
+
+/* --- Dropdowns y Elementos de Entrada --- */
+.label {
+    font-size: 0.85em;
+    font-weight: bold;
+    color: #81a1c1; /* Azul claro */
+    margin-bottom: 5px;
+}
+
+.dropdown {
+    margin-bottom: 8px;
+    background-color: #0a7782;
+    color: #e9d8e8;
+    border: 0px solid #0a7782; /* Borde en color oscuro */
+    border-radius: 5px;
+    padding: 2px;
+    font-size: 0.85em;
+    height: 40px;
+}
+
+/* Transparencia para el dropdown */
+.dropdown .Select-control {
+    background-color: rgba(29, 72, 80, 0.6); /* Fondo semitransparente */
+    color: #e0e0e0 !important; /* Color del texto */
+    border: 0px solid #0a7782; /* Borde en color oscuro */
+    border-radius: 0px; /* Bordes redondeados */
+    padding: 0px; /* Relleno interno */
+    font-size: 0.85em; /* Tamaño del texto */
+}
+
+.dropdown .Select-menu {
+    background-color: rgba(11, 12, 29, 0.9); /* Fondo oscuro y semitransparente */
+    color: #e0e0e0; /* Texto claro */
+    border: 0px solid #0a7782; /* Borde para el menú desplegable */
+    border-radius: 0px; /* Bordes redondeados */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Sombra del menú */
+}
+
+/* --- Modales --- */
+.modal-content {
+    background: linear-gradient(45deg, #0c0e22, #1c1d38); /* Fondo con degradado */
+    box-shadow: 0 0px 12px #0F4C75; /* Sombra */
+    border: 1px solid #1B262C;
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.modal-content:hover {
+    transform: scale(1.01); /* Efecto al pasar el mouse */
+    transition: transform 0.3s ease;
+}
+
+.modal-header {
+    font-size: 1.2em;
+    color: #1db9ac; /* Texto de acento */
+    font-weight: bold;
+    border-bottom: 2px solid #1db9ac;
+    padding-bottom: 10px;
+}
+
+.modal-body label {
+    font-size: 0.9em;
+    color: #d8dee9;
+}
+
+/* --- Resultados de Recomendaciones --- */
+.results-container {
+    background-color: #060c20; /* Fondo oscuro */
+    padding: 2px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px #0000004d;
+    display: flex;
+    justify-content: center; /* Alinea las tarjetas al centro */
+    gap: 10px; /* Espacio entre tarjetas */
+    flex-wrap: wrap; /* Permite que las tarjetas se envuelvan si no caben en una fila */
+    margin-top: 20px; /* Desplaza las tarjetas hacia abajo */
+}
+
+/* --- Tarjetas de Recomendaciones --- */
+.card {
+    flex: 1 1 80px; /* Cada tarjeta tendrá un tamaño base, pero se ajustará dependiendo del espacio disponible */
+    min-width: 80px; /* Tamaño mínimo de cada tarjeta */
+    max-width: 200px; /* Limita el tamaño máximo de las tarjetas */
+    margin: 1px;
+    border-radius: 4px;
+    border: 1px solid #1B262C; /* Borde oscuro */
+    box-shadow: 0 0px 12px #08646e; /* Sombra */
+    padding: 0; /* Eliminar el padding interno de la tarjeta */
+}
+
+.card:hover {
+    transform: scale(1.02); /* Efecto de ampliación sutil en el hover */
+}
+
+/* --- Contenido de la tarjeta --- */
+.card-body {
+    background: #1e2a36; /* Fondo oscuro para las tarjetas */
+    color: white;
+    padding: 5px;
+    border: 3px;
+    border-radius: 1px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* --- Ajuste en las tablas dentro de las tarjetas --- */
+.card .table {
+    background-color: #060c20; /* Fondo oscuro para la tabla */
+    color: #e0e0e0; /* Texto claro en la tabla */
+    border-radius: 2px;
+}
+
+/* --- Mejorar la visualización de los botones dentro de las tarjetas --- */
+.card .card-title {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #1db9ac; /* Resaltar el nombre del negocio */
+    margin-bottom: 10px;
+}
+
+.card .card-body p {
+    font-size: 0.9em;
+    margin-bottom: 5px;
+}
+
+/* --- Media Queries para Responsividad --- */
+@media (max-width: 768px) {
+    .card {
+        flex: 1 1 calc(50% - 15px); /* 2 tarjetas por fila en pantallas más pequeñas */
+    }
+}
+
+@media (max-width: 480px) {
+    .card {
+        flex: 1 1 100%; /* 1 tarjeta por fila en pantallas muy pequeñas */
+    }
+}

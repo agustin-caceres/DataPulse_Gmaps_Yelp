@@ -50,6 +50,36 @@ def crear_tablas_bigquery(project_id: str, dataset: str) -> None:
                 saturday STRING,
                 sunday STRING
             )
+        """,
+        "g_address": f"""
+            CREATE TABLE IF NOT EXISTS `{project_id}.{dataset}.g_address` (
+                gmap_id STRING,
+                address STRING,
+                latitude FLOAT64,
+                longitude FLOAT64,
+                direccion STRING,
+                ciudad STRING,
+                cod_postal STRING,
+                estado STRING,
+                id_estado INT64
+            )
+        """,
+        "g_sitios": f"""
+            CREATE TABLE IF NOT EXISTS `{project_id}.{dataset}.g_sitios` (
+                gmap_id STRING,
+                name STRING,
+                description STRING,
+                url STRING,
+                avg_rating FLOAT64,
+                num_of_reviews INt64
+            )
+        """,
+        "g_misc": f"""
+            CREATE TABLE IF NOT EXISTS `{project_id}.{dataset}.g_misc` (
+                gmap_id STRING,
+                categoria_atributo STRING,
+                atributo STRING
+            )
         """
     }
     

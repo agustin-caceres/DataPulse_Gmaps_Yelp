@@ -9,7 +9,7 @@ from google.cloud import bigquery
 import os
 
 # Función
-from functions.extract_transform_load_api import extraer_reviews_google_places, cargar_a_bigquery
+from functions.etl_api import extraer_reviews_google_places, cargar_a_bigquery
 
 ######################################################################################
 # PARÁMETROS
@@ -48,7 +48,7 @@ with DAG(
     description='Extrae datos de Google Places, los guarda en GCS y los carga a BigQuery',
     #schedule_interval=timedelta(days=1),
     #start_date=datetime(2023, 11, 5),
-    schedule_interval=None,
+    schedule_interval='@monthly',
     catchup=False,
 ) as dag:
 

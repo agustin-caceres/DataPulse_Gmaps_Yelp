@@ -1,0 +1,22 @@
+link al dashboard en drive: 
+
+https://drive.google.com/file/d/1UYIBLHtthDLJxmA3i9fmD1ymlvmGllzP/view?usp=drive_link
+
+ultima actualizacion: 
+
+16/11 16:53
+- agregue pagina de accesibilidad
+
+18/11 06:41
+- Se agrega el avance de accesibilidad al prototipo final
+link: https://drive.google.com/file/d/14hTU971OJjd41Uu7_UV7ctCm_SH1NeDY/view?usp=drive_link
+
+19/11 00:38
+- listo el kpi de accesibilidad.
+link: https://drive.google.com/file/d/1MAcFXim7-ubGe1hkuS97_c2IIdpmSsa0/view?usp=drive_link
+nombre : Dash_kpi_accs.pbix
+
+19/11 22:43 
+- listo el kpi de reseñas bajo rating en negocios de alto tráfico. 
+link: https://drive.google.com/drive/u/0/folders/1bq3YDJJ04cZpzJcLq8XSy2tJXE7-0D4h
+nombre: KPI_JULI.pbix 
