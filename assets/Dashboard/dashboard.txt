@@ -16,3 +16,7 @@ link: https://drive.google.com/file/d/14hTU971OJjd41Uu7_UV7ctCm_SH1NeDY/view?usp
 link: https://drive.google.com/file/d/1MAcFXim7-ubGe1hkuS97_c2IIdpmSsa0/view?usp=drive_link
 nombre : Dash_kpi_accs.pbix
 
+19/11 22:43 
+- listo el kpi de reseñas bajo rating en negocios de alto tráfico. 
+link: https://drive.google.com/drive/u/0/folders/1bq3YDJJ04cZpzJcLq8XSy2tJXE7-0D4h
+nombre: KPI_JULI.pbix 
