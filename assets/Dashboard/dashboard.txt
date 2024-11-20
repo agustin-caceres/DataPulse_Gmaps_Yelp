@@ -22,7 +22,7 @@ link: https://drive.google.com/drive/u/0/folders/1bq3YDJJ04cZpzJcLq8XSy2tJXE7-0D
 nombre: KPI_JULI.pbix 
 
 - Subo dashboard final
-link: https://drive.google.com/file/d/1ENIcmKoqK04LVftaSfijDevfUILo_8mD/view?usp=drive_link
+link: https://drive.google.com/file/d/1Xw9Q839yzdx7MMs8Scdrhwru6Gpa475C/view?usp=drive_link
 Nombre: Dashboard_PF_
 Fecha: 20-11
-Hora: 14:51
+Hora: 16:37
