@@ -1,4 +1,4 @@
-#  **Restaurant Recommendation App**
+#  **DataPulse Analytics - Restaurant Recommendation App**
 
 Esta aplicación en Dash ofrece un sistema de recomendación de restaurantes basado en preferencias del usuario y datos específicos de ubicación y características del negocio. Además, incluye integración con Google Maps para visualizar las ubicaciones sugeridas.
 
@@ -36,7 +36,7 @@ La aplicación está desplegada en línea y puedes acceder a ella a través del 
 4. 📍 Usa el botón de **"Ver en Google Maps"** para explorar las ubicaciones.
 
 <div align="center">
-<img src="https://www.greghilston.com/post/how-to-use-plotly-plotly-express-and-dash-with-jupyterlab/featured-image.png" alt="Dash Logo" width="150">
+<img src="https://www.greghilston.com/post/how-to-use-plotly-plotly-express-and-dash-with-jupyterlab/featured-image.png" alt="Dash Logo" width="300">
 </div>
 
 
