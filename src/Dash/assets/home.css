@@ -1,0 +1,79 @@
+/* -------------------------------------------------------------
+    Estilos Generales de las Tarjetas y Tooltips
+------------------------------------------------------------- */
+.card {
+    padding: 20px;
+    border-radius: 10px; /* Bordes ligeramente redondeados */
+    color: #fff;
+    text-align: left;
+    position: relative;
+    overflow: visible;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.3);
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.card:hover {
+    background-color: #444;
+    transform: scale(1.05);
+}
+
+/* Tarjetas con fondo degradado */
+.card-acceso-internet {
+    background: linear-gradient(to right, rgba(74, 144, 226, 1), rgba(74, 144, 226, 0.3));
+}
+
+.card-cobertura-fibra {
+    background: linear-gradient(to right, rgba(243, 156, 18, 1), rgba(243, 156, 18, 0.3));
+}
+
+.card-planes-pospago {
+    background: linear-gradient(to right, rgba(142, 68, 173, 1), rgba(142, 68, 173, 0.3));
+}
+
+/* Tooltip de texto */
+.tooltip-text {
+    position: absolute;
+    bottom: -50px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    padding: 12px 18px;
+    border-radius: 8px;
+    font-size: 14px;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.card:hover .tooltip-text {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(-10px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+}
+
+/* -------------------------------------------------------------
+    Animaciones
+------------------------------------------------------------- */
+@keyframes tooltip-fade {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+@keyframes progress-glow {
+    0%, 100% {
+        box-shadow: 
+            0 0 8px rgba(255, 255, 255, 0.5),
+            0 0 12px rgba(64, 224, 208, 0.3),
+            0 0 18px rgba(64, 224, 208, 0.2);
+    }
+    50% {
+        box-shadow: 
+            0 0 10px rgba(255, 255, 255, 0.6),
+            0 0 15px rgba(64, 224, 208, 0.4),
+            0 0 22px rgba(64, 224, 208, 0.3);
+    }
+}
+
