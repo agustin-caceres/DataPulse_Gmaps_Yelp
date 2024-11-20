@@ -33,10 +33,13 @@ ciudades_por_estado = {
     'TN': ['Pegram', 'Goodlettsville', 'Whites Creek', 'Cane Ridge', 'Mount Juliet', 'White House', 'Joelton', 'Smyrna', 'Berry Hill', 'La Vergne']
 }
 
-# Cargar usuarios desde el archivo Parquet
+# URL pública del archivo en GCS
+GCS_URL = "https://storage.googleapis.com/modelo-data/df_user_ids.parquet"
+
+# Cargar usuarios desde la URL pública
 try:
-    df_users = pd.read_parquet("Proyecto_final/Data_para_Agustin/df_user_ids.parquet")
+    df_users = pd.read_parquet(GCS_URL)
     usuarios = ['USUARIO NUEVO'] + df_users["user_id"].head(99).tolist()  # USUARIO NUEVO al inicio de la lista
 except Exception as e:
-    print(f"Error al cargar los usuarios: {e}")
+    print(f"Error al cargar los usuarios desde GCS: {e}")
     usuarios = ['USUARIO NUEVO']  # Fallback si ocurre un error
