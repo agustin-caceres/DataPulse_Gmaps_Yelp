@@ -5,6 +5,7 @@ from functions.api_request import get_recommendations
 from paginas.page_1 import layout  
 from functions.config import ciudades_por_estado
 import pandas as pd
+import os
 
 # Inicializar la app
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP], suppress_callback_exceptions=True)
@@ -151,4 +152,5 @@ def toggle_modals(open_characteristics_click, open_categories_click, close_chara
 
 # Ejecutar la app
 if __name__ == "__main__":
-    app.run_server(debug=True)
+    port = int(os.environ.get("PORT", 8050))  # Usar el puerto asignado por Render o 8050 por defecto
+    app.run_server(host="0.0.0.0", port=port, debug=True)
