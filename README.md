@@ -34,16 +34,16 @@ De esta forma buscamos garantizar resultados relevantes y de alta calidad, optim
 
 ## ESTRUCTURA DEL PROYECTO
 
-- [`assets/`](assets/): Archivos estaticos, imagenes y reportes. 
-    - [`Dashboard/`](assets/Dashboard/): Dasboard MVP y final. 
-    - [`Diagrama_ER/`](assets/Diagrama_ER/): Diagrama Entidad-Relacion. 
-    - [`Flujos_Gantt_Semanal/`](assets/Flujos_Gantt_Semanal/): Diagramas de Gantt para cada sprint. 
-    - [`Images/`](assets/Images/): Imagenes utilizadas en documentaciones. 
-    - [`Reportes Entregables/`](assets/Reportes%20Entregables/): Reportes de cada Sprint.
+- [`assets`](assets/): Archivos estaticos, imagenes y reportes. 
+    - [`Dashboard`](assets/Dashboard/): Dasboard MVP y final. 
+    - [`Diagrama_ER`](assets/Diagrama_ER/): Diagrama Entidad-Relacion. 
+    - [`Flujos_Gantt_Semanal`](assets/Flujos_Gantt_Semanal/): Diagramas de Gantt para cada sprint. 
+    - [`Images`](assets/Images/): Imagenes utilizadas en documentaciones. 
+    - [`Reportes Entregables`](assets/Reportes%20Entregables/): Reportes de cada Sprint.
 
-- [`Notebooks/`](Notebooks/): Jupyter notebooks con los análisis en local. 
-    - [`ETL/`](Notebooks/ETL/): Procesos de Extracción, Transformación y Carga de diferentes archivos.
-    - [`EDA/`](Notebooks/EDA/): Procesos de Análisis Exploratorio de Datos de diferentes archivos.
+- [`Notebooks`](Notebooks/): Jupyter notebooks con los análisis en local. 
+    - [`ETL`](Notebooks/ETL/): Procesos de Extracción, Transformación y Carga de diferentes archivos.
+    - [`EDA`](Notebooks/EDA/): Procesos de Análisis Exploratorio de Datos de diferentes archivos.
 
 - [`src/`](src/): Codigo fuente, modulos de aplicaciones y scripts. 
     - [`analisis_sentimiento`](src/analisis_sentimiento/): 
@@ -58,7 +58,8 @@ De esta forma buscamos garantizar resultados relevantes y de alta calidad, optim
         - [`README.md`](src/Streamlit/README.md): Documentación
 
 - [`README.md`](README.md): Documentación General. 
-- [`Diccionario_de_datos-PF`](Diccionario_de_datos-PF): Diccionario de datos. - [`requirements.txt`](requirements.txt): Requerimientos del proyecto. 
+- [`Diccionario_de_datos-PF`](Diccionario_de_datos-PF): Diccionario de datos. 
+- [`requirements.txt`](requirements.txt): Requerimientos del proyecto. 
 - [`cloudbuild.yaml`](cloudbuild.yaml): Conexion del repositorio con Composer.
 
 ## **ENTENDIMIENTO DE LA SITUACION ACTUAL**
@@ -118,7 +119,7 @@ centrarse en sectores directamente relacionados con su núcleo de negocio para o
 
 #### *Datos que respaldan la elección de nuestro alcance*
 - - - 
-![EDA](assets\Images\EDA_categorias.png)
+![EDA](assets/Images/EDA_categorias.png)
 
 ## DATOS Y FUENTES
 
@@ -179,7 +180,7 @@ centrarse en sectores directamente relacionados con su núcleo de negocio para o
 - **Lucidchart**: plataforma en línea para la creación de diagramas de forma colaborativa.
 - **Genially/Canva**: plataforma en línea para la realización de gráficos y visualizaciones.
 
-![Tecnologias](assets\Images\Logos_tecnologias.png)
+![Tecnologias](assets/Images/Logos_tecnologias.png)
 
 ## DASHBOARD
 
@@ -234,7 +235,7 @@ Métrica: Incremento porcentual en la densidad de reseñas por subcategoría res
 
 ## Algunas Imágenes
 
-![Gráfico Circular](assets\Images\Pics_Dash.png)
+![Gráfico Circular](assets/Images/Pics_Dash.png)
 
 ## **METODOLOGÍA DE TRABAJO** 
 
@@ -263,7 +264,7 @@ La utilización de iteraciones en forma de Sprints permite priorizar en todo mom
 ### **OTROS MÉTODOS DE ORGANIZACIÓN**  📊
 - - - 
 
-![Gantt](assets\Images\Gantt_README(2).png)
+![Gantt](assets/Images/Gantt_README(2).png)
 
 ## Diagrama de Gantt
 
@@ -286,8 +287,8 @@ La utilización de iteraciones en forma de Sprints permite priorizar en todo mom
 ## **CONTACTO**
 
 - Aliskair Rodríguez: [LinkedIn](https://www.linkedin.com/in/aliskair-rodriguez-782b3641/overlay/about-this-profile/?lipi=urn%3Ali%3Apage%3Ad_flagship3_profile_view_base%3ByTlTzyLcQBKlWP3ns6hYSg%3D%3D ) / [aliskairraul@gmail.com](mailto:aliskairraul@gmail.com)
-- Débora Kellenberger: [LinkedIn](www.linkedin.com/in/debora-kellenberger) / [debkellen1@gmail.com](mailto:debkellen1@gmail.com)
+- Débora Kellenberger: [LinkedIn](https://www.linkedin.com/in/debora-kellenberger) / [debkellen1@gmail.com](mailto:debkellen1@gmail.com)
 - Julieta Trimarchi:  [julieta.trimarchi@hotmail.com](mailto:mauricioarcez23@gmail.com)
-- Mauricio Arce: [LinkedIn](https://www.linkedin.com/in/mauricioarcez/) / [mauricioarcez23@gmail.com](mailto:mauricioarcez23@gmail.com)
+- Mauricio Arce: [LinkedIn](https://www.linkedin.com/in/mauricioarcez?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAACZ6owoB1Vryi79Z5V_SxboNODLaYhSNWas&lipi=urn%3Ali%3Apage%3Ad_flagship3_search_srp_all%3B0n8V3i1mSWuJGF6Omb4zKA%3D%3D) / [mauricioarcez23@gmail.com](mailto:mauricioarcez23@gmail.com)
 - Agustín Cáceres: [LinkedIn](https://www.linkedin.com/in/agustincaceres9?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAAEcxIFwBd56X9dnK87IK7Z4IFWbFHOxu_FQ&lipi=urn%3Ali%3Apage%3Ad_flagship3_search_srp_all%3BPlS7oi4%2FRpWZpED9RZCZ%2Fg%3D%3D) / [agusca.saot@gmail.com](mailto:mauricioarcez23@gmail.com)
 
