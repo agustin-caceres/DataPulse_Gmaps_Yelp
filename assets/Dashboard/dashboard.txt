@@ -21,8 +21,14 @@ nombre : Dash_kpi_accs.pbix
 link: https://drive.google.com/drive/u/0/folders/1bq3YDJJ04cZpzJcLq8XSy2tJXE7-0D4h
 nombre: KPI_JULI.pbix 
 
-- Subo dashboard final
+- Subo dashboard
 link: https://drive.google.com/file/d/1Xw9Q839yzdx7MMs8Scdrhwru6Gpa475C/view?usp=drive_link
 Nombre: Dashboard_PF_
 Fecha: 20-11
 Hora: 16:37
+
+- Subo dashboard final
+https://drive.google.com/file/d/1IEAWBkGj4DwNYBGdvsO2Jn05UAZYGFEy/view?usp=drive_link
+Nombre: Dashboard_P_Final
+Fecha: 21-11
+Hora: 16:20
