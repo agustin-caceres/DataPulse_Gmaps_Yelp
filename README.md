@@ -124,7 +124,7 @@ centrarse en sectores directamente relacionados con su núcleo de negocio para o
 ## DATOS Y FUENTES
 
 - Los archivos crudos con la información acerca de Google Maps y Yelp se encuentran en la siguiente ruta de Google Drive:
-[Enlace a Drive]("https://drive.google.com/drive/folders/1Wf7YkxA0aHI3GpoHc9Nh8_scf5BbD4DA")
+[Enlace a Drive](https://drive.google.com/drive/folders/1Wf7YkxA0aHI3GpoHc9Nh8_scf5BbD4DA)
 - Diccionario de datos: [Enlace al Diccionario de Datos]("assets/Diccionario_de_datos-PF.xlsx")
 
 ## PROCESO DEL PROYECTO
@@ -183,6 +183,9 @@ centrarse en sectores directamente relacionados con su núcleo de negocio para o
 ![Tecnologias](assets/Images/Tecnologias.png)
 
 ## DASHBOARD
+
+Puedes acceder a nuestro dashboard interactivo en el siguiente enlace: [Ver Dashboard](https://....)
+
 
 ## Descripción 
 Dashboard interactivo de Power BI que analiza las reseñas de los usuarios para monitorear el mercado y mejorar los servicios, proporciona una visión detallada de las tendencias y el sentimiento de las reseñas de Google Maps para los estados escogidos para el análisis.
