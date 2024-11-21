@@ -184,8 +184,7 @@ centrarse en sectores directamente relacionados con su núcleo de negocio para o
 
 ## DASHBOARD
 
-Puedes acceder a nuestro dashboard interactivo en el siguiente enlace: [Ver Dashboard](https://....)
-
+Puedes acceder a nuestro dashboard interactivo en el siguiente enlace: [Ver Dashboard](https://drive.google.com/file/d/1IEAWBkGj4DwNYBGdvsO2Jn05UAZYGFEy/view?usp=drive_link)
 
 ## Descripción 
 Dashboard interactivo de Power BI que analiza las reseñas de los usuarios para monitorear el mercado y mejorar los servicios, proporciona una visión detallada de las tendencias y el sentimiento de las reseñas de Google Maps para los estados escogidos para el análisis.
