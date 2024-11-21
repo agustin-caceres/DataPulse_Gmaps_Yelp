@@ -1,8 +1,6 @@
-
 # DataPulse Analytics - FastAPI Backend
 
-
-Este backend es parte de un sistema diseñado para ofrecer recomendaciones personalizadas de negocios (restaurantes, hoteles, etc.) basándose en las preferencias de los usuarios y datos de ubicación. Utiliza modelos de machine learning y está diseñado para integrarse con una aplicación de Streamlit como frontend.
+Este backend es parte de un sistema diseñado para ofrecer recomendaciones personalizadas de restaurantes, basándose en las preferencias de los usuarios y datos de ubicación. Utiliza modelos de ML y está diseñado para integrarse con una aplicación diseñada en Dash como frontend.
 
 ## 🛠️ Arquitectura del Sistema
 El sistema tiene tres componentes principales:
@@ -13,11 +11,11 @@ El sistema tiene tres componentes principales:
   - Usa un modelo preentrenado para generar recomendaciones personalizadas.
   - Devuelve un JSON estructurado con las recomendaciones.
 
-2. **Frontend (Streamlit)** Nuestra app que servira el modelo en una interfaz visual para que los usuarios interactúen con el sistema.
+2. **Frontend (Dash)** Nuestra app que servira el modelo en una interfaz visual para que los usuarios interactúen con el sistema.
 -  Cómo funciona:
     - Recoge los datos ingresados por los usuarios (estado, categoría, etc.).
     - Realiza solicitudes HTTP a la API del backend.
-    - Muestra los resultados en forma de listas, gráficos o mapas.
+    - Muestra los resultados en tarjetas visuales.
 
 3. **CI/CD y Despliegue**
 - Pipeline de CI/CD:
@@ -27,10 +25,13 @@ El sistema tiene tres componentes principales:
   - Servicio que ejecuta el backend como un contenedor escalable en la nube.
 
 ## 🚀 Flujo de Datos
-- **Entrada**: El usuario ingresa los siguientes datos en la app de Streamlit:
-  - ``state:`` Estado donde quiere las recomendaciones (por ejemplo, "California").
-  - ``user_id_str:`` Identificador del usuario.
-  - ``category:`` Categoría del negocio (por ejemplo, "Restaurants").
+- **Entrada**: El usuario ingresa los siguientes datos en la app de Dash:
+  - `km:` Distancia de las recomendaciones.
+  - `estado:` Estado donde quiere las recomendaciones (por ejemplo, "California").
+  - `ciudad:` Ciudades según el Estado seleccionado.
+  - `usuario` Identificador del usuario.
+  - `caracteristicas:` Características del negocio (por ejemplo, "Pet Friendly").
+  - `categorias`: Categorías del negocio (por ejemplo, "Cómida Rápida").
   - ``top_n:`` Número de recomendaciones deseadas.
 - **Procesamiento**
 1. **Carga de recursos:**
@@ -48,16 +49,25 @@ El sistema tiene tres componentes principales:
   {
     "recomendations": [
       {
-        "business_id": "123",
-        "name": "Italian Food",
-        "city": "Los Angeles",
-        "address": "123 street",
-        "latitude": 34.052235,
-        "longitude": -118.243683
+      "negocio": "string",
+      "direccion": "string",
+      "ciudad": "string",
+      "estado": "string",
+      "lunes": "string",
+      "martes": "string",
+      "miercoles": "string",
+      "jueves": "string",
+      "viernes": "string",
+      "sabado": "string",
+      "domingo": "string",
+      "distancia": 0,
+      "latitud": 0,
+      "longitud": 0
       }
     ]
   }
   ```
+  
 
 ## 📁 Estructura del Proyecto
 
@@ -72,7 +82,7 @@ El sistema tiene tres componentes principales:
 - **requirements.txt:** Dependencias del proyecto
 
 
-## 📋 Endpoints Disponibles
+## 🌐 Endpoints Disponibles
 
 
 ### **`GET /`**
@@ -83,30 +93,40 @@ El sistema tiene tres componentes principales:
 - **Parámetros del payload**:
   ```json
   {
-    "state": "California",
-    "user_id_str": "user123",
-    "category": "Restaurants",
-    "top_n": 5
+    "km": "27",
+    "estado": "LA",
+    "ciudad": "Riveridge",
+    "usuario": "Usuario Nuevo",
+    "caracteristicas": "Acepta Mascotas",
+    "categorias": "Restaurantes Generales"
   }
   ```
 - **Respuesta**:
-  ```json
+```json
   {
     "recomendations": [
       {
-        "business_id": "123",
-        "name": "Italian Food",
-        "city": "Los Angeles",
-        "address": "123 street",
-        "latitude": 34.052235,
-        "longitude": -118.243683
+      "negocio": "Crescent City Steak House",
+      "direccion": "1001 N Broad St",
+      "ciudad": "New Orleans",
+      "estado": "LA",
+      "lunes": "No Disponible",
+      "martes": "16:0 - 21:0",
+      "miercoles": "11:30 - 21:0",
+      "jueves": "11:30 - 21:0",
+      "viernes": "11:30 - 21:30",
+      "sabado": "16:0 - 21:30",
+      "domingo": "12:0 - 21:0",
+      "distancia": 14.21,
+      "latitud": 29.9733253,
+      "longitud": -90.0810244
       }
     ]
   }
   ```
 
 
-## 🧠 Modelo de Machine Learning
+## 🧠 Modelo ML
 El modelo de recomendaciones utiliza LightFM, ideal para:
 - Recomendaciones basadas en interacciones (reseñas, puntuaciones, etc.).
 - Incorporar datos adicionales mediante matrices de características.
@@ -120,7 +140,7 @@ El modelo de recomendaciones utiliza LightFM, ideal para:
     - Retorna los top_n negocios más relevantes.
 
 
-## 📦 Despliegue en Google Cloud Run
+## 🚀 Despliegue en Google Cloud Run
 
 El despliegue está automatizado usando **GitHub Actions**. Al hacer un push en la rama `main`, se activa un workflow que:
 
@@ -135,10 +155,6 @@ Los secretos necesarios en GitHub Actions:
 
 Para más detalles, consulta [`.github/workflows/deploy.yml`](./.github/workflows/deploy.yml).
 
-
-
-## 📋 Próximos pasos
-
-- **Integración con Streamlit**: Completar las pruebas para garantizar la comunicación correcta entre el frontend y el backend.
-- **Optimización del rendimiento**: Mejorar la carga de recursos y la eficiencia de los filtros.
-- **Monitoreo y logs:**: Configurar herramientas para monitorear el rendimiento y errores en producción.
+<div align="center">
+<img src="https://d3uyj2gj5wa63n.cloudfront.net/wp-content/uploads/2021/02/fastapi-logo.png" alt="Fastapi Logo" width="300">
+</div>
