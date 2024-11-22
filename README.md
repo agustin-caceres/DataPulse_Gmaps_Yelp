@@ -237,7 +237,7 @@ Métrica: Incremento porcentual en la densidad de reseñas por subcategoría res
 
 ## Algunas Imágenes
 
-![Gráfico Circular](assets/Images/Pics_Dash.png)
+![Gráfico dashboard](assets/Images/Dashboard_general.png)
 
 ## **METODOLOGÍA DE TRABAJO** 
 
